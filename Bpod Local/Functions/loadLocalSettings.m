@@ -4,9 +4,10 @@ function localsettings = loadLocalSettings()
 
 
 localsettings = struct();
-localsettings.useAIM        = true;
-localsettings.useFrame2TTL  = false;
-localsettings.pulseWindow   = false;
+localsettings.useAIM         = true;
+localsettings.useFrame2TTL   = false;
+localsettings.pulseWindow    = false;
+localsettings.useMouseSlider = false;
 %==========================================================================
 dpfilesettings = fullfile('C:\BoxSettings', 'local_settings.mat');
 if exist(dpfilesettings,'file')

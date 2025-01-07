@@ -1,56 +1,60 @@
-# Single Color RGB565 Blob Tracking Example
-#
-# This example shows off single color RGB565 tracking using the OpenMV Cam.
-
 import sensor, time, math
+import openmv_funs
 from pyb import Pin
-
+#=================================================================================================
+# Example usage:
+default_config = {
+    "sensor_window": (105,50,135,188),
+    "to_transpose": True,
+    "to_hmirror":   True,
+    "mouse_thres_int": (0, 65),
+    "region_M1": (0,   3,  188, 64),
+    "platform_cent_M1": (84,   54),
+    "region_M2": (0 , 67,  188, 64),
+    "platform_cent_M2": (0,  79),
+    "radius_M1_M2": (8 ,8),
+    "angle_requirement_deg": 45,
+    "history_alpha_x": 0.85,
+    "history_alpha_y": 0.99,
+    "draw_M1": (0, 0, 0),
+    "draw_M2": (100,100,100)
+}
+config_filename = "config.txt"
+#=================================================================================================
+# set configuration and pins
+final_config = openmv_funs.read_config_file(config_filename, default_config)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
-print(M1Pin_P0)
 M2Pin_P1 = Pin(Pin.board.P2, Pin.OUT_PP) # P1
-print(M2Pin_P1)
 mousepins = [M1Pin_P0, M2Pin_P1]
 
-
-thresholds_body = [ (0, 65)]  # black mouse
-thresholds_tail = [ (70, 140)]  # black mouse
-
+print("Final Configuration:")
+print(final_config)
+print("Mousepins:")
+print(mousepins)
+#=================================================================================================
+# setup sensor
 sensor.reset()
 sensor.set_pixformat(sensor.GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)
 sensor.skip_frames(time = 500)
 
-sensor.set_transpose(True)
-sensor.set_hmirror(True)
-sensor.set_windowing([105,50,135,188])
-#sensor.set_auto_gain(False) # must be turned off for color tracking
-#sensor.set_auto_whitebal(False) # must be turned off for color tracking
-
-## 90 DEGREES ROTATION -> https://docs.openmv.io/library/omv.sensor.html
-
+sensor.set_transpose(final_config['to_transpose'])
+sensor.set_hmirror(final_config['to_hmirror'])
+sensor.set_windowing(final_config['sensor_window'])
 clock = time.clock()
 #=================================================================================================
-## References area data (x, y, Valid(f  ounded during scan))
-# only change these numbers for defining the box, both sides should be symmetric
-myRegion_M1 = [0,   3,  188, 64]
-myRegion_M2 = [0 , 67,  188, 64]
-roiRegion   = [min([myRegion_M1[0], myRegion_M2[0]]), min([myRegion_M1[1], myRegion_M2[1]]),
-    max([myRegion_M1[2], myRegion_M2[2]]), myRegion_M1[1]+myRegion_M2[3]]
-myRegion = [myRegion_M1, myRegion_M2]
-colmouse = [(0, 0, 0), (100,100,100)]
-
+# set params from text config
+bodyThresh  = [final_config['mouse_thres_int']]
 targetAngle = [math.pi/2, -math.pi/2]
-#=================================================================================================
-loc1     = [84, 54]
-loc2     = [84, 79] #[84, 77]
-Rtrigger = [9,   9] #8 for single, 10 for pairs
-thetaRot = math.pi/4
-hpcnt    = 0.98 # 0.9 for normal mice, 0.8 for slow (e.g. NP)
-hisx     = 0.85
-hisy     = 0.99
+myRegion    = [final_config['region_M1'], final_config['region_M2']]
+colmouse    = [final_config['draw_M1'], final_config['draw_M2']]
+locvec      = [final_config['platform_cent_M1'], final_config['platform_cent_M2']]
+Rtrigger    = final_config['radius_M1_M2'] #8 for single, 10 for pairs
+thetaRot    = math.radians(final_config['angle_requirement_deg']) # keep at 45
+hisx        = final_config['history_alpha_x']
+hisy        = final_config['history_alpha_y']
 #=================================================================================================
 # tracking variables
-locvec    = [loc1, loc2]
 mousecent = [[0, 0], [0, 0]];
 mousepts  = [[0, 0, 0, 0], [0, 0, 0, 0]];
 mousehdir = [[0, 0], [0, 0]];
@@ -69,7 +73,7 @@ while(True):
     #============================================================================
     # operations
     for imouse in range(0,2):
-        mouseblob = img.find_blobs(thresholds_body, merge = True,
+        mouseblob = img.find_blobs(bodyThresh, merge = True,
         pixels_threshold=75, area_threshold=75, roi =myRegion[imouse])
         if len(mouseblob)>0:
             mouseblob = mouseblob[0]
