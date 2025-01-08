@@ -34,6 +34,7 @@ ops.degNegative  = -45;
 % ops.degPositive  = 45;
 % ops.degNegative  = 135;
 ops.pulseWinWidth = localsettings.pulseWinWidth;
+ops.useAIM        = localsettings.useAIM;
 ops.degPerPixel  = 92/1280;
 ops.screenFs     = 60; % make sure this matches your screen refresh rates!
 ops.stimsets     = stimsets;
