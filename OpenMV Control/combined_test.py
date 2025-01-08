@@ -2,27 +2,9 @@ import sensor, time, math
 import openmv_funs
 from pyb import Pin
 #=================================================================================================
-# Example usage:
-default_config = {
-    "sensor_window": (105,50,135,188),
-    "to_transpose": True,
-    "to_hmirror":   True,
-    "mouse_thres_int": (0, 65),
-    "region_M1": (0,   3,  188, 64),
-    "platform_cent_M1": (84,   54),
-    "region_M2": (0 , 67,  188, 64),
-    "platform_cent_M2": (0,  79),
-    "radius_M1_M2": (8 ,8),
-    "angle_requirement_deg": 45,
-    "history_alpha_x": 0.85,
-    "history_alpha_y": 0.99,
-    "draw_M1": (0, 0, 0),
-    "draw_M2": (100,100,100)
-}
-config_filename = "config.txt"
-#=================================================================================================
 # set configuration and pins
-final_config = openmv_funs.read_config_file(config_filename, default_config)
+config_filename = "config.txt"
+final_config = openmv_funs.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
 M2Pin_P1 = Pin(Pin.board.P2, Pin.OUT_PP) # P1
 mousepins = [M1Pin_P0, M2Pin_P1]

@@ -1,5 +1,26 @@
 # COPY THIS FILE TO THE OPENMV STORAGE
 #=================================================================================================
+
+def get_default_config():
+    default_config = {
+        "sensor_window": (105,50,135,188),
+        "to_transpose": True,
+        "to_hmirror":   True,
+        "mouse_thres_int": (0, 65),
+        "region_M1": (0,   3,  188, 64),
+        "platform_cent_M1": (84,   54),
+        "region_M2": (0 , 67,  188, 64),
+        "platform_cent_M2": (0,  79),
+        "radius_M1_M2": (8 ,8),
+        "angle_requirement_deg": 45,
+        "history_alpha_x": 0.85,
+        "history_alpha_y": 0.99,
+        "draw_M1": (0, 0, 0),
+        "draw_M2": (100,100,100)
+    }
+    return default_config
+
+
 def str_to_literal(value_str):
     """Safely converts a string to a literal (tuple, list, int, float, str, bool, None)."""
     value_str = value_str.strip()
@@ -31,10 +52,11 @@ def str_to_literal(value_str):
         return None
     return value_str #if everything fails, return the string
 
-def read_config_file(filename, default_config):
+def read_config_file(filename):
     """Reads configuration from a file, merging it with defaults.
        Handles tuples without using the ast module.
     """
+    default_config = get_default_config()
     config = default_config.copy()
     try:
         with open(filename, "r") as f:
