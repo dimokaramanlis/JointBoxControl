@@ -60,13 +60,19 @@ for istim = 1:Nstimuli
     BpodSystem.SoftCodeHandlerFunction = handlerfuns{istim};
     [StimPara, PTB] = getStimulusData(stimulishow{istim}, PTB, degPerPixel);
     allstimpara{istim} = StimPara;
+    % decide on output actions
+    if localsettings.useAIM ~=0
+        outacts = {'AnalogIn1', ['#' istim]};
+    else
+        outacts = {};
+    end
     for itrial = 1:StimPara.Nstimtrials
         % run state machine quickly to mark events
         sma = NewStateMachine(); % Initialize new state machine description
         sma = AddState(sma, 'Name', 'customExit', ...
                 'Timer', 0, ...
                 'StateChangeConditions', {'Tup','exit'},...
-                'OutputActions',{'AnalogIn1', ['#' istim]});
+                'OutputActions',outacts);
         SendStateMatrix(sma); % Send the state matrix to the Bpod device
         RawEvents = RunStateMatrix; % Run the trial and return events
         eval(handlerfuns{istim});
@@ -79,6 +85,7 @@ for istim = 1:Nstimuli
                     [PTB.windowrects(iscreen,3:4)-wp PTB.windowrects(iscreen, 3:4)]);
         PTB.vbls(iscreen) = Screen('Flip', PTB.windows(iscreen),  PTB.vbls(iscreen) + (betweenstimframes - 0.5) * mean(PTB.ifis));
     end
+    
 end
 %-------------------------------------------------------------------------
 answer = questdlg('Stop all recordings and video', ...
