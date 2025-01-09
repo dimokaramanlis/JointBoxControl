@@ -4,6 +4,9 @@ function stimdesc = getDefaultStimParams(stimtype, screensize, degPerPixel, fps)
         % chirp parameters
 stimdesc = struct();
 switch stimtype
+    case 'OnOffSteps'
+        stimdesc.Nstimframes       = 12 * fps;
+        stimdesc.Ntrials           = 20;
     case 'Chirp'
         stimdesc.partdurations = [2 3 3 2 8 2 8 2 2]';
         stimdesc.freqsweep.lo_freq = 0.5;

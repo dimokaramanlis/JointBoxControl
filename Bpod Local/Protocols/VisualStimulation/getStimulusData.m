@@ -7,6 +7,10 @@ stimdesc = getDefaultStimParams(stimtype, screensize, degPerPixel, fps);
 stimpara = struct();
 fprintf('Loading %s... ', stimtype); tic;
 switch stimtype
+    case 'OnOffSteps'
+        %---------------------------------------------------------------------------
+        stimpara.Nstimframes = stimdesc.Nstimframes;
+        stimpara.Nstimtrials = stimdesc.Ntrials;
     case 'Chirp'
         %---------------------------------------------------------------------------
         % generate chirp
