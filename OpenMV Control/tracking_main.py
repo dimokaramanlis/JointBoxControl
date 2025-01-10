@@ -53,7 +53,7 @@ n         = [0, 0]
 while(True):
     clock.tick()
     img = sensor.snapshot()
-    #img.median(2)
+    img.median(2)
     zeroedge    = [(0,0),(0,0),(0,0),(0,0)]
     mcorners    = [zeroedge, zeroedge];
     mouseinzone = [False, False]
