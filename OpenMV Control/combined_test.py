@@ -22,6 +22,7 @@ sensor.skip_frames(time = 500)
 
 sensor.set_transpose(final_config['to_transpose'])
 sensor.set_hmirror(final_config['to_hmirror'])
+sensor.set_vflip(final_config['to_vflip'])
 sensor.set_windowing(final_config['sensor_window'])
 clock = time.clock()
 #=================================================================================================

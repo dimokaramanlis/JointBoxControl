@@ -6,6 +6,7 @@ def get_default_config():
         "sensor_window": (105,50,135,188),
         "to_transpose": True,
         "to_hmirror":   True,
+        "to_vflip":   False,
         "mouse_thres_int": (0, 65),
         "region_M1": (0,   3,  188, 64),
         "platform_cent_M1": (84,   54),
