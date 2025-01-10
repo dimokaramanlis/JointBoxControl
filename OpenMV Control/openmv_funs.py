@@ -4,6 +4,8 @@
 def get_default_config():
     default_config = {
         "sensor_window": (105,50,135,188),
+        "sensor_brightness": 0,
+        "transpose_first": True,
         "to_transpose": True,
         "to_hmirror":   True,
         "to_vflip":   False,

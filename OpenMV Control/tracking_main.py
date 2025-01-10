@@ -18,12 +18,17 @@ print(mousepins)
 sensor.reset()
 sensor.set_pixformat(sensor.GRAYSCALE)
 sensor.set_framesize(sensor.QVGA)
-sensor.skip_frames(time = 500)
-
-sensor.set_transpose(final_config['to_transpose'])
-sensor.set_hmirror(final_config['to_hmirror'])
-sensor.set_vflip(final_config['to_vflip'])
+if final_config['transpose_first']:
+    sensor.set_transpose(final_config['to_transpose'])
+    sensor.set_hmirror(final_config['to_hmirror'])
+    sensor.set_vflip(final_config['to_vflip'])
+else:
+    sensor.set_hmirror(final_config['to_hmirror'])
+    sensor.set_vflip(final_config['to_vflip'])
+    sensor.set_transpose(final_config['to_transpose'])
 sensor.set_windowing(final_config['sensor_window'])
+sensor.skip_frames(time = 500)
+sensor.set_brightness(final_config['sensor_brightness'])
 clock = time.clock()
 #=================================================================================================
 # set params from text config
@@ -48,7 +53,7 @@ n         = [0, 0]
 while(True):
     clock.tick()
     img = sensor.snapshot()
-    img.median(2)
+    #img.median(2)
     zeroedge    = [(0,0),(0,0),(0,0),(0,0)]
     mcorners    = [zeroedge, zeroedge];
     mouseinzone = [False, False]
