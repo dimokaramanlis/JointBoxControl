@@ -49,6 +49,7 @@ mousehdir = [[0, 0], [0, 0]];
 maxspeed  = [2, 2]
 mouseeli  = [[0, 0], [0, 0]]
 n         = [0, 0]
+prevcorr  = [False, False]
 #=================================================================================================
 while(True):
     clock.tick()
@@ -102,17 +103,19 @@ while(True):
                 thetadiff = targetAngle[imouse]-headdir
                 angle = math.pi - math.fabs(math.fabs(thetadiff) - math.pi);
                 thetacorrect = math.fabs(thetadiff) < thetaRot
-
                 mdist = math.sqrt((mx - locvec[imouse][0])**2 + (my - locvec[imouse][1])**2)
                 distcorr = mdist < Rtrigger[imouse]
-                if thetacorrect and distcorr:
-                    mouseinzone[imouse] = True
-                    mousepins[imouse].value(True)
+                if thetacorrect and distcorr and abs(vxest):
+                    mouseinzone[imouse] = True and prevcorr[imouse]
+                    mousepins[imouse].value(True and prevcorr[imouse])
+                    prevcorr[imouse] = True
                     print("Mouse ", imouse+1," detected")
                 else:
                     mousepins[imouse].value(False)
+                    prevcorr[imouse] = False
         else:
             n[imouse] = 0
+            prevcorr[imouse] = False
     #============================================================================
     # drawing
     for imouse in range(0,2):
