@@ -106,8 +106,8 @@ while(True):
                 mdist = math.sqrt((mx - locvec[imouse][0])**2 + (my - locvec[imouse][1])**2)
                 distcorr = mdist < Rtrigger[imouse]
                 if thetacorrect and distcorr and abs(vxest):
-                    mouseinzone[imouse] = True and prevcorr[imouse]
-                    mousepins[imouse].value(True and prevcorr[imouse])
+                    mouseinzone[imouse] = True
+                    mousepins[imouse].value(True)
                     prevcorr[imouse] = True
                     print("Mouse ", imouse+1," detected")
                 else:
