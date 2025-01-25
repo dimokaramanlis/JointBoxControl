@@ -16,7 +16,9 @@ else
 end
 
 
-ymax = max(ftoplot, [], 'all');
+% ymax = max(ftoplot, [], 'all');
+ymax = norm(weights(1) * xvals);
+
 % ylim(PsychWeightPlot, [-0.2 1])
 % yticks(PsychWeightPlot, [-0.2 0 1] )
 
