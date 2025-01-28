@@ -35,8 +35,8 @@ if ~isempty(psychparams)
         line(PsychometricPlot, xvals, psychvalsr, 'Color', [0 0 1 0.4], 'LineWidth', 0.5)
         line(PsychometricPlot, xvals, psychvalsl, 'Color', [1 0 0 0.4], 'LineWidth', 0.5)
     end
-    lpos = psychparams(1);
-    lneg = psychparams(2);
+%     lpos = psychparams(1);
+%     lneg = psychparams(2);
     hold(PsychometricPlot,'on');
 end
 errorbar(PsychometricPlot, convec, allresp, allresp-allerrs(:,1), allerrs(:,2)-allresp,...

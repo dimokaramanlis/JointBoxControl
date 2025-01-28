@@ -7,7 +7,7 @@ cla(PsychWeightPlot);
 
 
 % weights = psychparams(3:end-1);
-weights = psychparams(2:end-1);
+weights = psychparams(2:end);
 
 if numel(weights) > 1
     %ftoplot =  [weights(1) * xvals; weights(2)*ones(size(xvals)); weights(3)* (1-xvals)];
@@ -19,7 +19,7 @@ end
 
 
 % ymax = max(ftoplot, [], 'all');
-ymax = norm(weights(1) * xvals);
+ymax = norm(weights(1));
 
 % ylim(PsychWeightPlot, [-0.2 1])
 % yticks(PsychWeightPlot, [-0.2 0 1] )

@@ -101,7 +101,7 @@ for ii = 1:2
     title({'Psychometric with 95%% CI ', 'lapse blue = 0, red = 0'})
     %----------------------------------------------------------------------
     myPlots.WeightPlot(ii) = p(2,2,ii).select();
-    pbaspect([1.5 1 1]); xlim([0 1]); ylim([-1 1])
+    pbaspect([1.5 1 1]); xlim([0 1]); ylim([-1 1]*1.5)
     yticks([-1 0 1]); xticks([0 0.5 1])
     yticklabels([]); xlabel('Contrast')
     if ii == 1
