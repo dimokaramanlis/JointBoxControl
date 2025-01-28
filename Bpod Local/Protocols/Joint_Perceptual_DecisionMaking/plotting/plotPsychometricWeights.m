@@ -6,7 +6,9 @@ xvals = linspace(0, 1, 200);
 cla(PsychWeightPlot);
 
 
-weights = psychparams(3:end-1);
+% weights = psychparams(3:end-1);
+weights = psychparams(2:end-1);
+
 if numel(weights) > 1
     %ftoplot =  [weights(1) * xvals; weights(2)*ones(size(xvals)); weights(3)* (1-xvals)];
     ftoplot =  [weights(1) * xvals; weights(2)*ones(size(xvals)) + weights(3)* (1-xvals)];

@@ -100,9 +100,16 @@ for imouse = 1:2
         end
         %temporary fix 
 %         psychparams{imouse} = []; 
-        psychparams{imouse} = fitPsychologisticML(xx, mousechoice(iuse)==1, myPlots.psychparams{imouse});
+
+%         [bfit, binfo] = lassoglm(xx, mousechoice(iuse)==1, 'binomial', 'Alpha', 1e-5,'NumLambda', 20);
+%         psychparams{imouse} = [0;0;bfit(:,1);binfo.Intercept(1)];
+%         
+        bfit = glmfit(xx, mousechoice(iuse)==1, 'binomial');
+        psychparams{imouse} =bfit;
+
+%         psychparams{imouse} = fitPsychologisticML(xx, mousechoice(iuse)==1, myPlots.psychparams{imouse});
         if ~isempty(psychparams{imouse})
-            modelpred   = psychologistic(psychparams{imouse}, xx) > 0.5;
+            modelpred   = glmval(psychparams{imouse}, xx, 'logit') > 0.5;
             mdlaccuracy(imouse) = mean(modelpred == (mousechoice(iuse)==1));
         end
     end       

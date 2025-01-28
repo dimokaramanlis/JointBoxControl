@@ -24,14 +24,14 @@ lneg = NaN;
 cla(PsychometricPlot);
 line(PsychometricPlot, [-1 1], [1 1]*0.5, 'Color', 'k', 'LineStyle','--', 'LineWidth',0.5)
 if ~isempty(psychparams)
-    psychvals  = psychologistic(psychparams, xx);
+    psychvals  = glmval(psychparams, xx, 'logit');
     line(PsychometricPlot, xvals, psychvals, 'Color', [0 0 0 0.6], 'LineWidth', 1,...
         'Linestyle','-')
     
     % only if there is a social fit we need to plot more psychometrics
     if  numel(psychparams) > 4
-        psychvalsr = psychologistic(psychparams, xxr);
-        psychvalsl = psychologistic(psychparams, xxl);
+        psychvalsr = glmval(psychparams, xxr, 'logit');
+        psychvalsl = glmval(psychparams, xxl, 'logit');
         line(PsychometricPlot, xvals, psychvalsr, 'Color', [0 0 1 0.4], 'LineWidth', 0.5)
         line(PsychometricPlot, xvals, psychvalsl, 'Color', [1 0 0 0.4], 'LineWidth', 0.5)
     end
