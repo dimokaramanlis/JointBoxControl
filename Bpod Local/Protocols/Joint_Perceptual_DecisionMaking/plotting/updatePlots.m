@@ -1,11 +1,11 @@
-function myPlots = updatePlots(BpodSystem, S, myPlots, graphics)
+function myPlots = updatePlots(Data, subjectName, myPlots, graphics)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %--------------------------------------------------------------------------
 % here one can do calculations relevant for each plot and pass them as
 % arguments
 beta       = 0.8; %0.9
-Ntrials = max(BpodSystem.Data.TrialNumber);
+Ntrials = max(Data.TrialNumber);
 %--------------------------------------------------------------------------
 % get running averages for performance, choice and disengagement
 %%
@@ -18,9 +18,9 @@ choiceavg  = NaN(Ntrials, 2);
 disengavg  = NaN(Ntrials, 2);
 iscongr    = zeros(Ntrials, 1);
 for ii = 1:Ntrials
-    iscongr(ii) = BpodSystem.Data.TrialSettings(ii).GUI.Dependent;
-    mcurr       = BpodSystem.Data.TrialOutcome(ii, :);
-    chcurr      = BpodSystem.Data.MouseChoice(ii, :);
+    iscongr(ii) =  Data.TrialSettings(ii).GUI.Dependent;
+    mcurr       =  Data.TrialOutcome(ii, :);
+    chcurr      =  Data.MouseChoice(ii, :);
 
     dcurr = all(isnan(chcurr));
     molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
@@ -60,10 +60,10 @@ psychparams = cell(1,2);
 mdlaccuracy = NaN(1, 2);
 dtime = 0.02;
 for imouse = 1:2
-    mousechoice   = BpodSystem.Data.MouseChoice(:,imouse);
-    mousereact    = BpodSystem.Data.ReactionTimes(:,imouse);
-    mousedecide   = decideFromSpout(mousereact, mousechoice); %BpodSystem.Data.DecisionTimes(:,imouse);
-    mousecontrast = BpodSystem.Data.Contrast(:, imouse);
+    mousechoice   =  Data.MouseChoice(:,imouse);
+    mousereact    =  Data.ReactionTimes(:,imouse);
+    mousedecide   = decideFromSpout(mousereact, mousechoice); % Data.DecisionTimes(:,imouse);
+    mousecontrast =  Data.Contrast(:, imouse);
         
     
     iuse = ~isnan(mousechoice);
@@ -72,15 +72,15 @@ for imouse = 1:2
     respcells{imouse}  = accumarray(ic, mousechoice(iuse)==1, [], @(x) {x});
     respreacts{imouse} = accumarray(ic, mousereact(iuse), [], @(x) {x});
     respdecis{imouse}  = accumarray(ic, mousedecide(iuse), [], @(x) {x});
-    %BpodSystem.Data.ReactionTimes
+    % Data.ReactionTimes
      
     iother      = 2-mod(1,imouse);
     if nnz(iuse) > 8 % at least some observations for fitting
-        if nnz(~isnan(sum(BpodSystem.Data.MouseChoice(iuse,:),2))) > 16
+        if nnz(~isnan(sum( Data.MouseChoice(iuse,:),2))) > 16
             % fit social model
             xx1 = mousecontrast(iuse);
-            otherchoice  = BpodSystem.Data.MouseChoice(:, iother);
-            otherreact   = BpodSystem.Data.ReactionTimes(:,iother);
+            otherchoice  =  Data.MouseChoice(:, iother);
+            otherreact   =  Data.ReactionTimes(:,iother);
             otherreactuse = decideFromSpout(otherreact(iuse), otherchoice(iuse));
             mousereactuse = mousedecide(iuse);
 
@@ -117,40 +117,40 @@ end
 myPlots.psychparams = psychparams;
 %--------------------------------------------------------------------------
 % do plotting
-initiationtimes = BpodSystem.Data.InitiationTime;
-if isfield(BpodSystem.Data, 'isSpontaneous')
-    isspontaneous   = BpodSystem.Data.isSpontaneous;
+initiationtimes =  Data.InitiationTime;
+if isfield( Data, 'isSpontaneous')
+    isspontaneous   =  Data.isSpontaneous;
 else
     isspontaneous = false([size(initiationtimes,1),1]);
 end
 plotInitiationTimes(myPlots.initationTimePlot, graphics, initiationtimes, isspontaneous)
 %--------------------------------------------------------------------------
-decidetimes = BpodSystem.Data.DecisionTimes;
-decidetimes(isnan(BpodSystem.Data.MouseChoice)) = NaN;
+decidetimes =  Data.DecisionTimes;
+decidetimes(isnan( Data.MouseChoice)) = NaN;
 
 plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes);
 %--------------------------------------------------------------------------
-choicetimes = BpodSystem.Data.ReactionTimes;
-choicetimes(isnan(BpodSystem.Data.MouseChoice)) = NaN;
+choicetimes =  Data.ReactionTimes;
+choicetimes(isnan( Data.MouseChoice)) = NaN;
 plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes);
 %--------------------------------------------------------------------------
-trialoutcomes = BpodSystem.Data.TrialOutcome;
+trialoutcomes =  Data.TrialOutcome;
 trialoutcomes(trialoutcomes<0) = NaN;
 perftot    = mean(trialoutcomes, 1, 'omitnan');
-rewtot     = sum(BpodSystem.Data.RewardAmount.*trialoutcomes, 1, 'omitnan');
+rewtot     = sum( Data.RewardAmount.*trialoutcomes, 1, 'omitnan');
 Nmax       = min(100, Ntrials);
 perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
 
 plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, perfavg, perfmax, rewtot)
 %--------------------------------------------------------------------------
-choicetot = sum(BpodSystem.Data.MouseChoice>0, 1);
-choicetot = choicetot./sum(abs(BpodSystem.Data.MouseChoice)>0, 1);
+choicetot = sum( Data.MouseChoice>0, 1);
+choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
 
-rplus  = sum(BpodSystem.Data.RewardAmount.*trialoutcomes.*...
-    (BpodSystem.Data.MouseChoice>0), 1, 'omitnan');
-rminus = sum(BpodSystem.Data.RewardAmount.*trialoutcomes.*...
-    (BpodSystem.Data.MouseChoice<0), 1, 'omitnan');
+rplus  = sum( Data.RewardAmount.*trialoutcomes.*...
+    ( Data.MouseChoice>0), 1, 'omitnan');
+rminus = sum( Data.RewardAmount.*trialoutcomes.*...
+    ( Data.MouseChoice<0), 1, 'omitnan');
 plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus]);
 %--------------------------------------------------------------------------
 % plot fits
@@ -168,7 +168,7 @@ plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respr
 plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis)
 
 %--------------------------------------------------------------------------
-if contains(BpodSystem.Status.CurrentSubjectName, '_')
+if contains( subjectName, '_')
     iscall = mode(iscongr);
     switch iscall
         case 1
@@ -178,9 +178,8 @@ if contains(BpodSystem.Status.CurrentSubjectName, '_')
         case 3
             extrastr = 'Anticorrelated';
     end
-    title(myPlots.panhandle, {sprintf('%s %s %s', ...
-        strrep(BpodSystem.Status.CurrentSubjectName,'_',' '), date, extrastr),...
-        ' '});
+    title(myPlots.panhandle, ...
+        {sprintf('%s %s %s', strrep( subjectName,'_',' '), date, extrastr), ' '});
 end
 %--------------------------------------------------------------------------
 end

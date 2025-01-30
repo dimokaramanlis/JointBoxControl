@@ -65,6 +65,6 @@ end
 BpodSystem.SoftCodeHandlerFunction = 'StimulusFunctionOrientation';
 %==========================================================================
 % Setup figure
-[myPlots, graphics] = initializePlots(BpodSystem);
+[myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
 %==========================================================================
 end

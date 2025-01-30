@@ -1,4 +1,4 @@
-function [myPlots, graphics] = initializePlots(BpodSystem)
+function [myPlots, graphics] = initializePlots(subjectName)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %==========================================================================
@@ -128,8 +128,7 @@ title('Time to reach spout')
 %==========================================================================
 p.fontsize = 10;
 p.title({...
-    sprintf('%s %s', strrep(BpodSystem.Status.CurrentSubjectName,'_',' '), date),...
-    ' '})
+    sprintf('%s %s', strrep(subjectName,'_',' '), date),' '})
 %==========================================================================
 myPlots.panhandle  = p;
 myPlots.psychparams = {[], []};

@@ -153,9 +153,9 @@ for currentTrial = 1:10000
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)
-            [myPlots, graphics] = initializePlots(BpodSystem);
+            [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
         end
-        updatePlots(BpodSystem, S, myPlots, graphics);
+        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics);
     end
     %----------------------------------------------------------------------
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.
