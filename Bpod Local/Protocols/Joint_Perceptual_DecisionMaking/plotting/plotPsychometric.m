@@ -3,7 +3,7 @@ function plotPsychometric(PsychometricPlot, mousecol, convec, respcell, psychpar
 xvals = linspace(-1, 1, 200);
 % choicem2(dectimeM1-dectimeM2<-0.2)=0;
 % xdata    = [allcon1(ic1)' choicem2];
-if numel(psychparams) > 4
+if numel(psychparams) > 2
     xx  = [xvals' zeros(size(xvals))' zeros(size(xvals))'];
     xxr = [xvals'  ones(size(xvals))'   1-abs(xvals)'];
     xxl = [xvals' -ones(size(xvals))' -(1-abs(xvals)')];
@@ -29,7 +29,7 @@ if ~isempty(psychparams)
         'Linestyle','-')
     
     % only if there is a social fit we need to plot more psychometrics
-    if  numel(psychparams) > 4
+    if  numel(psychparams) > 2
         psychvalsr = glmval(psychparams, xxr, 'logit');
         psychvalsl = glmval(psychparams, xxl, 'logit');
         line(PsychometricPlot, xvals, psychvalsr, 'Color', [0 0 1 0.4], 'LineWidth', 0.5)
