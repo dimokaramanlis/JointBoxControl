@@ -6,13 +6,14 @@ Written and designed by Anas Masood and Dimokratis Karamanlis
 ----------------------------------------------------------------------------
 %}
 
-global BpodSystem PTB S displayTimer GratingProperties ops
+global BpodSystem PTB S displayTimer GratingProperties ops myStepperBoard
 %----------------------------------------------------------------------------
 protocolpath = which('Joint_Perceptual_DecisionMaking');
 addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
 localsettings = loadLocalSettings();
+localsettings.useMouseSlider = false;
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
@@ -31,10 +32,12 @@ stimsetnames = {'Con100', 'Con100_50', 'Con100_to_12', ...
 % set global options
 ops.degPositive  = 45;
 ops.degNegative  = -45;
+ops.sliderCOM    = "COM9";
 % ops.degPositive  = 45;
 % ops.degNegative  = 135;
 ops.pulseWinWidth = localsettings.pulseWinWidth;
 ops.useAIM        = localsettings.useAIM;
+ops.useSlider    = localsettings.useMouseSlider;
 ops.degPerPixel  = 92/1280;
 ops.screenFs     = 60; % make sure this matches your screen refresh rates!
 ops.stimsets     = stimsets;
@@ -56,6 +59,7 @@ ops.nosepokes.m2Blue = 'Port3In';
 % initialize bpod system
 [PTB, S, BpodSystem, graphics, myPlots] = initOrientationProtocol(BpodSystem, screenIds, screenInvGammaTables,ops);
 %----------------------------------------------------------------------------
+% initialize Analog Input Module
 if localsettings.useAIM ~=0
     BpodSystem.assertModule('AnalogIn', 1); % The second argument (1) indicates that AnalogIn must be paired with its USB serial port
     A = BpodAnalogIn(BpodSystem.ModuleUSB.AnalogIn1);
@@ -71,7 +75,17 @@ if localsettings.useAIM ~=0
     A.scope; % Launch Scope GUI
     A.scope_StartStop % Start USB streaming + data logging
 end
-% %----------------------------------------------------------------------------
+%----------------------------------------------------------------------------
+% initialize Mouse Slider
+if localsettings.useMouseSlider
+    if ~ismember(ops.sliderCOM, serialportlist)
+        localsettings.useMouseSlider = false;
+    else
+        sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
+        [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
+    end
+end
+%----------------------------------------------------------------------------
 answer = questdlg('Start all recordings and video', ...
     'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
@@ -81,6 +95,7 @@ isdependent  = (2 - S.GUI.Dependent);
 renewprob    = true;
 currreward   = -1; % for debug mode
 %===========================================================================
+
 % Main trial loop
 for currentTrial = 1:10000
     %----------------------------------------------------------------------------
@@ -140,6 +155,19 @@ for currentTrial = 1:10000
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
     %----------------------------------------------------------------------
+    if localsettings.useMouseSlider
+%         startSliderMovement(myStepperBoard)
+%         sliderTimer = timer;
+%         sliderTimer.stop();
+%         sliderTimer.Period = round(1/ops.screenFs, 3); %10ms refresh
+%         sliderTimer.TimerFcn      = @SliderRoaming;
+%         sliderTimer.ExecutionMode = 'fixedRate';
+%         sliderTimer.StopFcn       = {@SliderRoamingStop};
+%         sliderTimer.TasksToExecute = 10;
+%         sliderTimer.start();
+%         delete(sliderTimer)
+    end
+    %----------------------------------------------------------------------------
     % prepare and run state machine
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
     SendStateMatrix(sma); % Send the state matrix to the Bpod device

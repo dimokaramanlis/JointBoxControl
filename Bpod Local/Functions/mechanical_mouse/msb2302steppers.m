@@ -218,9 +218,15 @@ classdef msb2302steppers
             end            
         end
 
-        function error = startMotorRotation(obj, motorNb, stepsDirection, speed)
-            msg = sprintf('Starting motor rotation for %d steps with speed %d', stepsDirection, speed);
-            disp(msg);
+        function error = startMotorRotation(obj, motorNb, stepsDirection, speed, varargin)
+            if nargin<4
+                verbose = true;
+            else
+                verbose = false;
+            end
+            if verbose
+                fprintf('Starting motor rotation for %d steps with speed %d\n', stepsDirection, speed);
+            end
 
             regAdr=0x0C;    % Select motor A command register 0x0A(0x0B for motor B)
             regSteps=0x0E;  % Select motor A step registers 0x0E & 0x0F (0x10 & 0x11 for motor B)

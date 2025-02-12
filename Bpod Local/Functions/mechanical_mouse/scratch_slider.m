@@ -12,7 +12,7 @@
 
 serialportlist("available")
 
-myStepperBoard = msb2302steppers("COM3", 115200, 0x58);
+myStepperBoard = msb2302steppers("COM9", 115200, 0x58);
 
 allpercent = [20 40 60 80 100];
 Nsteps = 100;
@@ -107,10 +107,10 @@ if myStepperBoard.isDeviceReady()
 end
 myStepperBoard.close();
 %%
-% probably Nlength = 1620
+% probably Nlength = 1623
 
-Nmid = 810;
-myStepperBoard = msb2302steppers("COM3", 115200, 0x58);
+Nmid = 811;
+myStepperBoard = msb2302steppers("COM9", 115200, 0x58);
 Nstepsend      = 10000;
 peruse = 100;
 if myStepperBoard.isDeviceReady()

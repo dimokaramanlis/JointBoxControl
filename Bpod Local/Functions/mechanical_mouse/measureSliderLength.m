@@ -7,9 +7,9 @@ steplengths = round(linspace(Nstepsmin, Nstepsmax, Nres));
 steptimes   = zeros(size(steplengths));
 
  for ilength = 1:numel(steplengths)
-    moveToEndPoint(myStepperBoard, 'l', peruse);
+    moveToEndPoint(myStepperBoard, 'l', peruse, false);
     tic;
-    myStepperBoard.startMotorRotation(0, steplengths(ilength), peruse);
+    myStepperBoard.startMotorRotation(0, steplengths(ilength), peruse, false);
     waitForMotor(myStepperBoard);
     steptimes(ilength) = toc;
  end
