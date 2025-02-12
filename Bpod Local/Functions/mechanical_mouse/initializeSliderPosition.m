@@ -1,4 +1,4 @@
-function [myStepperBoard, Nmid] = initializeSliderPosition(sliderinfo, comport)
+function [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, comport)
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
 peruse = 85;

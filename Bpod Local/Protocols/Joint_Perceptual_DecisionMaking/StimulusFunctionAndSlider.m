@@ -52,6 +52,11 @@ if ID == 10
    else
        displayTimer.TasksToExecute = 1;
    end
+   
+   SliderRoamingStop();
+   SliderStartTrial();
+   
+
 end
 
 end

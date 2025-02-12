@@ -1,8 +1,8 @@
 function SliderRoaming(~,~)
 %PTBDISPLAY Summary of this function goes here
 
-
-global myStepperBoard
+ 
+global myStepperBoard GratingProperties
 %----------------------------------------------------------------------
 peruse = 85;
 nrand = round(randn(1)*20);

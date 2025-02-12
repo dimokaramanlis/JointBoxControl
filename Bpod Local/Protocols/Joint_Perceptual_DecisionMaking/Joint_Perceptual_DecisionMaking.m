@@ -1,19 +1,19 @@
 function Joint_Perceptual_DecisionMaking
-%{
----------------------------------------------------------------------------- 
-Written and designed by Anas Masood and Dimokratis Karamanlis
-
-----------------------------------------------------------------------------
-%}
-
-global BpodSystem PTB S displayTimer GratingProperties ops myStepperBoard
+%--------------------------------------------------------------------------
+% Written and designed by Anas Masood and Dimokratis Karamanlis
+% 202502: Major slider support
+% -------------------------------------------------------------------------
+global BpodSystem PTB S displayTimer GratingProperties ops...
+    myStepperBoard sliderProperties
 %----------------------------------------------------------------------------
 protocolpath = which('Joint_Perceptual_DecisionMaking');
 addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
 localsettings = loadLocalSettings();
-localsettings.useMouseSlider = false;
+% localsettings.useMouseSlider = true;
+% localsettings.useAIM = false;
+
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
@@ -83,6 +83,7 @@ if localsettings.useMouseSlider
     else
         sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
         [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
+        sliderProperties.xpos    = xstart;
     end
 end
 %----------------------------------------------------------------------------
@@ -154,19 +155,6 @@ for currentTrial = 1:10000
     % initialize gratings
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
-    %----------------------------------------------------------------------
-    if localsettings.useMouseSlider
-%         startSliderMovement(myStepperBoard)
-%         sliderTimer = timer;
-%         sliderTimer.stop();
-%         sliderTimer.Period = round(1/ops.screenFs, 3); %10ms refresh
-%         sliderTimer.TimerFcn      = @SliderRoaming;
-%         sliderTimer.ExecutionMode = 'fixedRate';
-%         sliderTimer.StopFcn       = {@SliderRoamingStop};
-%         sliderTimer.TasksToExecute = 10;
-%         sliderTimer.start();
-%         delete(sliderTimer)
-    end
     %----------------------------------------------------------------------------
     % prepare and run state machine
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
@@ -213,6 +201,10 @@ for currentTrial = 1:10000
             warning('No File to Copy! Please check raw data!');
         end
     
+        %==================================================================
+        if localsettings.useMouseSlider
+            myStepperBoard.close();
+        end
         %==================================================================
         answer = questdlg('Stop all recordings and video', ...
             'Stop dialog', 'OK','OK');
