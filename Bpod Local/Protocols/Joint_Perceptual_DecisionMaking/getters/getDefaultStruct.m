@@ -105,12 +105,7 @@ function S = getDefaultStruct(ops)
     S.GUI.ContrastSet = 2;
     S.GUIMeta.ContrastSet.Style = 'popupmenu';
     S.GUIMeta.ContrastSet.String = ops.stimsetnames;
-    
-    %Stimulus Stays (boolean)
-    S.GUI.StimulusStays = 0;
-    S.GUIMeta.StimulusStays.Style = 'checkbox';
-    S.GUIMeta.StimulusStays.String = 'Stimulus Stays During Decision';
-    
+
     S.GUI.RewardStimulusTimeout = 0;
     S.GUIMeta.RewardStimulusTimeout.Style = 'edit';
     S.GUIMeta.RewardStimulusTimeout.String = 'Stimulus duration (s) at Reward';
@@ -139,7 +134,6 @@ function S = getDefaultStruct(ops)
     
 
     S.GUIPanels.TrainingAids = {'ContrastSet',...
-                                'StimulusStays',...
                                 'RewardStimulusTimeout',...
                                 'BlackScreen',...
                                 'Terminate',...
@@ -159,6 +153,35 @@ function S = getDefaultStruct(ops)
 
     S.GUIPanels.Debugging = {'ProbabilitySetting',...
                             'ProbabilityBlue'};
+    %% Slider properties
+    if ops.useSlider
+
+
+        S.GUI.Performance = 0.9; 
+        S.GUIMeta.Performance.Style='edit';
+        S.GUIMeta.Performance.String = "Performance";
+
+        S.GUI.MaxSpeed = 85; 
+        S.GUIMeta.MaxSpeed.Style='edit';
+        S.GUIMeta.MaxSpeed.String = "MaxSpeed(%)";
+
+        S.GUI.DTimeMin = 0.05; 
+        S.GUIMeta.DTimeMin.Style='edit';
+        S.GUIMeta.DTimeMin.String = "DTimeMin";
+
+        S.GUI.DTimeMax = 0.75; 
+        S.GUIMeta.DTimeMax.Style='edit';
+        S.GUIMeta.DTimeMax.String = "DTimeMax";
+
+
+        S.GUI.RewardStayTime = 2; 
+        S.GUIMeta.RewardStayTime.Style='edit';
+        S.GUIMeta.RewardStayTime.String = "RewardStayTime";
+
+
+        S.GUIPanels.Slider = {'Performance', 'MaxSpeed', 'DTimeMin', 'DTimeMax', 'RewardStayTime'};
+    end
+
   
      %% Plotting
 %      S.GUI.betaavg =0.8;

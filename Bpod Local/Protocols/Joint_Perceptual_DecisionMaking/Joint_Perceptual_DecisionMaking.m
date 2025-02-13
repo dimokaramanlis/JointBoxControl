@@ -11,9 +11,8 @@ addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
 localsettings = loadLocalSettings();
-% localsettings.useMouseSlider = true;
+localsettings.useMouseSlider = false;
 % localsettings.useAIM = false;
-
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
@@ -155,6 +154,9 @@ for currentTrial = 1:10000
     % initialize gratings
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
+    %----------------------------------------------------------------------------
+    % initialize slider
+    sliderProperties = createSliderTrajectory(S, sliderProperties, currreward, mousesetting);
     %----------------------------------------------------------------------------
     % prepare and run state machine
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
