@@ -156,7 +156,9 @@ for currentTrial = 1:10000
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
     %----------------------------------------------------------------------------
     % initialize slider
-    sliderProperties = createSliderTrajectory(S, sliderProperties, currreward, mousesetting);
+    if localsettings.useMouseSlider
+        sliderProperties = createSliderTrajectory(S, sliderProperties, currreward, mousesetting);
+    end
     %----------------------------------------------------------------------------
     % prepare and run state machine
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
