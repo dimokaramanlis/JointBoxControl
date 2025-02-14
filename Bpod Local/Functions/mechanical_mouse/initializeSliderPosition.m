@@ -13,6 +13,7 @@ if myStepperBoard.isDeviceReady()
     moveToEndPoint(myStepperBoard, 'l', peruse);
     Nmid = round(sliderinfo.endstopdistance/2);
     myStepperBoard.startMotorRotation(0, Nmid, peruse, false);
+    waitForMotor(myStepperBoard);
     xstart = Nmid;
 end
 end

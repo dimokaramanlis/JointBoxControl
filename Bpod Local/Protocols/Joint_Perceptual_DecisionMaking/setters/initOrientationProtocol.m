@@ -28,7 +28,7 @@ end
 
 %load updated contrasts
 S.GUIMeta.ContrastSet.String = ops.stimsetnames;
-BpodParameterGUI('init', S); % Initialize parameter GUI plugin
+BpodParameterGUI_improved('init', S); % Initialize parameter GUI plugin
 % ==========================================================================
 % Init Psych Screen
 PsychDefaultSetup(2);

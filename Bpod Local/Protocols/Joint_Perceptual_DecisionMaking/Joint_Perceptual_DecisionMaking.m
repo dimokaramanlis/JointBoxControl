@@ -12,7 +12,7 @@ addpath(addpath(genpath(fileparts(protocolpath))));
 % local settings for each box
 localsettings = loadLocalSettings();
 localsettings.useMouseSlider = false;
-% localsettings.useAIM = false;
+% localsettings.useAIM = true;
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
@@ -77,13 +77,9 @@ end
 %----------------------------------------------------------------------------
 % initialize Mouse Slider
 if localsettings.useMouseSlider
-    if ~ismember(ops.sliderCOM, serialportlist)
-        localsettings.useMouseSlider = false;
-    else
-        sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
-        [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
-        sliderProperties.xpos    = xstart;
-    end
+    sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
+    [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
+    sliderProperties.xpos    = xstart;
 end
 %----------------------------------------------------------------------------
 answer = questdlg('Start all recordings and video', ...
@@ -99,7 +95,7 @@ currreward   = -1; % for debug mode
 % Main trial loop
 for currentTrial = 1:10000
     %----------------------------------------------------------------------------
-    S = BpodParameterGUI('sync', S); % Sync parameters with BpodParameterGUI plugin
+    S = BpodParameterGUI_improved('sync', S); % Sync parameters with BpodParameterGUI plugin
     ops.degPositive = S.GUI.Angle;
     ops.degNegative = -S.GUI.Angle;
     %----------------------------------------------------------------------------

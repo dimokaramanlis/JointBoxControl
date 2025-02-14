@@ -23,14 +23,14 @@ maxspeed = max(S.GUI.MaxSpeed, 0);
 maxspeed = min(maxspeed, 85); % WE CAN INCREASE THIS IF WE TEST!!!!!!!!!!
 SliderProperties.maxspeed = maxspeed;
 %-----------------------------------------------------------------------------------------------------------------
-rewside = currreward;
+sliderchoice = currreward;
 if mousesetting == 1
-    rewside = -currreward;
+    sliderchoice = -currreward;
 end
 if slideroutcome == 0
-    rewside = -rewside;
+    sliderchoice = -sliderchoice;
 end
-SliderProperties.rewside = rewside;
+SliderProperties.sliderchoice = sliderchoice;
 %-----------------------------------------------------------------------------------------------------------------
 % TODO
 % Here we create a trajectory that will be initiated by the state machine

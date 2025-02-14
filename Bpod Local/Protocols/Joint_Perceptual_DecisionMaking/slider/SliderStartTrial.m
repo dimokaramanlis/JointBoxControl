@@ -3,6 +3,9 @@ function SliderStartTrial(~,~)
 
 global myStepperBoard sliderProperties
 %----------------------------------------------------------------------
+% we first stop roaming to start deciding
+myStepperBoard.stopMotorRotation(0)
+%----------------------------------------------------------------------
 peruse = sliderProperties.maxspeed/2;
 tic;
 tel = 0;
@@ -20,14 +23,14 @@ end
 %----------------------------------------------------------------------
 
 % if slider is correct, pause for 2 sec, otherwise pause for 0.5 sec
-if sliderProperties.rewside>0
+if sliderProperties.sliderchoice>0
     sidemove = 'r';
 else
     sidemove = 'l';
 end
 %----------------------------------------------------------------------
 % first slider goes to spout
-moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed);
+moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false);
 %----------------------------------------------------------------------
 % then slider waits based on outcome
 if sliderProperties.outcome
@@ -38,7 +41,9 @@ end
 pause(spouttime);
 %----------------------------------------------------------------------
 % finally, slider goes back to the center
-myStepperBoard.startMotorRotation(0, -sliderProperties.rewside * sliderProperties.xpos, 50);
+speedreturn =  (1 + rand(1))* sliderProperties.maxspeed/2;
+myStepperBoard.startMotorRotation(0, ...
+    -sliderProperties.sliderchoice * sliderProperties.xpos, speedreturn);
 %----------------------------------------------------------------------
 
         
