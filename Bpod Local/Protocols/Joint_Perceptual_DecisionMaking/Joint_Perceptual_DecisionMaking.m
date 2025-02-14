@@ -95,7 +95,7 @@ currreward   = -1; % for debug mode
 % Main trial loop
 for currentTrial = 1:10000
     %----------------------------------------------------------------------------
-    S = BpodParameterGUI_improved('sync', S); % Sync parameters with BpodParameterGUI plugin
+    S = BpodParameterGUI('sync', S); % Sync parameters with BpodParameterGUI plugin
     ops.degPositive = S.GUI.Angle;
     ops.degNegative = -S.GUI.Angle;
     %----------------------------------------------------------------------------

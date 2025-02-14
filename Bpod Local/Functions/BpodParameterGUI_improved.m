@@ -39,7 +39,7 @@ global BpodSystem % Import the global BpodSystem object
 
 fontsize = 11;
 Pix_SS       = get(0,'screensize');
-columnwidth  = round(Pix_SS(3)/3.5);
+columnwidth  = round(Pix_SS(3)/4);
 tabwidthname  = round(columnwidth * 0.49);
 tabwidthvalue = round(columnwidth * 0.44);
 
