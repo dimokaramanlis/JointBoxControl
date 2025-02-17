@@ -12,7 +12,7 @@ addpath(addpath(genpath(fileparts(protocolpath))));
 % local settings for each box
 localsettings = loadLocalSettings();
 localsettings.useMouseSlider = false;
-% localsettings.useAIM = true;
+% localsettings.useAIM = false;
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];

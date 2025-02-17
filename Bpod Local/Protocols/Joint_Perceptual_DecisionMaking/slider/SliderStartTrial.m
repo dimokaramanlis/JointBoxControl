@@ -35,9 +35,14 @@ moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false);
 % then slider waits based on outcome
 if sliderProperties.outcome
     spouttime = sliderProperties.rewstay;
+    % whenever the slider reaches the spout, state machine gets to know
+    SendBpodSoftCode(1); 
 else
     spouttime = 0.5;
+    % whenever the slider reaches the spout, state machine gets to know
+    SendBpodSoftCode(2); 
 end
+% stay to drink or stay for a bit on the spout
 pause(spouttime);
 %----------------------------------------------------------------------
 % finally, slider goes back to the center
