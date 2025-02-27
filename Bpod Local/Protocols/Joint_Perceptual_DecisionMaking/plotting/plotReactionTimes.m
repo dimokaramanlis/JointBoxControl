@@ -12,8 +12,8 @@ for imouse = 1:2
     mousecol = graphics.mouseColor(imouse, :);
 
     if isempty(reactcell{imouse}), continue, end
-    meanreact = cellfun(@nanmean, reactcell{imouse});
-    semreact  = cellfun(@nansemSuite, reactcell{imouse});
+    meanreact = cellfun(@(x) median(x,'omitnan'), reactcell{imouse});
+    semreact  = cellfun(@(x) 1.4826 * mad(x, 1, 'omitnan')/sqrt(nnz(~isnan(x))), reactcell{imouse});
 
     errorbar(OrientationReactionTimePlot,...
         convec{imouse}, meanreact, semreact,...
