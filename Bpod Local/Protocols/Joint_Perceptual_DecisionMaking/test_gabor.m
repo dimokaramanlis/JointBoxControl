@@ -37,7 +37,7 @@ res = 3*[323 323];
 phase = 0;
 sc = 150.0;
 freq = .01;
-tilt = 50;
+tilt = 20;
 contrast = 100.0;
 aspectratio = 1.0;
 nonsymmetric =0;
@@ -45,8 +45,11 @@ nonsymmetric =0;
 tw = res(1);
 th = res(2);
 % pixels, and a RGB color offset of 0.5 -- a 50% gray.
-[gabortex,gaborrect] = CreateProceduralGabor(PTB.windows(ii), tw, th, nonsymmetric, [0.5 0.5 0.5 0.0]);
-
+% [gabortex,gaborrect] = CreateProceduralGabor(PTB.windows(ii), tw, th, nonsymmetric, [0.5 0.5 0.5 0.0]);
+[gabortex,gaborrect] = CreateProceduralSquareWaveGrating(PTB.windows(ii),...
+            tw, th,[0.5 0.5 0.5 0.0], sc, 0.5);
+        
+        
 xc = PTB.windowrects(ii, 3)/2 - tw/2;
 yc = PTB.windowrects(ii, 4)/2 - th/2 + 100;
 
