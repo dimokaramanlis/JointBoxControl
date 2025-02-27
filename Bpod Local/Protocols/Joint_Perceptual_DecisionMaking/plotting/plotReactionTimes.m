@@ -13,7 +13,7 @@ for imouse = 1:2
 
     if isempty(reactcell{imouse}), continue, end
     meanreact = cellfun(@(x) median(x,'omitnan'), reactcell{imouse});
-    semreact  = cellfun(@(x) 1.4826 * mad(x, 1, 'omitnan')/sqrt(nnz(~isnan(x))), reactcell{imouse});
+    semreact  = cellfun(@(x) 1.4826 * mad(x(~isnan(x)), 1)/sqrt(nnz(~isnan(x))), reactcell{imouse});
 
     errorbar(OrientationReactionTimePlot,...
         convec{imouse}, meanreact, semreact,...
