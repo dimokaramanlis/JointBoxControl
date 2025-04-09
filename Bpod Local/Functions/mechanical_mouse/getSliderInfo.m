@@ -10,8 +10,11 @@ if exist(dpfilesettings,'file')
 else
     % calibrate and save
     sliderinfo = calibrateEndStopDistance(comport, 10);
+    sliderinfo.calibrationdate = datetime('now');
     save(dpfilesettings, '-struct', "sliderinfo")
 end
 %==========================================================================
-
+fprintf('Slider calbibration found from %s, proceeding... \n', ...
+     datestr(sliderinfo.calibrationdate))
+%==========================================================================
 end
