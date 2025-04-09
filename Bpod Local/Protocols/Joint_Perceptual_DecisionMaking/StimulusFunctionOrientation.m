@@ -1,9 +1,10 @@
 function StimulusFunctionOrientation(ID)
 %--------------------------------------------------------------------------
 global PTB S GratingProperties ops displayTimer;
-%--------------------------------------------------------------------------
 
+%--------------------------------------------------------------------------
 switch ID
+    %------------------------------------------------------------------
     case 101
         Priority(1);
         
@@ -15,9 +16,17 @@ switch ID
         for iscreen = 1:2
            Screen('Flip', PTB.windows(iscreen)); 
         end
-        case 10 % Flip screen and progress phase
+
+        % make sure slider is back home
+        if ops.useSlider > 0
+            global myStepperBoard;
+            waitForMotor(myStepperBoard);
+            SendBpodSoftCode(10);
+        end
+    %------------------------------------------------------------------
+    case 10 % Flip screen and progress phase
         %------------------------------------------------------------------
-        case 100 %Stop and gray screen
+    case 100 %Stop and gray screen
         %------------------------------------------------------------------
          if ~isempty(displayTimer.StopFcn)
            displayTimer.stop();
@@ -51,7 +60,14 @@ if ID == 10
        displayTimer.start();
    else
        displayTimer.TasksToExecute = 1;
+   end 
+   %-----------------------------------------------------------------------
+   % start slider if needed
+   if ops.useSlider > 0
+       SliderRoamingStop();
+       SliderStartTrial();
    end
+   %-----------------------------------------------------------------------
 end
 
 end

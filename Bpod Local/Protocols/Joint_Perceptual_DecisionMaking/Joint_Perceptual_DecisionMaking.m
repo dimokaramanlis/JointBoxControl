@@ -11,8 +11,6 @@ addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
 localsettings = loadLocalSettings();
-localsettings.useMouseSlider = false;
-% localsettings.useAIM = false;
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
@@ -31,17 +29,17 @@ stimsetnames = {'Con100', 'Con100_50', 'Con100_to_12', ...
 % set global options
 ops.degPositive  = 45;
 ops.degNegative  = -45;
-ops.sliderCOM    = "COM9";
+ops.sliderCOM    = sprintf("COM%d", localsettings.sliderCOM);
 % ops.degPositive  = 45;
 % ops.degNegative  = 135;
 ops.pulseWinWidth = localsettings.pulseWinWidth;
 ops.useAIM        = localsettings.useAIM;
-ops.useSlider    = localsettings.useMouseSlider;
-ops.degPerPixel  = 92/1280;
-ops.screenFs     = 60; % make sure this matches your screen refresh rates!
-ops.stimsets     = stimsets;
-ops.stimsetnames = stimsetnames;
-ops.probsettings = {'Pseudorandom','Alternate','RepeatTrials'};
+ops.useSlider     = localsettings.useMouseSlider;
+ops.degPerPixel   = 92/1280;
+ops.screenFs      = 60; % make sure this matches your screen refresh rates!
+ops.stimsets      = stimsets;
+ops.stimsetnames  = stimsetnames;
+ops.probsettings  = {'Pseudorandom','Alternate','RepeatTrials'};
 % nosepoke map
 ops.valves.m1Red     = 'Valve1';
 ops.nosepokes.m1Red  = 'Port1In';
@@ -76,7 +74,7 @@ if localsettings.useAIM ~=0
 end
 %----------------------------------------------------------------------------
 % initialize Mouse Slider
-if localsettings.useMouseSlider
+if localsettings.useMouseSlider > 0
     sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
     [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
     sliderProperties.xpos    = xstart;
@@ -147,14 +145,20 @@ for currentTrial = 1:10000
         currreward = getTrialReward(currstim, isdependent); % find rewarded sides and correct for zero contrast.
     end
     %----------------------------------------------------------------------
-    % initialize gratings
+    % initialize slider
+    if ops.useSlider > 0
+        sliderProperties = createSliderTrajectory(S, sliderProperties, currreward,...
+            ops.useSlider);
+        sliderProperties.side = ops.useSlider;
+        if Nmice == 2
+            prevstim = currstim(:, ops.useSlider);
+            currstim(:, ops.useSlider) = eps * sign(prevstim);
+        end
+    end
+    %----------------------------------------------------------------------------
+     % initialize gratings
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
-    %----------------------------------------------------------------------------
-    % initialize slider
-    if localsettings.useMouseSlider
-        sliderProperties = createSliderTrajectory(S, sliderProperties, currreward, mousesetting);
-    end
     %----------------------------------------------------------------------------
     % prepare and run state machine
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);

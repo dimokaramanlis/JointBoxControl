@@ -6,13 +6,13 @@ global myStepperBoard sliderProperties
 % we first stop roaming to start deciding
 myStepperBoard.stopMotorRotation(0)
 %----------------------------------------------------------------------
-peruse = sliderProperties.maxspeed/2;
+peruse = sliderProperties.maxspeed;
 tic;
 tel = 0;
 x = sliderProperties.xpos;
 while tel < sliderProperties.dectime
 
-    nrand = round(randn(1)*20);
+    nrand = round(randn(1)*sliderProperties.UncertaintySD);
 %     percurr = (0.2+0.8*rand(1))*peruse;
     percurr = peruse;
     myStepperBoard.startMotorRotation(0, nrand, percurr);
@@ -31,6 +31,8 @@ end
 %----------------------------------------------------------------------
 % first slider goes to spout
 moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false);
+% Nsteps = floor((2*sliderProperties.xpos - x) * 0.99);
+% moveToEndPointSteps(myStepperBoard, sidemove, sliderProperties.maxspeed, Nsteps);
 %----------------------------------------------------------------------
 % then slider waits based on outcome
 if sliderProperties.outcome
@@ -38,7 +40,7 @@ if sliderProperties.outcome
     % whenever the slider reaches the spout, state machine gets to know
     SendBpodSoftCode(1); 
 else
-    spouttime = 0.5;
+    spouttime = 0.4;
     % whenever the slider reaches the spout, state machine gets to know
     SendBpodSoftCode(2); 
 end

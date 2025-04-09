@@ -36,6 +36,7 @@ function S = getDefaultStruct(ops)
                                      'OrientationTwoMice',...
                                      'ContrastTwoMice',...
                                      'MirrorTwoMice',...
+                                     'SliderSingleMouse',...
                                      'Tests'};
 
     S.GUIPanels.Task = {'MouseSetting',...
@@ -68,7 +69,6 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.RandomHeight.Style='checkbox';
     S.GUIMeta.RandomHeight.String="RandomHeight";
     
-    
     S.GUI.TemporalFrequency = 0;
     S.GUIMeta.TemporalFrequency.Style='edit';
     S.GUIMeta.TemporalFrequency.String="Temporal Frequency (cycles/s)";
@@ -82,7 +82,6 @@ function S = getDefaultStruct(ops)
                             'StimulusOffset',...
                             'Angle',...
                             'SquareWave',...
-                            'RandomHeight', ...
                             'TemporalFrequency',...
                             'SpatialFrequency'};
     %% Timers
@@ -171,13 +170,18 @@ function S = getDefaultStruct(ops)
         S.GUIMeta.DTimeMax.Style='edit';
         S.GUIMeta.DTimeMax.String = "DTimeMax";
 
+        S.GUI.UncertaintySD = 20; 
+        S.GUIMeta.UncertaintySD.Style='edit';
+        S.GUIMeta.UncertaintySD.String = "UncertaintySD(steps)";
+
 
         S.GUI.RewardStayTime = 2; 
         S.GUIMeta.RewardStayTime.Style='edit';
         S.GUIMeta.RewardStayTime.String = "RewardStayTime";
 
 
-        S.GUIPanels.Slider = {'Performance', 'MaxSpeed', 'DTimeMin', 'DTimeMax', 'RewardStayTime'};
+        S.GUIPanels.Slider = {'Performance', 'MaxSpeed', ...
+            'DTimeMin', 'DTimeMax', 'UncertaintySD', 'RewardStayTime'};
     end
 
   

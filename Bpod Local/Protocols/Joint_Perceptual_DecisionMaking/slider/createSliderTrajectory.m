@@ -1,4 +1,4 @@
-function SliderProperties = createSliderTrajectory(S, SliderProperties, currreward, mousesetting)
+function SliderProperties = createSliderTrajectory(S, SliderProperties, currreward, sliderside)
 %CREATEANDDRAWTEXTURES Takes the current trial types and creates the
 %appropriate textures on the screen.
 
@@ -20,17 +20,19 @@ rewlicktime = max(S.GUI.RewardStayTime, 1e-3);
 SliderProperties.rewstay = rewlicktime;
 %-----------------------------------------------------------------------------------------------------------------
 maxspeed = max(S.GUI.MaxSpeed, 0);
-maxspeed = min(maxspeed, 85); % WE CAN INCREASE THIS IF WE TEST!!!!!!!!!!
+maxspeed = min(maxspeed, 100); % WE CAN INCREASE THIS IF WE TEST!!!!!!!!!!
 SliderProperties.maxspeed = maxspeed;
 %-----------------------------------------------------------------------------------------------------------------
-sliderchoice = currreward;
-if mousesetting == 1
+sliderchoice = currreward(sliderside);
+if sliderside == 2
     sliderchoice = -currreward;
 end
 if slideroutcome == 0
     sliderchoice = -sliderchoice;
 end
 SliderProperties.sliderchoice = sliderchoice;
+%-----------------------------------------------------------------------------------------------------------------
+SliderProperties.UncertaintySD = S.GUI.UncertaintySD;
 %-----------------------------------------------------------------------------------------------------------------
 % TODO
 % Here we create a trajectory that will be initiated by the state machine
