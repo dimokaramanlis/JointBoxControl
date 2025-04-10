@@ -84,7 +84,7 @@ answer = questdlg('Start all recordings and video', ...
     'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
-setchoose    = stimsets{S.GUI.ContrastSet};
+setchoose    = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}};
 isdependent  = (2 - S.GUI.Dependent);
 renewprob    = true;
 currreward   = -1; % for debug mode
@@ -107,8 +107,8 @@ for currentTrial = 1:10000
     Nmice = numel(mousesetting);
 
     % update contrast set if altered
-    if ~isequal(setchoose, ops.stimsets{S.GUI.ContrastSet})
-        setchoose = ops.stimsets{S.GUI.ContrastSet}; 
+    if ~isequal(setchoose, {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}})
+        setchoose = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}}; 
         renewprob = true;
     end
  
@@ -120,7 +120,7 @@ for currentTrial = 1:10000
     %----------------------------------------------------------------------------
 
     % get trial set
-    trialset    = getTrialSet(setchoose,  Nmice, isdependent);
+    trialset    = getTrialSet(setchoose,  mousesetting, isdependent);
     if renewprob
         probtrial = ones(size(trialset,1), 1)/size(trialset,1);
         renewprob = false;

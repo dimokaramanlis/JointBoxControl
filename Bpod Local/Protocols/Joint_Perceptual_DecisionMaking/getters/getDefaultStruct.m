@@ -48,6 +48,14 @@ function S = getDefaultStruct(ops)
     
     %% Stimulus Properties
 
+    S.GUI.ContrastSet1 = 2;
+    S.GUIMeta.ContrastSet1.Style = 'popupmenu';
+    S.GUIMeta.ContrastSet1.String = ops.stimsetnames;
+    
+    S.GUI.ContrastSet2 = 2;
+    S.GUIMeta.ContrastSet2.Style = 'popupmenu';
+    S.GUIMeta.ContrastSet2.String = ops.stimsetnames;
+    
     S.GUI.StimulusDuration = 0.5; % Duration of visual stimulus (s)
     
     S.GUI.StimulusRadius = 30;
@@ -76,7 +84,9 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.SpatialFrequency.Style='edit';
     S.GUIMeta.SpatialFrequency.String = "Spatial Frequency (cycles/deg)";
 
-    S.GUIPanels.Stimulus = {'StimulusDuration',...
+    S.GUIPanels.Stimulus = {'ContrastSet1',...
+                            'ContrastSet2',...
+                            'StimulusDuration',...
                             'StimulusRadius',...
                             'StimulusOffset',...
                             'Angle',...
@@ -99,11 +109,6 @@ function S = getDefaultStruct(ops)
                             'ITIMax'};
     %% Training Aids
   
-
-    S.GUI.ContrastSet = 2;
-    S.GUIMeta.ContrastSet.Style = 'popupmenu';
-    S.GUIMeta.ContrastSet.String = ops.stimsetnames;
-
     S.GUI.RewardStimulusTimeout = 0;
     S.GUIMeta.RewardStimulusTimeout.Style = 'edit';
     S.GUIMeta.RewardStimulusTimeout.String = 'Stimulus duration (s) at Reward';
@@ -138,8 +143,7 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.ProbabilityBlue.Style='edit';
     S.GUIMeta.ProbabilityBlue.String = "Probability blue side";
 
-    S.GUIPanels.TrainingAids = {'ContrastSet',...
-                                'RewardStimulusTimeout',...
+    S.GUIPanels.TrainingAids = {'RewardStimulusTimeout',...
                                 'BlackScreen',...
                                 'Terminate',...
                                 'RewardMultiplier1',...
