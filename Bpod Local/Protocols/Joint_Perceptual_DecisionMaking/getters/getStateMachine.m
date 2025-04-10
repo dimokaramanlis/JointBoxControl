@@ -106,19 +106,24 @@ if numel(mousesetting)==2
         'BNC1Low', 'WaitingforBothMiceStart','Tup','customExit'};
     conditions.WaitingForMouse1 = {'BNC1High', 'BothMiceInZone',...
         'BNC2Low', 'WaitingforBothMiceStart','Tup','customExit'};
+    conditions.CheckZoneOut = {'BNC1Low','BothMiceMakingDecision',...
+        'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
     %----------------------------------------------------------------------
+    
     if ops.useSlider > 0
         % here we assign slider actions
         switch ops.useSlider
             case 1
                 choices.m1CorrectChoice   = 'SoftCode1';
-                choices.m1InCorrectChoice = 'SoftCode2';
+                choices.m1IncorrectChoice = 'SoftCode2';
                 conditions.ZoneChangeCondition = {'SoftCode10', 'WaitingforMouse2',...
                     'BNC2High', 'WaitingforMouse1','Tup', 'customExit'};
                 conditions.WaitingForMouse2 = {'BNC2High', 'BothMiceInZone',...
                     'Tup','customExit'};
                 conditions.WaitingForMouse1 = {'SoftCode10', 'BothMiceInZone',...
                     'BNC2Low', 'WaitingforBothMiceStart','Tup','customExit'};
+                conditions.CheckZoneOut  = {'SoftCode11','BothMiceMakingDecision',...
+                    'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
             case 2
                 choices.m2CorrectChoice   = 'SoftCode1';
                 choices.m2InCorrectChoice = 'SoftCode2';
@@ -128,6 +133,8 @@ if numel(mousesetting)==2
                     Tup','customExit'};
                 conditions.WaitingForMouse2 = {'SoftCode10', 'BothMiceInZone',...
                     'BNC1Low', 'WaitingforBothMiceStart','Tup','customExit'};
+                conditions.CheckZoneOut  = {'SoftCode11','BothMiceMakingDecision',...
+                    'BNC1Low','BothMiceMakingDecision','Tup','customExit'};
         end
     end
     %----------------------------------------------------------------------

@@ -96,6 +96,7 @@ for currentTrial = 1:10000
     S = BpodParameterGUI('sync', S); % Sync parameters with BpodParameterGUI plugin
     ops.degPositive = S.GUI.Angle;
     ops.degNegative = -S.GUI.Angle;
+    sliderstruct = struct();
     %----------------------------------------------------------------------------
     % same for mouse setting
     if ~isequal(mousesetting, getmousesetting(S.GUI.MouseSetting))
@@ -154,6 +155,7 @@ for currentTrial = 1:10000
             prevstim = currstim(:, ops.useSlider);
             currstim(:, ops.useSlider) = eps * sign(prevstim);
         end
+        sliderstruct = sliderProperties;
     end
     %----------------------------------------------------------------------------
      % initialize gratings
@@ -169,7 +171,7 @@ for currentTrial = 1:10000
         BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                              RawEvents,currentTrial,...
                                              currstim, currreward,currRewardAmount,...
-                                             mousesetting);
+                                             mousesetting, sliderstruct);
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)

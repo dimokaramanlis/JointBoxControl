@@ -20,6 +20,7 @@ while tel < sliderProperties.dectime
     x   = x + nrand;
     tel = toc;
 end
+SendBpodSoftCode(11);
 %----------------------------------------------------------------------
 
 % if slider is correct, pause for 2 sec, otherwise pause for 0.5 sec
@@ -33,9 +34,10 @@ end
 moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false);
 % Nsteps = floor((2*sliderProperties.xpos - x) * 0.99);
 % moveToEndPointSteps(myStepperBoard, sidemove, sliderProperties.maxspeed, Nsteps);
+
 %----------------------------------------------------------------------
 % then slider waits based on outcome
-if sliderProperties.outcome
+if sliderProperties.outcome > 0
     spouttime = sliderProperties.rewstay;
     % whenever the slider reaches the spout, state machine gets to know
     SendBpodSoftCode(1); 

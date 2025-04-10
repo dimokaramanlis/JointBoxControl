@@ -28,8 +28,7 @@ function S = getDefaultStruct(ops)
     
     S.GUI.ProtocolName  = 2;
     S.GUIMeta.ProtocolName.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
-    S.GUIMeta.ProtocolName.String = {'ObservationalLearning',...
-                                     'SequenceSingleMouse',...
+    S.GUIMeta.ProtocolName.String = {'SequenceSingleMouse',...
                                      'OrientationSingleMouse',...
                                      'ContrastSingleMouse',...
                                      'MirrorSingleMouse',...
@@ -65,9 +64,9 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.SquareWave.Style='checkbox';
     S.GUIMeta.SquareWave.String="SquareWave";
 
-    S.GUI.RandomHeight = 0;
-    S.GUIMeta.RandomHeight.Style='checkbox';
-    S.GUIMeta.RandomHeight.String="RandomHeight";
+%     S.GUI.RandomHeight = 0;
+%     S.GUIMeta.RandomHeight.Style='checkbox';
+%     S.GUIMeta.RandomHeight.String="RandomHeight";
     
     S.GUI.TemporalFrequency = 0;
     S.GUIMeta.TemporalFrequency.Style='edit';
