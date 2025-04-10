@@ -4,7 +4,7 @@ function Joint_Perceptual_DecisionMaking
 % 202502: Major slider support
 % -------------------------------------------------------------------------
 global BpodSystem PTB S displayTimer GratingProperties ops...
-    myStepperBoard sliderProperties
+    myStepperBoard sliderProperties sliderTimer;
 %----------------------------------------------------------------------------
 protocolpath = which('Joint_Perceptual_DecisionMaking');
 addpath(addpath(genpath(fileparts(protocolpath))));
@@ -186,6 +186,12 @@ for currentTrial = 1:10000
         Screen('CloseAll');
         if exist("displayTimer",'var')
             delete(displayTimer); 
+        end
+        if exist("sliderTimer",'var')
+            if ~isempty(sliderTimer.StopFcn)
+                sliderTimer.stop();
+                delete(sliderTimer);
+            end
         end
         %----------------------------------------------------------------------
         MouseName = BpodSystem.GUIData.SubjectName;

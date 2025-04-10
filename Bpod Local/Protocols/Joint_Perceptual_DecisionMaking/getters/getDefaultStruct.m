@@ -181,10 +181,14 @@ function S = getDefaultStruct(ops)
         S.GUI.RewardStayTime = 3; 
         S.GUIMeta.RewardStayTime.Style='edit';
         S.GUIMeta.RewardStayTime.String = "RewardStayTime";
-
+        
+        S.GUI.RoamingType  = 2;
+        S.GUIMeta.RoamingType.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
+        S.GUIMeta.RoamingType.String = {'None',...
+                                         'Platform'};
 
         S.GUIPanels.Slider = {'Performance', 'MaxSpeed', ...
-            'DTimeMin', 'DTimeMax', 'UncertaintySD', 'RewardStayTime'};
+            'DTimeMin', 'DTimeMax', 'UncertaintySD', 'RewardStayTime', 'RoamingType'};
     end
 
   
