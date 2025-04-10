@@ -22,9 +22,9 @@ for imouse = 1:2
         'Marker', '.', 'MarkerSize', 5, 'Color', [mousecol 0.5], 'LineWidth', 1);
 end
 
-tstr1    = sprintf('Task performance, max m1: %2.2f, m2: %2.2f, avg m1: %2.2f, m2: %2.2f',...
-    perfmax(1), perfmax(2), perftot(1), perftot(2));
-tstr2    = sprintf('Reward cons.(ul), m1: %d, m2: %d', round(rewtot(1)), round(rewtot(2)));
+tstr1    = sprintf('Task performance, max/avg m1: %2.2f/%2.2f, m2: %2.2f/%2.2f',...
+    perfmax(1),perftot(1),  perfmax(2), perftot(2));
+tstr2    = sprintf('Reward consumed (ul), m1: %d, m2: %d', round(rewtot(1)), round(rewtot(2)));
 
 title(percentageCorrectPlot, {tstr1 tstr2})
 

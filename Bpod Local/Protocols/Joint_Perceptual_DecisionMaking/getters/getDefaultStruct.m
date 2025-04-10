@@ -56,7 +56,7 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.ContrastSet2.Style = 'popupmenu';
     S.GUIMeta.ContrastSet2.String = ops.stimsetnames;
     
-    S.GUI.StimulusDuration = 0.5; % Duration of visual stimulus (s)
+    S.GUI.StimulusDuration = 1; % Duration of visual stimulus (s)
     
     S.GUI.StimulusRadius = 30;
     S.GUIMeta.StimulusRadius.Style = 'edit';
@@ -100,8 +100,8 @@ function S = getDefaultStruct(ops)
     S.GUI.PunishTimeoutDuration = 0; % Seconds to wait on errors before next trial can start
     %DecisionTime (default 5-7) s
     S.GUI.DecisionTime = 60;
-    S.GUI.ITIMin = 1;
-    S.GUI.ITIMax = 3;
+    S.GUI.ITIMin = 2;
+    S.GUI.ITIMax = 5;
     S.GUIPanels.Timers = {  'InitiationTimeout',...
                             'DecisionTime',...
                             'PunishTimeoutDuration',...
@@ -157,28 +157,28 @@ function S = getDefaultStruct(ops)
     if ops.useSlider
 
 
-        S.GUI.Performance = 0.9; 
+        S.GUI.Performance = 0.8; 
         S.GUIMeta.Performance.Style='edit';
         S.GUIMeta.Performance.String = "Performance";
 
-        S.GUI.MaxSpeed = 85; 
+        S.GUI.MaxSpeed = 100; 
         S.GUIMeta.MaxSpeed.Style='edit';
         S.GUIMeta.MaxSpeed.String = "MaxSpeed(%)";
 
-        S.GUI.DTimeMin = 0.05; 
+        S.GUI.DTimeMin = 0.02; 
         S.GUIMeta.DTimeMin.Style='edit';
         S.GUIMeta.DTimeMin.String = "DTimeMin";
 
-        S.GUI.DTimeMax = 0.75; 
+        S.GUI.DTimeMax = 0.5; 
         S.GUIMeta.DTimeMax.Style='edit';
         S.GUIMeta.DTimeMax.String = "DTimeMax";
 
-        S.GUI.UncertaintySD = 20; 
+        S.GUI.UncertaintySD = 50; 
         S.GUIMeta.UncertaintySD.Style='edit';
         S.GUIMeta.UncertaintySD.String = "UncertaintySD(steps)";
 
 
-        S.GUI.RewardStayTime = 2; 
+        S.GUI.RewardStayTime = 3; 
         S.GUIMeta.RewardStayTime.Style='edit';
         S.GUIMeta.RewardStayTime.String = "RewardStayTime";
 
