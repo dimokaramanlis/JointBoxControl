@@ -20,7 +20,7 @@ switch ID
         % make sure slider is back home
         if ops.useSlider > 0
             waitForMotor(myStepperBoard);
-            SendBpodSoftCode(10);
+%             SendBpodSoftCode(10);
 
             sliderTimer = timer;
             sliderTimer.stop();

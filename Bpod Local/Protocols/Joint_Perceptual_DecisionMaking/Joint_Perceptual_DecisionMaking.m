@@ -77,7 +77,7 @@ end
 if localsettings.useMouseSlider > 0
     sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
     [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
-    sliderProperties.xpos    = xstart;
+    sliderProperties.xpos       = xstart;
 end
 %----------------------------------------------------------------------------
 answer = questdlg('Start all recordings and video', ...
@@ -154,6 +154,11 @@ for currentTrial = 1:10000
         if Nmice == 2
             prevstim = currstim(:, ops.useSlider);
             currstim(:, ops.useSlider) = eps * sign(prevstim);
+        end
+        sliderProperties.timeonplat = 0;
+        sliderProperties.currwait   = exprnd(3 * S.GUI.DTimeAvg);
+        if sliderProperties.RoamingType  < 3
+            sliderProperties.currwait = Inf;
         end
         sliderstruct = sliderProperties;
     end

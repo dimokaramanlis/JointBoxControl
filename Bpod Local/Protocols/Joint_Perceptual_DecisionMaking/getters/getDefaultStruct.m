@@ -165,13 +165,9 @@ function S = getDefaultStruct(ops)
         S.GUIMeta.MaxSpeed.Style='edit';
         S.GUIMeta.MaxSpeed.String = "MaxSpeed(%)";
 
-        S.GUI.DTimeMin = 0.02; 
-        S.GUIMeta.DTimeMin.Style='edit';
-        S.GUIMeta.DTimeMin.String = "DTimeMin";
-
-        S.GUI.DTimeMax = 0.5; 
-        S.GUIMeta.DTimeMax.Style='edit';
-        S.GUIMeta.DTimeMax.String = "DTimeMax";
+        S.GUI.DTimeAvg = 0.3; 
+        S.GUIMeta.DTimeAvg.Style='edit';
+        S.GUIMeta.DTimeAvg.String = "DTimeMean";
 
         S.GUI.UncertaintySD = 50; 
         S.GUIMeta.UncertaintySD.Style='edit';
@@ -185,10 +181,11 @@ function S = getDefaultStruct(ops)
         S.GUI.RoamingType  = 2;
         S.GUIMeta.RoamingType.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
         S.GUIMeta.RoamingType.String = {'None',...
-                                         'Platform'};
+                                         'Platform',...
+                                         'Full'};
 
         S.GUIPanels.Slider = {'Performance', 'MaxSpeed', ...
-            'DTimeMin', 'DTimeMax', 'UncertaintySD', 'RewardStayTime', 'RoamingType'};
+            'DTimeAvg', 'UncertaintySD', 'RewardStayTime', 'RoamingType'};
     end
 
   

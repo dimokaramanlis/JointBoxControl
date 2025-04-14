@@ -1,10 +1,7 @@
 function SliderStartTrial(~,~)
 %PTBDISPLAY Summary of this function goes here
 
-global myStepperBoard sliderProperties;
-%----------------------------------------------------------------------
-% we first stop roaming to start deciding
-myStepperBoard.stopMotorRotation(0)
+global myStepperBoard sliderProperties sliderTimer;
 %----------------------------------------------------------------------
 peruse = sliderProperties.maxspeed;
 tic;
@@ -52,7 +49,7 @@ pause(spouttime);
 speedreturn =  (1 + rand(1))* sliderProperties.maxspeed/2;
 myStepperBoard.startMotorRotation(0, ...
     -sliderProperties.sliderchoice * sliderProperties.xpos, speedreturn);
-%----------------------------------------------------------------------        
+%----------------------------------------------------------------------
 end
 
 

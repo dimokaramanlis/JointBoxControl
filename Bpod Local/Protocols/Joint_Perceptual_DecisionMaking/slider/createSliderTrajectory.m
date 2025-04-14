@@ -10,17 +10,11 @@ slideroutcome = rand(1) < perfcurr;
 sliderProperties.outcome = slideroutcome;
 %-----------------------------------------------------------------------------------------------------------------
 % some checks
-dtmin         = max(S.GUI.DTimeMin, 1e-3);
-dtmax         = max(dtmin + 1e-3, S.GUI.DTimeMax);
-gmean         = dtmin +  (dtmax - dtmin)/2;
-gsigma        = (dtmax - dtmin)/3;
-if slideroutcome == 1
-    gsigma = gsigma/2;
-end
-sliderDecTime = gmean + randn(1) * gsigma;
-sliderDecTime = max(sliderDecTime, 1e-3);
-
-sliderProperties.dectime = sliderDecTime;
+maxdt         = min(S.GUI.DecisionTime/2, 3); % maximum is 3 s or half of DT
+dtcurr        = exprnd(S.GUI.DTimeAvg);
+dtcurr        = max(dtcurr, 0.02);  % minimum is 20 ms
+dtcurr        = min(dtcurr, maxdt); 
+sliderProperties.dectime = dtcurr;
 %-----------------------------------------------------------------------------------------------------------------
 rewlicktime = max(S.GUI.RewardStayTime, 1e-3);
 sliderProperties.rewstay = rewlicktime;
