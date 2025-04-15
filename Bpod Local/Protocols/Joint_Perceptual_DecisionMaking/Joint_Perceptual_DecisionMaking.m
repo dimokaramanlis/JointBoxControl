@@ -189,7 +189,7 @@ for currentTrial = 1:10000
         %----------------------------------------------------------------------
         % we first stop the slider
         if exist("sliderTimer",'var')
-            if isfield(sliderTimer, 'StopFcn')
+            if any(contains(fieldnames(sliderTimer), 'StopFcn'))
                 if ~isempty(sliderTimer.StopFcn)
                     sliderTimer.stop();
                 end

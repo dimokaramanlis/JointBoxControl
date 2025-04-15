@@ -12,12 +12,13 @@ myStepperBoard = msb2302steppers(comport, 115200, 0x58);
 maxStepsToMap  = 4000;
 minStepsToMap  = 10;
 peruse = 95;
+topFreq = 230;
+
 if myStepperBoard.isDeviceReady()
 
     myStepperBoard.setMotorAcceleration(0,9,13);           % Need to be before config
     myStepperBoard.setMotorConfig(0, 0, 1, 0, 0);
 
-    topFreq = 180;
     myStepperBoard.setMotorTopFrequency(0, topFreq);
     
 %     moveToEndPoint(myStepperBoard, 'r', peruse, dt);
@@ -57,6 +58,7 @@ if myStepperBoard.isDeviceReady()
     sliderinfo.endstopdistance = endstopdistance;
     sliderinfo.timecalibrate   = y;
     sliderinfo.rotcalibrate    = x;
+    sliderinfo.topFrequency    = topFreq;
     %----------------------------------------------------------------------
 end
 myStepperBoard.close();
