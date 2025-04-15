@@ -7,6 +7,7 @@ global myStepperBoard sliderProperties S
 peruse  = sliderProperties.maxspeed/2;
 currn   = 0;
 currtic = tic;
+%sliderProperties.roamdecsteps(mod(istep, Nstepsavail) + 1)
 if sliderProperties.timeonplat < sliderProperties.currwait
     if sliderProperties.timeonplat == 0
         SendBpodSoftCode(10); % only send soft code at the platform beginning
@@ -34,11 +35,10 @@ else
         sidemove = 'l';
     end
     newaittime = exprnd(3 * S.GUI.DTimeAvg);
-    moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false);
-    pause(0.3);
+    moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false, round(sliderProperties.endstopdistance*1.1));
+    pause(0.3); % no reward time
     speedreturn =  (1 + rand(1))* sliderProperties.maxspeed/2;
-    myStepperBoard.startMotorRotation(0, ...
-        -sliderchoice * sliderProperties.xpos, speedreturn);
+    myStepperBoard.startMotorRotation(0, -sliderchoice * sliderProperties.xpos, speedreturn);
     waitForMotor(myStepperBoard);
     sliderProperties.timeonplat = 0;
     sliderProperties.currwait   = newaittime;

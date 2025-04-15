@@ -4,10 +4,15 @@ function [valreturn, counter] = moveToEndPoint(myStepperBoard, ptside, peruse, v
 if nargin < 4
     verbose = true;
 else
-    verbose = false;
+    verbose = varargin{4};
 end
 
-Nstepsmax = 3000;
+if nargin < 5
+	Nstepsmax = 3000;
+else
+	Nstepsmax = varargin{5};
+end
+
 switch ptside
     case {'right', 'r', 'Right'}
         txtwrite = 'right';
@@ -18,13 +23,13 @@ switch ptside
 end
 myStepperBoard.startMotorRotation(0, signuse * Nstepsmax, peruse, false);
 
-tic;
+currtimer = tic;
 waitForMotor(myStepperBoard);
-
 if verbose
     fprintf('Took %2.2f sec to reach %s endpoint\n', toc, txtwrite)
 end
 valreturn = true;
-counter   = toc;
+counter   = toc(currtimer);
+
 end
 

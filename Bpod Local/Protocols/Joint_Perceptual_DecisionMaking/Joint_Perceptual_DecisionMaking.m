@@ -77,6 +77,7 @@ end
 if localsettings.useMouseSlider > 0
     sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
     [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
+	sliderProperties         = sliderinfo;
     sliderProperties.xpos    = xstart;
 end
 %----------------------------------------------------------------------------

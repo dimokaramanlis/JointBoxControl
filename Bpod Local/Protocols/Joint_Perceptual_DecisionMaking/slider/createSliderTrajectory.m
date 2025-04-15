@@ -2,6 +2,9 @@ function sliderProperties = createSliderTrajectory(S, sliderProperties, currrewa
 %CREATEANDDRAWTEXTURES Takes the current trial types and creates the
 %appropriate textures on the screen.
 
+Ndecsteps     = 200;
+Nroamingsteps = Ndecsteps * 10;
+
 %-----------------------------------------------------------------------------------------------------------------
 % performance always between 0 and 1
 perfcurr      = min(S.GUI.Performance, 1);
@@ -9,18 +12,26 @@ perfcurr      = max(perfcurr, 0);
 slideroutcome = rand(1) < perfcurr;
 sliderProperties.outcome = slideroutcome;
 %-----------------------------------------------------------------------------------------------------------------
-% some checks
-maxdt         = min(S.GUI.DecisionTime/2, 3); % maximum is 3 s or half of DT
-dtcurr        = exprnd(S.GUI.DTimeAvg);
-dtcurr        = max(dtcurr, 0.02);  % minimum is 20 ms
-dtcurr        = min(dtcurr, maxdt); 
-sliderProperties.dectime = dtcurr;
+% decision-time related
+maxdt                     = min(S.GUI.DecisionTime/2, 3); % maximum is 3 s or half of DT
+dtcurr                    = exprnd(S.GUI.DTimeAvg);
+dtcurr                    = max(dtcurr, 0.02);  % minimum is 20 ms
+dtcurr                    = min(dtcurr, maxdt); 
+sliderProperties.dectime  = dtcurr;
+sliderProperties.decsteps = round(randn([Ndecsteps, 1])*sliderProperties.UncertaintySD);
 %-----------------------------------------------------------------------------------------------------------------
-rewlicktime = max(S.GUI.RewardStayTime, 1e-3);
-sliderProperties.rewstay = rewlicktime;
+% reward and return related
+rewlicktime                    = max(S.GUI.RewardStayTime, 1e-3);
+if sliderProperties.outcome > 0
+	sliderProperties.spouttime = rewlicktime; % drink
+else
+	sliderProperties.spouttime = 0.3; % leave
+end
+speedreturn                  =  (1 + rand(1))* sliderProperties.maxspeed/2;
+sliderProperties.speedreturn = speedreturn;
 %-----------------------------------------------------------------------------------------------------------------
-maxspeed = max(S.GUI.MaxSpeed, 0);
-maxspeed = min(maxspeed, 100); % WE CAN INCREASE THIS IF WE TEST!!!!!!!!!!
+maxspeed                  = max(S.GUI.MaxSpeed, 0);
+maxspeed                  = min(maxspeed, 100);
 sliderProperties.maxspeed = maxspeed;
 %-----------------------------------------------------------------------------------------------------------------
 sliderchoice = currreward(sliderside);
@@ -34,12 +45,14 @@ sliderProperties.sliderchoice = sliderchoice;
 %-----------------------------------------------------------------------------------------------------------------
 sliderProperties.UncertaintySD = S.GUI.UncertaintySD;
 %-----------------------------------------------------------------------------------------------------------------
-% TODO
+% ROAMING MODE
 % Here we create a trajectory that will be initiated by the state machine
 % the trajectory will wait till the robo is available and then start
 % roaming
 sliderProperties.trajx = 1;
-sliderProperties.RoamingType = S.GUI.RoamingType;
-sliderProperties.RoamingSD   = sliderProperties.UncertaintySD/3;
+sliderProperties.RoamingType  = S.GUI.RoamingType;
+sliderProperties.RoamingSD    = sliderProperties.UncertaintySD/3;
+sliderProperties.roamdecsteps = round(randn([Nroamingsteps, 1])*sliderProperties.RoamingSD);
+
 %-----------------------------------------------------------------------------------------------------------------
 end
