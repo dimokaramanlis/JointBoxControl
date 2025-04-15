@@ -77,11 +77,10 @@ end
 if localsettings.useMouseSlider > 0
     sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
     [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
-    sliderProperties.xpos       = xstart;
+    sliderProperties.xpos    = xstart;
 end
 %----------------------------------------------------------------------------
-answer = questdlg('Start all recordings and video', ...
-    'Start dialog', 'OK','OK');
+questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
 setchoose    = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}};
@@ -188,15 +187,20 @@ for currentTrial = 1:10000
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.
     if BpodSystem.Status.BeingUsed == 0  % If protocol was stopped, exit the loop
         %----------------------------------------------------------------------
+        % we first stop the slider
+        if exist("sliderTimer",'var')
+            if isfield(sliderTimer, 'StopFcn')
+                if ~isempty(sliderTimer.StopFcn)
+                    sliderTimer.stop();
+                end
+            end
+            delete(sliderTimer);
+        end
+        %----------------------------------------------------------------------
+        % we then clear the screen
         Screen('CloseAll');
         if exist("displayTimer",'var')
             delete(displayTimer); 
-        end
-        if exist("sliderTimer",'var')
-            if ~isempty(sliderTimer.StopFcn)
-                sliderTimer.stop();
-                delete(sliderTimer);
-            end
         end
         %----------------------------------------------------------------------
         MouseName = BpodSystem.GUIData.SubjectName;
@@ -223,8 +227,7 @@ for currentTrial = 1:10000
             myStepperBoard.close();
         end
         %==================================================================
-        answer = questdlg('Stop all recordings and video', ...
-            'Stop dialog', 'OK','OK');
+        questdlg('Stop all recordings and video', 'Stop dialog', 'OK','OK');
         %----------------------------------------------------------------------
         if localsettings.useAIM ~=0
             A.scope_StartStop; % Stop Oscope GUI

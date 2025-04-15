@@ -30,7 +30,7 @@ classdef msb2302steppers
             elseif isprop(portNameOrHandle, 'BaudRate') && isprop(portNameOrHandle, 'Port')
              % Détecte un objet de type serialport
                 obj.serialObj = portNameOrHandle;
-                disp(sprintf('%s using GATEWAY serial communication handle', obj.BOARD_TYPE_LIBRARY));
+                fprintf('%s using GATEWAY serial communication handle', obj.BOARD_TYPE_LIBRARY);
             elseif ischar(portNameOrHandle) || isstring(portNameOrHandle)
                 % Vérifie si le port est déjà ouvert
                 if any(strcmp(serialportlist("all"), portNameOrHandle))
@@ -43,7 +43,7 @@ classdef msb2302steppers
                 % Initialise le port série
                 obj.serialObj = serialport(portNameOrHandle, baudRate);
                 configureTerminator(obj.serialObj, "CR/LF"); % Configurer le terminateur
-                disp(sprintf('%s using serial port %s with %d baud rate.', obj.BOARD_TYPE_LIBRARY,  portNameOrHandle, baudRate));                
+                fprintf('%s using serial port %s with %d baud rate.', obj.BOARD_TYPE_LIBRARY,  portNameOrHandle, baudRate);                
                 disp('Cleaning buffer, please wait ... ');
                 pause(2); % Pause pour stabiliser la connexion
                 
@@ -66,7 +66,7 @@ classdef msb2302steppers
             
             % Envoi d'une requête de lecture pour obtenir la valeur des
             % registre du module
-            disp(sprintf('Trying to detect board on address 0x%.2X...', obj.i2cAdr));
+            fprintf('Trying to detect board on address 0x%.2X...', obj.i2cAdr);
             reqRegistersSeq = [0x01, obj.i2cAdr];
             %reqRegistersSeq = [0x01, obj.BOARD_ADR];
             obj.writeSerialData(reqRegistersSeq); % Utilisation de la méthode définie ici
@@ -82,7 +82,7 @@ classdef msb2302steppers
                 return;
             else
                 if ~strcmp(brdType, obj.BOARD_TYPE_LIBRARY)
-                    disp(sprintf('[ERROR] Incompatible detected board [%s] with this library [%s]', brdType, obj.BOARD_TYPE_LIBRARY));
+                    fprintf('[ERROR] Incompatible detected board [%s] with this library [%s]', brdType, obj.BOARD_TYPE_LIBRARY);
                     isReady = false;
                     return;
                 else
@@ -431,7 +431,7 @@ classdef msb2302steppers
             end
         
             % Retourne les données accumulées
-            data;
+%             data;
         end
 
         function value = getDeviceRegisterValue(obj, regAdr)
