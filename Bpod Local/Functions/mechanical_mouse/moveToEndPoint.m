@@ -4,13 +4,13 @@ function [valreturn, counter] = moveToEndPoint(myStepperBoard, ptside, peruse, v
 if nargin < 4
     verbose = true;
 else
-    verbose = varargin{4};
+    verbose = varargin{1};
 end
 
 if nargin < 5
 	Nstepsmax = 3000;
 else
-	Nstepsmax = varargin{5};
+	Nstepsmax = varargin{2};
 end
 
 switch ptside

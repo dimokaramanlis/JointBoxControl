@@ -11,7 +11,7 @@
 %myStepperBoard2 = msb2302steppers(serialHandler, 0x59);
 
 serialportlist("available")
-myStepperBoard = msb2302steppers_v2("COM7", 115200, 0x58);
+myStepperBoard = msb2302steppers("COM7", 115200, 0x58);
 
 if myStepperBoard.isDeviceReady()
     disp('[MAIN] ----> Board ready ');

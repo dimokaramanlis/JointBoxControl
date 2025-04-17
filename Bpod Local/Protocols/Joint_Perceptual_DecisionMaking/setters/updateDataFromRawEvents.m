@@ -176,6 +176,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem,...
         
         if ~isempty(sliderstruct)
             decisionTimeToSave(sliderstruct.side) = sliderstruct.dectime;
+            BpodSystem.Data.DecisionSteps(currentTrial, :) = {sliderstruct.decsteps};
         end
         
         BpodSystem.Data.TrialTypes(   currentTrial,  :) = currReward;

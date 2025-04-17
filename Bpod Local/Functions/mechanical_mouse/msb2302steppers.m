@@ -461,7 +461,7 @@ classdef msb2302steppers
             registersData = []; % Tableau vide par défaut pour les valeurs des registres
 
             % Lecture de la réponse
-            rxFrame = obj.readSerialData(obj.VALID_FRAME_BYTE_COUNT, 1);
+            rxFrame = obj.readSerialData(obj.VALID_FRAME_BYTE_COUNT, 2);
     
             % Vérification de la longueur du tableau
             if length(rxFrame) < 10 % Au moins 10 octets (3 pour l'en-tête, 4 pour les données, et 3 pour la fin)

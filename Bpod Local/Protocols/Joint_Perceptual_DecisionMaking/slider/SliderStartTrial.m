@@ -15,7 +15,7 @@ while timeelapsed < sliderProperties.dectime
     timeelapsed = toc(dectic);
 end
 SendBpodSoftCode(11);
-sliderProperties.decsteps = sliderProperties.decsteps(1:istep);
+sliderProperties.decsteps = sliderProperties.decsteps(1:istep-1);
 %----------------------------------------------------------------------
 % if slider is correct, pause for 2 sec, otherwise pause for 0.5 sec
 if sliderProperties.sliderchoice>0

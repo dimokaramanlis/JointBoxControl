@@ -160,7 +160,6 @@ for currentTrial = 1:10000
         if sliderProperties.RoamingType  < 3
             sliderProperties.currwait = Inf;
         end
-        sliderstruct = sliderProperties;
     end
     %----------------------------------------------------------------------------
      % initialize gratings
@@ -173,6 +172,9 @@ for currentTrial = 1:10000
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
     if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)
+        if ops.useSlider > 0
+            sliderstruct = sliderProperties;
+        end
         BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                              RawEvents,currentTrial,...
                                              currstim, currreward,currRewardAmount,...

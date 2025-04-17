@@ -4,7 +4,10 @@ function sliderProperties = createSliderTrajectory(S, sliderProperties, currrewa
 
 Ndecsteps     = 200;
 Nroamingsteps = Ndecsteps * 10;
-
+sliderProperties.UncertaintySD = S.GUI.UncertaintySD;
+maxspeed                       = max(S.GUI.MaxSpeed, 0);
+maxspeed                       = min(maxspeed, 100);
+sliderProperties.maxspeed      = maxspeed;
 %-----------------------------------------------------------------------------------------------------------------
 % performance always between 0 and 1
 perfcurr      = min(S.GUI.Performance, 1);
@@ -30,9 +33,7 @@ end
 speedreturn                  =  (1 + rand(1))* sliderProperties.maxspeed/2;
 sliderProperties.speedreturn = speedreturn;
 %-----------------------------------------------------------------------------------------------------------------
-maxspeed                  = max(S.GUI.MaxSpeed, 0);
-maxspeed                  = min(maxspeed, 100);
-sliderProperties.maxspeed = maxspeed;
+
 %-----------------------------------------------------------------------------------------------------------------
 sliderchoice = currreward(sliderside);
 if sliderside == 2
@@ -43,7 +44,6 @@ if slideroutcome == 0
 end
 sliderProperties.sliderchoice = sliderchoice;
 %-----------------------------------------------------------------------------------------------------------------
-sliderProperties.UncertaintySD = S.GUI.UncertaintySD;
 %-----------------------------------------------------------------------------------------------------------------
 % ROAMING MODE
 % Here we create a trajectory that will be initiated by the state machine
