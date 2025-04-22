@@ -12,7 +12,7 @@
 
 serialportlist("available")
 
-myStepperBoard = msb2302steppers("COM9", 115200, 0x58);
+myStepperBoard = msb2302steppers("COM7", 115200, 0x58);
 
 allpercent = [20 40 60 80 100];
 Nsteps = 100;

@@ -98,16 +98,47 @@ if numel(mousesetting)==2
     else
         error('Incorrect trial type for M2. Please check currReward variable');
     end
-
-%     if ops.useSlider
-%         % here we assign slider actions
-%         choices.m2CorrectChoice   = 'SoftCode1';
-%         choices.m2InCorrectChoice = 'SoftCode2';
-%         sma = getSliderStateMachine(choices,actions,times);
-%     else
-%         sma = getTwoMiceStateMachine(choices,actions,times);
-%     end
-    sma = getTwoMiceStateMachine(choices,actions,times);
+    %----------------------------------------------------------------------
+    % here we change the conditions for initiation
+    conditions.ZoneChangeCondition = {'BNC1High', 'WaitingforMouse2',...
+        'BNC2High', 'WaitingforMouse1','Tup', 'customExit'};
+    conditions.WaitingForMouse2 = {'BNC2High', 'BothMiceInZone',...
+        'BNC1Low', 'WaitingforBothMiceStart','Tup','customExit'};
+    conditions.WaitingForMouse1 = {'BNC1High', 'BothMiceInZone',...
+        'BNC2Low', 'WaitingforBothMiceStart','Tup','customExit'};
+    conditions.CheckZoneOut = {'BNC1Low','BothMiceMakingDecision',...
+        'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
+    %----------------------------------------------------------------------
+    
+    if ops.useSlider > 0
+        % here we assign slider actions
+        switch ops.useSlider
+            case 1
+                choices.m1CorrectChoice   = 'SoftCode1';
+                choices.m1IncorrectChoice = 'SoftCode2';
+                conditions.ZoneChangeCondition = {'SoftCode10', 'WaitingforMouse2',...
+                    'BNC2High', 'WaitingforMouse1','Tup', 'customExit'};
+                conditions.WaitingForMouse2 = {'BNC2High', 'BothMiceInZone',...
+                    'SoftCode11', 'WaitingforBothMiceStart', 'Tup','customExit'};
+                conditions.WaitingForMouse1 = {'SoftCode10', 'BothMiceInZone',...
+                    'BNC2Low', 'WaitingforBothMiceStart','Tup','customExit'};
+                conditions.CheckZoneOut  = {'SoftCode11','BothMiceMakingDecision',...
+                    'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
+            case 2
+                choices.m2CorrectChoice   = 'SoftCode1';
+                choices.m2InCorrectChoice = 'SoftCode2';
+                conditions.ZoneChangeCondition = {'BNC1High', 'WaitingforMouse2',...
+                    'SoftCode10', 'WaitingforMouse1','Tup', 'customExit'};
+                conditions.WaitingForMouse1 = {'BNC1High', 'BothMiceInZone',...
+                    'SoftCode11', 'WaitingforBothMiceStart', 'Tup','customExit'};
+                conditions.WaitingForMouse2 = {'SoftCode10', 'BothMiceInZone',...
+                    'BNC1Low', 'WaitingforBothMiceStart','Tup','customExit'};
+                conditions.CheckZoneOut  = {'SoftCode11','BothMiceMakingDecision',...
+                    'BNC1Low','BothMiceMakingDecision','Tup','customExit'};
+        end
+    end
+    %----------------------------------------------------------------------
+    sma = getTwoMiceStateMachine(choices,actions,times,conditions);
     currRewardAmount = NaN(1, 2);
     for ii = 1:2
         currRewardAmount(ii) = reshrew(ii, 1+(1-currreward(ii))/2);

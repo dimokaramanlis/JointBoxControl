@@ -4,7 +4,8 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem,...
                                               currStim,...
                                               currReward,...
                                               currRewardAmount,...
-                                              mousesetting)
+                                              mousesetting,...
+                                              sliderstruct)
     % handle general saving
     
     BpodSystem.Data = AddTrialEvents(BpodSystem.Data,RawEvents); % Computes trial events from raw data
@@ -171,6 +172,11 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem,...
                     end
                 end
             end
+        end
+        
+        if ~isempty(sliderstruct)
+            decisionTimeToSave(sliderstruct.side) = sliderstruct.dectime;
+            BpodSystem.Data.DecisionSteps(currentTrial, :) = {sliderstruct.decsteps};
         end
         
         BpodSystem.Data.TrialTypes(   currentTrial,  :) = currReward;

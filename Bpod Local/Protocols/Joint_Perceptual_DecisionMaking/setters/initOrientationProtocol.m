@@ -62,11 +62,7 @@ for ii = 1:numel(screenIds)
 end
 %==========================================================================
 % Set soft code handler to trigger stimuli
-if ops.useSlider
-    BpodSystem.SoftCodeHandlerFunction = 'StimulusFunctionAndSlider';
-else
-    BpodSystem.SoftCodeHandlerFunction = 'StimulusFunctionOrientation';
-end
+BpodSystem.SoftCodeHandlerFunction = 'StimulusFunctionOrientation';
 %==========================================================================
 % Setup figure
 [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);

@@ -1,9 +1,10 @@
 function StimulusFunctionOrientation(ID)
 %--------------------------------------------------------------------------
-global PTB S GratingProperties ops displayTimer;
-%--------------------------------------------------------------------------
+global PTB S GratingProperties ops displayTimer sliderTimer myStepperBoard;
 
+%--------------------------------------------------------------------------
 switch ID
+    %------------------------------------------------------------------
     case 101
         Priority(1);
         
@@ -15,12 +16,29 @@ switch ID
         for iscreen = 1:2
            Screen('Flip', PTB.windows(iscreen)); 
         end
-        case 10 % Flip screen and progress phase
+
+        % make sure slider is back home
+        if ops.useSlider > 0
+            waitForMotor(myStepperBoard);
+%             SendBpodSoftCode(10);
+
+            sliderTimer = timer;
+            sliderTimer.stop();
+            sliderTimer.Period         = 0.01; %10ms refresh
+            sliderTimer.TimerFcn       = @SliderRoaming;
+            sliderTimer.StopFcn        = @SliderRoamingStop;
+            sliderTimer.ExecutionMode  = 'fixedSpacing';
+            sliderTimer.TasksToExecute = 10000;
+            sliderTimer.start();
+        end
+    %------------------------------------------------------------------
+    case 10 % Flip screen and progress phase
         %------------------------------------------------------------------
-        case 100 %Stop and gray screen
+    case 100 %Stop and gray screen
         %------------------------------------------------------------------
          if ~isempty(displayTimer.StopFcn)
            displayTimer.stop();
+           displayTimer.Period = round(1/ops.screenFs, 3); %10ms refresh
          end
         %------------------------------------------------------------------
     case 200 %Stop and black screen
@@ -51,7 +69,16 @@ if ID == 10
        displayTimer.start();
    else
        displayTimer.TasksToExecute = 1;
+   end 
+   %-----------------------------------------------------------------------
+   % start slider if needed
+   if ops.useSlider > 0
+%        SliderRoamingStop();
+% 
+        sliderTimer.stop();
+        SliderStartTrial();
    end
+   %-----------------------------------------------------------------------
 end
 
 end

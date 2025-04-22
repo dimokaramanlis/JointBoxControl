@@ -4,15 +4,13 @@ function Joint_Perceptual_DecisionMaking
 % 202502: Major slider support
 % -------------------------------------------------------------------------
 global BpodSystem PTB S displayTimer GratingProperties ops...
-    myStepperBoard sliderProperties
+    myStepperBoard sliderProperties sliderTimer;
 %----------------------------------------------------------------------------
 protocolpath = which('Joint_Perceptual_DecisionMaking');
 addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
 localsettings = loadLocalSettings();
-localsettings.useMouseSlider = false;
-% localsettings.useAIM = false;
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
@@ -31,17 +29,17 @@ stimsetnames = {'Con100', 'Con100_50', 'Con100_to_12', ...
 % set global options
 ops.degPositive  = 45;
 ops.degNegative  = -45;
-ops.sliderCOM    = "COM9";
+ops.sliderCOM    = sprintf("COM%d", localsettings.sliderCOM);
 % ops.degPositive  = 45;
 % ops.degNegative  = 135;
 ops.pulseWinWidth = localsettings.pulseWinWidth;
 ops.useAIM        = localsettings.useAIM;
-ops.useSlider    = localsettings.useMouseSlider;
-ops.degPerPixel  = 92/1280;
-ops.screenFs     = 60; % make sure this matches your screen refresh rates!
-ops.stimsets     = stimsets;
-ops.stimsetnames = stimsetnames;
-ops.probsettings = {'Pseudorandom','Alternate','RepeatTrials'};
+ops.useSlider     = localsettings.useMouseSlider;
+ops.degPerPixel   = 92/1280;
+ops.screenFs      = 60; % make sure this matches your screen refresh rates!
+ops.stimsets      = stimsets;
+ops.stimsetnames  = stimsetnames;
+ops.probsettings  = {'Pseudorandom','Alternate','RepeatTrials'};
 % nosepoke map
 ops.valves.m1Red     = 'Valve1';
 ops.nosepokes.m1Red  = 'Port1In';
@@ -76,17 +74,17 @@ if localsettings.useAIM ~=0
 end
 %----------------------------------------------------------------------------
 % initialize Mouse Slider
-if localsettings.useMouseSlider
+if localsettings.useMouseSlider > 0
     sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
     [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
+	sliderProperties         = sliderinfo;
     sliderProperties.xpos    = xstart;
 end
 %----------------------------------------------------------------------------
-answer = questdlg('Start all recordings and video', ...
-    'Start dialog', 'OK','OK');
+questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
-setchoose    = stimsets{S.GUI.ContrastSet};
+setchoose    = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}};
 isdependent  = (2 - S.GUI.Dependent);
 renewprob    = true;
 currreward   = -1; % for debug mode
@@ -98,6 +96,7 @@ for currentTrial = 1:10000
     S = BpodParameterGUI('sync', S); % Sync parameters with BpodParameterGUI plugin
     ops.degPositive = S.GUI.Angle;
     ops.degNegative = -S.GUI.Angle;
+    sliderstruct = struct();
     %----------------------------------------------------------------------------
     % same for mouse setting
     if ~isequal(mousesetting, getmousesetting(S.GUI.MouseSetting))
@@ -108,8 +107,8 @@ for currentTrial = 1:10000
     Nmice = numel(mousesetting);
 
     % update contrast set if altered
-    if ~isequal(setchoose, ops.stimsets{S.GUI.ContrastSet})
-        setchoose = ops.stimsets{S.GUI.ContrastSet}; 
+    if ~isequal(setchoose, {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}})
+        setchoose = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}}; 
         renewprob = true;
     end
  
@@ -121,7 +120,7 @@ for currentTrial = 1:10000
     %----------------------------------------------------------------------------
 
     % get trial set
-    trialset    = getTrialSet(setchoose,  Nmice, isdependent);
+    trialset    = getTrialSet(setchoose,  mousesetting, isdependent);
     if renewprob
         probtrial = ones(size(trialset,1), 1)/size(trialset,1);
         renewprob = false;
@@ -147,14 +146,25 @@ for currentTrial = 1:10000
         currreward = getTrialReward(currstim, isdependent); % find rewarded sides and correct for zero contrast.
     end
     %----------------------------------------------------------------------
-    % initialize gratings
+    % initialize slider
+    if ops.useSlider > 0
+        sliderProperties = createSliderTrajectory(S, sliderProperties, currreward,...
+            ops.useSlider);
+        sliderProperties.side = ops.useSlider;
+        if Nmice == 2
+            prevstim = currstim(:, ops.useSlider);
+            currstim(:, ops.useSlider) = eps * sign(prevstim);
+        end
+        sliderProperties.timeonplat = 0;
+        sliderProperties.currwait   = exprnd(3 * S.GUI.DTimeAvg);
+        if sliderProperties.RoamingType  < 3
+            sliderProperties.currwait = Inf;
+        end
+    end
+    %----------------------------------------------------------------------------
+     % initialize gratings
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
-    %----------------------------------------------------------------------------
-    % initialize slider
-    if localsettings.useMouseSlider
-        sliderProperties = createSliderTrajectory(S, sliderProperties, currreward, mousesetting);
-    end
     %----------------------------------------------------------------------------
     % prepare and run state machine
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
@@ -162,10 +172,13 @@ for currentTrial = 1:10000
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
     if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)
+        if ops.useSlider > 0
+            sliderstruct = sliderProperties;
+        end
         BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                              RawEvents,currentTrial,...
                                              currstim, currreward,currRewardAmount,...
-                                             mousesetting);
+                                             mousesetting, sliderstruct);
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)
@@ -177,6 +190,17 @@ for currentTrial = 1:10000
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.
     if BpodSystem.Status.BeingUsed == 0  % If protocol was stopped, exit the loop
         %----------------------------------------------------------------------
+        % we first stop the slider
+        if ops.useSlider > 0 && exist("sliderTimer",'var')
+            if any(contains(fieldnames(sliderTimer), 'StopFcn'))
+                if ~isempty(sliderTimer.StopFcn)
+                    sliderTimer.stop();
+                end
+            end
+            delete(sliderTimer);
+        end
+        %----------------------------------------------------------------------
+        % we then clear the screen
         Screen('CloseAll');
         if exist("displayTimer",'var')
             delete(displayTimer); 
@@ -206,8 +230,7 @@ for currentTrial = 1:10000
             myStepperBoard.close();
         end
         %==================================================================
-        answer = questdlg('Stop all recordings and video', ...
-            'Stop dialog', 'OK','OK');
+        questdlg('Stop all recordings and video', 'Stop dialog', 'OK','OK');
         %----------------------------------------------------------------------
         if localsettings.useAIM ~=0
             A.scope_StartStop; % Stop Oscope GUI

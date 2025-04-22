@@ -98,7 +98,7 @@ offset = S.GUI.StimulusOffset;
 PTB.xc = zeros(2,1);
 PTB.yc = zeros(2,1);
 
-if S.GUI.RandomHeight
+if isfield(S.GUI, 'RandomHeight') && S.GUI.RandomHeight
     hadd = abs(randn(1)) * PTB.windowrects(ii,4)/4;
 else
     hadd = 0;

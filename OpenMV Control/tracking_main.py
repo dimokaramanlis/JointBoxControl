@@ -119,7 +119,7 @@ while(True):
     # drawing
     for imouse in range(0,2):
         img.draw_rectangle(myRegion[imouse], colmouse[imouse], 1, False)
-        img.draw_circle(locvec[imouse][0], locvec[imouse][1], Rtrigger[imouse], colmouse[imouse])
+        img.draw_circle(locvec[imouse][0], locvec[imouse][1], Rtrigger[imouse], colmouse[imouse]),
         img.draw_cross(locvec[imouse][0], locvec[imouse][1], colmouse[imouse], size=1, thickness=1)
         if ismouseblob[imouse]:
             img.draw_edges(mcorners[imouse], color = (180,180,180))

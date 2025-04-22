@@ -28,14 +28,14 @@ function S = getDefaultStruct(ops)
     
     S.GUI.ProtocolName  = 2;
     S.GUIMeta.ProtocolName.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
-    S.GUIMeta.ProtocolName.String = {'ObservationalLearning',...
-                                     'SequenceSingleMouse',...
+    S.GUIMeta.ProtocolName.String = {'SequenceSingleMouse',...
                                      'OrientationSingleMouse',...
                                      'ContrastSingleMouse',...
                                      'MirrorSingleMouse',...
                                      'OrientationTwoMice',...
                                      'ContrastTwoMice',...
                                      'MirrorTwoMice',...
+                                     'SliderSingleMouse',...
                                      'Tests'};
 
     S.GUIPanels.Task = {'MouseSetting',...
@@ -48,7 +48,15 @@ function S = getDefaultStruct(ops)
     
     %% Stimulus Properties
 
-    S.GUI.StimulusDuration = 0.5; % Duration of visual stimulus (s)
+    S.GUI.ContrastSet1 = 2;
+    S.GUIMeta.ContrastSet1.Style = 'popupmenu';
+    S.GUIMeta.ContrastSet1.String = ops.stimsetnames;
+    
+    S.GUI.ContrastSet2 = 2;
+    S.GUIMeta.ContrastSet2.Style = 'popupmenu';
+    S.GUIMeta.ContrastSet2.String = ops.stimsetnames;
+    
+    S.GUI.StimulusDuration = 1; % Duration of visual stimulus (s)
     
     S.GUI.StimulusRadius = 30;
     S.GUIMeta.StimulusRadius.Style = 'edit';
@@ -64,10 +72,9 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.SquareWave.Style='checkbox';
     S.GUIMeta.SquareWave.String="SquareWave";
 
-    S.GUI.RandomHeight = 0;
-    S.GUIMeta.RandomHeight.Style='checkbox';
-    S.GUIMeta.RandomHeight.String="RandomHeight";
-    
+%     S.GUI.RandomHeight = 0;
+%     S.GUIMeta.RandomHeight.Style='checkbox';
+%     S.GUIMeta.RandomHeight.String="RandomHeight";
     
     S.GUI.TemporalFrequency = 0;
     S.GUIMeta.TemporalFrequency.Style='edit';
@@ -77,12 +84,13 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.SpatialFrequency.Style='edit';
     S.GUIMeta.SpatialFrequency.String = "Spatial Frequency (cycles/deg)";
 
-    S.GUIPanels.Stimulus = {'StimulusDuration',...
+    S.GUIPanels.Stimulus = {'ContrastSet1',...
+                            'ContrastSet2',...
+                            'StimulusDuration',...
                             'StimulusRadius',...
                             'StimulusOffset',...
                             'Angle',...
                             'SquareWave',...
-                            'RandomHeight', ...
                             'TemporalFrequency',...
                             'SpatialFrequency'};
     %% Timers
@@ -92,8 +100,8 @@ function S = getDefaultStruct(ops)
     S.GUI.PunishTimeoutDuration = 0; % Seconds to wait on errors before next trial can start
     %DecisionTime (default 5-7) s
     S.GUI.DecisionTime = 60;
-    S.GUI.ITIMin = 1;
-    S.GUI.ITIMax = 3;
+    S.GUI.ITIMin = 2;
+    S.GUI.ITIMax = 5;
     S.GUIPanels.Timers = {  'InitiationTimeout',...
                             'DecisionTime',...
                             'PunishTimeoutDuration',...
@@ -101,11 +109,6 @@ function S = getDefaultStruct(ops)
                             'ITIMax'};
     %% Training Aids
   
-
-    S.GUI.ContrastSet = 2;
-    S.GUIMeta.ContrastSet.Style = 'popupmenu';
-    S.GUIMeta.ContrastSet.String = ops.stimsetnames;
-
     S.GUI.RewardStimulusTimeout = 0;
     S.GUIMeta.RewardStimulusTimeout.Style = 'edit';
     S.GUIMeta.RewardStimulusTimeout.String = 'Stimulus duration (s) at Reward';
@@ -140,8 +143,7 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.ProbabilityBlue.Style='edit';
     S.GUIMeta.ProbabilityBlue.String = "Probability blue side";
 
-    S.GUIPanels.TrainingAids = {'ContrastSet',...
-                                'RewardStimulusTimeout',...
+    S.GUIPanels.TrainingAids = {'RewardStimulusTimeout',...
                                 'BlackScreen',...
                                 'Terminate',...
                                 'RewardMultiplier1',...
@@ -155,29 +157,35 @@ function S = getDefaultStruct(ops)
     if ops.useSlider
 
 
-        S.GUI.Performance = 0.9; 
+        S.GUI.Performance = 0.8; 
         S.GUIMeta.Performance.Style='edit';
         S.GUIMeta.Performance.String = "Performance";
 
-        S.GUI.MaxSpeed = 85; 
+        S.GUI.MaxSpeed = 100; 
         S.GUIMeta.MaxSpeed.Style='edit';
         S.GUIMeta.MaxSpeed.String = "MaxSpeed(%)";
 
-        S.GUI.DTimeMin = 0.05; 
-        S.GUIMeta.DTimeMin.Style='edit';
-        S.GUIMeta.DTimeMin.String = "DTimeMin";
+        S.GUI.DTimeAvg = 0.3; 
+        S.GUIMeta.DTimeAvg.Style='edit';
+        S.GUIMeta.DTimeAvg.String = "DTimeMean";
 
-        S.GUI.DTimeMax = 0.75; 
-        S.GUIMeta.DTimeMax.Style='edit';
-        S.GUIMeta.DTimeMax.String = "DTimeMax";
+        S.GUI.UncertaintySD = 50; 
+        S.GUIMeta.UncertaintySD.Style='edit';
+        S.GUIMeta.UncertaintySD.String = "UncertaintySD(steps)";
 
 
-        S.GUI.RewardStayTime = 2; 
+        S.GUI.RewardStayTime = 3; 
         S.GUIMeta.RewardStayTime.Style='edit';
         S.GUIMeta.RewardStayTime.String = "RewardStayTime";
+        
+        S.GUI.RoamingType  = 2;
+        S.GUIMeta.RoamingType.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
+        S.GUIMeta.RoamingType.String = {'None',...
+                                         'Platform',...
+                                         'Full'};
 
-
-        S.GUIPanels.Slider = {'Performance', 'MaxSpeed', 'DTimeMin', 'DTimeMax', 'RewardStayTime'};
+        S.GUIPanels.Slider = {'Performance', 'MaxSpeed', ...
+            'DTimeAvg', 'UncertaintySD', 'RewardStayTime', 'RoamingType'};
     end
 
   

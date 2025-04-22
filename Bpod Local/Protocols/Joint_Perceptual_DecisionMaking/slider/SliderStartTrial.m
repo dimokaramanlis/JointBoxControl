@@ -1,27 +1,22 @@
 function SliderStartTrial(~,~)
 %PTBDISPLAY Summary of this function goes here
 
-global myStepperBoard sliderProperties
+global myStepperBoard sliderProperties sliderTimer;
 %----------------------------------------------------------------------
-% we first stop roaming to start deciding
-myStepperBoard.stopMotorRotation(0)
-%----------------------------------------------------------------------
-peruse = sliderProperties.maxspeed/2;
-tic;
-tel = 0;
-x = sliderProperties.xpos;
-while tel < sliderProperties.dectime
-
-    nrand = round(randn(1)*20);
-%     percurr = (0.2+0.8*rand(1))*peruse;
-    percurr = peruse;
-    myStepperBoard.startMotorRotation(0, nrand, percurr);
+timeelapsed    = 0;
+x              = sliderProperties.xpos;
+dectic         = tic;
+istep          = 1;
+while timeelapsed < sliderProperties.dectime
+    myStepperBoard.startMotorRotation(0, sliderProperties.decsteps(istep), sliderProperties.maxspeed);
     waitForMotor(myStepperBoard);
-    x   = x + nrand;
-    tel = toc;
+    x           = x + sliderProperties.decsteps(istep);
+	istep       = istep + 1;
+    timeelapsed = toc(dectic);
 end
+SendBpodSoftCode(11);
+sliderProperties.decsteps = sliderProperties.decsteps(1:istep-1);
 %----------------------------------------------------------------------
-
 % if slider is correct, pause for 2 sec, otherwise pause for 0.5 sec
 if sliderProperties.sliderchoice>0
     sidemove = 'r';
@@ -31,27 +26,24 @@ end
 %----------------------------------------------------------------------
 % first slider goes to spout
 moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false);
+% Nsteps = floor((2*sliderProperties.xpos - x) * 0.99);
+% moveToEndPointSteps(myStepperBoard, sidemove, sliderProperties.maxspeed, Nsteps);
 %----------------------------------------------------------------------
 % then slider waits based on outcome
-if sliderProperties.outcome
-    spouttime = sliderProperties.rewstay;
+if sliderProperties.outcome > 0
     % whenever the slider reaches the spout, state machine gets to know
     SendBpodSoftCode(1); 
 else
-    spouttime = 0.5;
     % whenever the slider reaches the spout, state machine gets to know
     SendBpodSoftCode(2); 
 end
 % stay to drink or stay for a bit on the spout
-pause(spouttime);
+pause(sliderProperties.spouttime);
 %----------------------------------------------------------------------
 % finally, slider goes back to the center
-speedreturn =  (1 + rand(1))* sliderProperties.maxspeed/2;
 myStepperBoard.startMotorRotation(0, ...
-    -sliderProperties.sliderchoice * sliderProperties.xpos, speedreturn);
+    -sliderProperties.sliderchoice * sliderProperties.xpos, sliderProperties.speedreturn);
 %----------------------------------------------------------------------
-
-        
 end
 
 
