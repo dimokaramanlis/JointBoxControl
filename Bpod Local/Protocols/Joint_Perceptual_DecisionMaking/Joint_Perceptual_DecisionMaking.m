@@ -191,7 +191,7 @@ for currentTrial = 1:10000
     if BpodSystem.Status.BeingUsed == 0  % If protocol was stopped, exit the loop
         %----------------------------------------------------------------------
         % we first stop the slider
-        if exist("sliderTimer",'var')
+        if ops.useSlider > 0 && exist("sliderTimer",'var')
             if any(contains(fieldnames(sliderTimer), 'StopFcn'))
                 if ~isempty(sliderTimer.StopFcn)
                     sliderTimer.stop();
