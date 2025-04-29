@@ -155,11 +155,6 @@ for currentTrial = 1:10000
             prevstim = currstim(:, ops.useSlider);
             currstim(:, ops.useSlider) = eps * sign(prevstim);
         end
-        sliderProperties.timeonplat = 0;
-        sliderProperties.currwait   = exprnd(3 * S.GUI.DTimeAvg);
-        if sliderProperties.RoamingType  < 3
-            sliderProperties.currwait = Inf;
-        end
     end
     %----------------------------------------------------------------------------
      % initialize gratings

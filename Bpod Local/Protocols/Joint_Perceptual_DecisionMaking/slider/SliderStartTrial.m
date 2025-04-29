@@ -1,7 +1,7 @@
 function SliderStartTrial(~,~)
 %PTBDISPLAY Summary of this function goes here
 
-global myStepperBoard sliderProperties sliderTimer;
+global myStepperBoard sliderProperties;
 %----------------------------------------------------------------------
 timeelapsed    = 0;
 x              = sliderProperties.xpos;
@@ -17,17 +17,12 @@ end
 SendBpodSoftCode(11);
 sliderProperties.decsteps = sliderProperties.decsteps(1:istep-1);
 %----------------------------------------------------------------------
-% if slider is correct, pause for 2 sec, otherwise pause for 0.5 sec
-if sliderProperties.sliderchoice>0
-    sidemove = 'r';
-else
-    sidemove = 'l';
-end
-%----------------------------------------------------------------------
-% first slider goes to spout
-moveToEndPoint(myStepperBoard, sidemove, sliderProperties.maxspeed, false);
-% Nsteps = floor((2*sliderProperties.xpos - x) * 0.99);
-% moveToEndPointSteps(myStepperBoard, sidemove, sliderProperties.maxspeed, Nsteps);
+% first slider goes to spout with max speed
+moveToEndPoint(myStepperBoard, sliderProperties.sidemove, sliderProperties.maxspeed, false);
+% Nsteps = floor(abs(sliderProperties.endval - x) * 0.99);
+% moveToEndPointSteps(myStepperBoard, sliderProperties.sidemove,...
+%     sliderProperties.maxspeed, Nsteps);
+% xfin = x + sliderProperties.sliderchoice * Nsteps;
 %----------------------------------------------------------------------
 % then slider waits based on outcome
 if sliderProperties.outcome > 0
@@ -43,6 +38,8 @@ pause(sliderProperties.spouttime);
 % finally, slider goes back to the center
 myStepperBoard.startMotorRotation(0, ...
     -sliderProperties.sliderchoice * sliderProperties.xpos, sliderProperties.speedreturn);
+% myStepperBoard.startMotorRotation(0, ...
+%     -(xfin -  sliderProperties.xpos), sliderProperties.speedreturn);
 %----------------------------------------------------------------------
 end
 

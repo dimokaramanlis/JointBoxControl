@@ -1,4 +1,4 @@
-function [valreturn, counter] = moveToEndPointSteps(myStepperBoard, ptside, peruse, Nstepsmax)
+function valreturn = moveToEndPointSteps(myStepperBoard, ptside, peruse, Nstepsmax)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -12,12 +12,9 @@ end
 myStepperBoard.startMotorRotation(0, signuse * Nstepsmax, peruse, false);
 
 isRunning = myStepperBoard.isMotorRunning(0);
-tic;
 while isRunning == true
     isRunning = myStepperBoard.isMotorRunning(0);
 end
-
 valreturn = ~isRunning;
-counter   = toc;
 end
 

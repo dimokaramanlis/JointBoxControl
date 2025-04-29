@@ -1,6 +1,6 @@
 function StimulusFunctionOrientation(ID)
 %--------------------------------------------------------------------------
-global PTB S GratingProperties ops displayTimer sliderTimer myStepperBoard;
+global PTB S ops displayTimer sliderTimer myStepperBoard;
 
 %--------------------------------------------------------------------------
 switch ID
