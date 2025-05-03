@@ -24,16 +24,19 @@ moveToEndPoint(myStepperBoard, sliderProperties.sidemove, sliderProperties.maxsp
 %     sliderProperties.maxspeed, Nsteps);
 % xfin = x + sliderProperties.sliderchoice * Nsteps;
 %----------------------------------------------------------------------
-% then slider waits based on outcome
+% then slider waits based on outcome.
+% to increase robustness, we poke three times
 if sliderProperties.outcome > 0
-    % whenever the slider reaches the spout, state machine gets to know
-    SendBpodSoftCode(1); 
+	softcode = 1;
 else
-    % whenever the slider reaches the spout, state machine gets to know
-    SendBpodSoftCode(2); 
+	softcode = 2;
+end
+
+for ii = 1:3
+    SendBpodSoftCode(softcode); % whenever the slider reaches the spout, state machine gets to know
+	pause(sliderProperties.spouttime/3);
 end
 % stay to drink or stay for a bit on the spout
-pause(sliderProperties.spouttime);
 %----------------------------------------------------------------------
 % finally, slider goes back to the center
 myStepperBoard.startMotorRotation(0, ...
