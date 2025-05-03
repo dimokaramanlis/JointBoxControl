@@ -18,7 +18,7 @@ SendBpodSoftCode(11);
 sliderProperties.decsteps = sliderProperties.decsteps(1:istep-1);
 %----------------------------------------------------------------------
 % first slider goes to spout with max speed
-moveToEndPoint(myStepperBoard, sliderProperties.sidemove, sliderProperties.maxspeed, false);
+moveToEndPoint(myStepperBoard, sliderProperties.sidemove, sliderProperties.maxspeed, false, round(sliderProperties.endstopdistance*1.1));
 % Nsteps = floor(abs(sliderProperties.endval - x) * 0.99);
 % moveToEndPointSteps(myStepperBoard, sliderProperties.sidemove,...
 %     sliderProperties.maxspeed, Nsteps);

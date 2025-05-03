@@ -80,6 +80,7 @@ sliderProperties.roamdecsteps    = roamdecsteps;
 sliderProperties.roamchoices     = roamchoices;
 sliderProperties.roamspeedreturn = roamspeedreturn;
 sliderProperties.roamingdectimes = exprnd(2 * S.GUI.DTimeAvg/log(2), [Nroamingtrials 1]);
+sliderProperties.roamingdectimes = min(sliderProperties.roamingdectimes, maxdt);
 sliderProperties.x               = 0;
 %-----------------------------------------------------------------------------------------------------------------
 sliderProperties.timeonplat = 0;
