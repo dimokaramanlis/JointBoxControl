@@ -8,6 +8,8 @@ final_config = openmv_funs.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
 M2Pin_P1 = Pin(Pin.board.P2, Pin.OUT_PP) # P1
 mousepins = [M1Pin_P0, M2Pin_P1]
+mousepins[0].value(False)
+mousepins[1].value(False)
 
 print("Final Configuration:")
 print(final_config)
@@ -38,13 +40,19 @@ myRegion    = [final_config['region_M1'], final_config['region_M2']]
 colmouse    = [final_config['draw_M1'], final_config['draw_M2']]
 locvec      = [final_config['platform_cent_M1'], final_config['platform_cent_M2']]
 Rtrigger    = final_config['radius_M1_M2'] #8 for single, 10 for pairs
-thetaRot    = [math.radians(final_config['angle_requirement_deg']), 
+thetaRot    = [math.radians(final_config['angle_requirement_deg']),
                math.radians(final_config['angle_requirement_deg'])] # keep at 45
 hisx        = final_config['history_alpha_x']
 hisy        = final_config['history_alpha_y']
 if final_config['use_slider']>0:
     bodyThresh[final_config['use_slider']-1] = final_config['slider_thres_int']
-    thetaRot[final_config['use_slider']-1]   = math.pi
+    thetaRot[final_config['use_slider']-1]   = 2*math.pi
+    if final_config['use_slider'] == 1:
+        myRegion[0][1] = myRegion[0][1] + int(myRegion[0][3]/2)
+        myRegion[0][3] = int(myRegion[0][3]/2)
+    if final_config['use_slider'] == 2:
+            myRegion[1][1] = myRegion[1][1] + int(myRegion[1][3]/2)
+            myRegion[1][3] = int(myRegion[1][3]/2)
 #=================================================================================================
 # tracking variables
 mousecent = [[0, 0], [0, 0]];
@@ -65,7 +73,7 @@ while(True):
     #============================================================================
     # operations
     for imouse in range(0,2):
-        mouseblob = img.find_blobs(bodyThresh[imouse], merge = True,
+        mouseblob = img.find_blobs([bodyThresh[imouse]], merge = True,
         pixels_threshold=75, area_threshold=75, roi =myRegion[imouse])
         if len(mouseblob)>0:
             mouseblob = mouseblob[0]
@@ -109,6 +117,7 @@ while(True):
                 mdist = math.sqrt((mx - locvec[imouse][0])**2 + (my - locvec[imouse][1])**2)
                 distcorr = mdist < Rtrigger[imouse]
                 if thetacorrect and distcorr and abs(vxest):
+                    print(abs(vxest))
                     mouseinzone[imouse] = True
                     mousepins[imouse].value(True)
                     prevcorr[imouse] = True
