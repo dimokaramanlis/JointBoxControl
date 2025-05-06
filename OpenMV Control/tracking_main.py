@@ -38,19 +38,13 @@ myRegion    = [final_config['region_M1'], final_config['region_M2']]
 colmouse    = [final_config['draw_M1'], final_config['draw_M2']]
 locvec      = [final_config['platform_cent_M1'], final_config['platform_cent_M2']]
 Rtrigger    = final_config['radius_M1_M2'] #8 for single, 10 for pairs
-thetaRot    = [math.radians(final_config['angle_requirement_deg']),
+thetaRot    = [math.radians(final_config['angle_requirement_deg']), 
                math.radians(final_config['angle_requirement_deg'])] # keep at 45
 hisx        = final_config['history_alpha_x']
 hisy        = final_config['history_alpha_y']
 if final_config['use_slider']>0:
     bodyThresh[final_config['use_slider']-1] = final_config['slider_thres_int']
-    thetaRot[final_config['use_slider']-1]   = 2*math.pi
-    if final_config['use_slider'] == 1:
-        myRegion[0][1] = myRegion[0][1] + int(myRegion[0][3]/2)
-        myRegion[0][3] = int(myRegion[0][3]/2)
-    if final_config['use_slider'] == 2:
-            myRegion[1][1] = myRegion[1][1] + int(myRegion[1][3]/2)
-            myRegion[1][3] = int(myRegion[1][3]/2)
+    thetaRot[final_config['use_slider']-1]   = math.pi
 #=================================================================================================
 # tracking variables
 mousecent = [[0, 0], [0, 0]];
@@ -71,7 +65,7 @@ while(True):
     #============================================================================
     # operations
     for imouse in range(0,2):
-        mouseblob = img.find_blobs([bodyThresh[imouse]], merge = True,
+        mouseblob = img.find_blobs(bodyThresh[imouse], merge = True,
         pixels_threshold=75, area_threshold=75, roi =myRegion[imouse])
         if len(mouseblob)>0:
             mouseblob = mouseblob[0]
