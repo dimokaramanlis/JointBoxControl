@@ -8,8 +8,6 @@ final_config = openmv_funs.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
 M2Pin_P1 = Pin(Pin.board.P2, Pin.OUT_PP) # P1
 mousepins = [M1Pin_P0, M2Pin_P1]
-mousepins[0].value(False)
-mousepins[1].value(False)
 
 print("Final Configuration:")
 print(final_config)
@@ -73,7 +71,6 @@ while(True):
     #============================================================================
     # operations
     for imouse in range(0,2):
-        mousepins[imouse].value(False)
         mouseblob = img.find_blobs([bodyThresh[imouse]], merge = True,
         pixels_threshold=75, area_threshold=75, roi =myRegion[imouse])
         if len(mouseblob)>0:
@@ -118,7 +115,6 @@ while(True):
                 mdist = math.sqrt((mx - locvec[imouse][0])**2 + (my - locvec[imouse][1])**2)
                 distcorr = mdist < Rtrigger[imouse]
                 if thetacorrect and distcorr and abs(vxest):
-                    print(abs(vxest))
                     mouseinzone[imouse] = True
                     mousepins[imouse].value(True)
                     prevcorr[imouse] = True

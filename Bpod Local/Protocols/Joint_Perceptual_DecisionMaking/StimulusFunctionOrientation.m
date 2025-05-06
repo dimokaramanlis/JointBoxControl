@@ -24,10 +24,10 @@ switch ID
 
             sliderTimer = timer;
             sliderTimer.stop();
-            sliderTimer.ExecutionMode  = 'fixedSpacing';
             sliderTimer.Period         = 0.01; %10ms refresh
             sliderTimer.TimerFcn       = @SliderRoaming;
             sliderTimer.StopFcn        = @SliderRoamingStop;
+            sliderTimer.ExecutionMode  = 'fixedSpacing';
             sliderTimer.TasksToExecute = 10000;
             sliderTimer.start();
         end
