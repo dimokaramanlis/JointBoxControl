@@ -10,6 +10,8 @@ def get_default_config():
         "to_hmirror":   True,
         "to_vflip":   False,
         "mouse_thres_int": (0, 65),
+        "slider_thres_int": (0, 65),
+        "use_slider": 0,
         "region_M1": (0,   3,  188, 64),
         "platform_cent_M1": (84,   54),
         "region_M2": (0 , 67,  188, 64),

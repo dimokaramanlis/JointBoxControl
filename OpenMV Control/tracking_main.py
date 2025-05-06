@@ -32,15 +32,19 @@ sensor.set_brightness(final_config['sensor_brightness'])
 clock = time.clock()
 #=================================================================================================
 # set params from text config
-bodyThresh  = [final_config['mouse_thres_int']]
+bodyThresh  = [final_config['mouse_thres_int'], final_config['mouse_thres_int']]
 targetAngle = [math.pi/2, -math.pi/2]
 myRegion    = [final_config['region_M1'], final_config['region_M2']]
 colmouse    = [final_config['draw_M1'], final_config['draw_M2']]
 locvec      = [final_config['platform_cent_M1'], final_config['platform_cent_M2']]
 Rtrigger    = final_config['radius_M1_M2'] #8 for single, 10 for pairs
-thetaRot    = math.radians(final_config['angle_requirement_deg']) # keep at 45
+thetaRot    = [math.radians(final_config['angle_requirement_deg']), 
+               math.radians(final_config['angle_requirement_deg'])] # keep at 45
 hisx        = final_config['history_alpha_x']
 hisy        = final_config['history_alpha_y']
+if final_config['use_slider']>0:
+    bodyThresh[final_config['use_slider']-1] = final_config['slider_thres_int']
+    thetaRot[final_config['use_slider']-1]   = math.pi
 #=================================================================================================
 # tracking variables
 mousecent = [[0, 0], [0, 0]];
@@ -61,7 +65,7 @@ while(True):
     #============================================================================
     # operations
     for imouse in range(0,2):
-        mouseblob = img.find_blobs(bodyThresh, merge = True,
+        mouseblob = img.find_blobs(bodyThresh[imouse], merge = True,
         pixels_threshold=75, area_threshold=75, roi =myRegion[imouse])
         if len(mouseblob)>0:
             mouseblob = mouseblob[0]
@@ -101,7 +105,7 @@ while(True):
                 #----------------------------------------------------------------------------------
                 thetadiff = targetAngle[imouse]-headdir
                 angle = math.pi - math.fabs(math.fabs(thetadiff) - math.pi);
-                thetacorrect = math.fabs(thetadiff) < thetaRot
+                thetacorrect = math.fabs(thetadiff) < thetaRot[imouse]
                 mdist = math.sqrt((mx - locvec[imouse][0])**2 + (my - locvec[imouse][1])**2)
                 distcorr = mdist < Rtrigger[imouse]
                 if thetacorrect and distcorr and abs(vxest):
