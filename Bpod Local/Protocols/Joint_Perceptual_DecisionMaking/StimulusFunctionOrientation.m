@@ -28,7 +28,7 @@ switch ID
             sliderTimer.TimerFcn       = @SliderRoaming;
             sliderTimer.StopFcn        = @SliderRoamingStop;
             sliderTimer.ExecutionMode  = 'fixedSpacing';
-            sliderTimer.TasksToExecute = 10000;
+            sliderTimer.TasksToExecute = 20000;
             sliderTimer.start();
         end
     %------------------------------------------------------------------

@@ -10,6 +10,7 @@ if exist(dpfilesettings,'file')
 else
     % calibrate and save
     sliderinfo = calibrateEndStopDistance(comport, 20);
+    sliderinfo = calibrateSliderVelocity(sliderinfo, comport, 5);
     sliderinfo.calibrationdate = datetime('now');
     save(dpfilesettings, '-struct', "sliderinfo")
 end

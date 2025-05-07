@@ -1,9 +1,7 @@
-function [steplengths, steptimes] = measureSliderLength(myStepperBoard, ...
-    Nstepsmin, Nstepsmax, Nres, peruse)
+function steptimes = measureSliderLength(myStepperBoard, steplengths, peruse)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
-steplengths = round(linspace(Nstepsmin, Nstepsmax, Nres));
 steptimes   = zeros(size(steplengths));
 
  for ilength = 1:numel(steplengths)

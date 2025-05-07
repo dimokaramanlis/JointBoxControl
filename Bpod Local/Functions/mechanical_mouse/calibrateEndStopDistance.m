@@ -24,10 +24,10 @@ if myStepperBoard.isDeviceReady()
 %     moveToEndPoint(myStepperBoard, 'r', peruse, dt);
     %----------------------------------------------------------------------
     % coarse measurement
-    [coarsesteps, coarsetimes] = measureSliderLength(myStepperBoard, ...
-        minStepsToMap, maxStepsToMap, Ncoarse, peruse);
-    alldiffs = diff(coarsetimes);
-    ifirst = find(abs(diff(coarsetimes))<max(alldiffs)/10, 1);
+    coarsesteps = round(linspace(minStepsToMap, maxStepsToMap, Ncoarse));
+    coarsetimes = measureSliderLength(myStepperBoard, coarsesteps, peruse);
+    alldiffs    = diff(coarsetimes);
+    ifirst      = find(abs(diff(coarsetimes))<max(alldiffs)/10, 1);
     rangecoarse = coarsesteps(ifirst + [-1 1]);
     printstr = '==============================================';
     fprintf('%s\nrangecoarse length between %d and %d rotations\n%s\n', ...
@@ -36,8 +36,8 @@ if myStepperBoard.isDeviceReady()
     % fine measurement
     Nfine = round(Ncoarse * 1.5);
     fprintf('Refining with %d fine measurements...', Nfine)
-    [finesteps, finetimes] = measureSliderLength(myStepperBoard,...
-        rangecoarse(1)-200, rangecoarse(2)+100, round(Ncoarse * 1.5), peruse);
+    finesteps = round(linspace(rangecoarse(1)-200, rangecoarse(2)+100, Nfine));
+    finetimes = measureSliderLength(myStepperBoard, finesteps, peruse);
     fprintf('Refinement done!\n')
     %----------------------------------------------------------------------
     alltimes = [coarsetimes'; finetimes'];
