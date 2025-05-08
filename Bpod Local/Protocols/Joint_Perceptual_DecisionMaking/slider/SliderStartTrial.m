@@ -11,7 +11,7 @@ for istep = 1:numel(sliderProperties.decsteps)
     waitForMotor(myStepperBoard);
 end
 
-SendBpodSoftCode(11);
+% SendBpodSoftCode(11);
 %----------------------------------------------------------------------
 % first slider goes to spout with max speed
 moveToEndPoint(myStepperBoard, sliderProperties.sidemove, sliderProperties.maxspeed, ...

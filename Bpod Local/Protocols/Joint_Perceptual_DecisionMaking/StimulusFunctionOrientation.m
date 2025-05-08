@@ -1,6 +1,6 @@
 function StimulusFunctionOrientation(ID)
 %--------------------------------------------------------------------------
-global PTB S ops displayTimer sliderTimer myStepperBoard;
+global PTB S ops displayTimer sliderTimer myStepperBoard sliderProperties;
 
 %--------------------------------------------------------------------------
 switch ID
@@ -17,19 +17,21 @@ switch ID
            Screen('Flip', PTB.windows(iscreen)); 
         end
 
-        % make sure slider is back home
         if ops.useSlider > 0
+            %   make sure slider is back home
             waitForMotor(myStepperBoard);
-            SendBpodSoftCode(10);
+
             sliderTimer = timer;
             sliderTimer.stop();
-            sliderTimer.Period         = 0.01; %10ms refresh
+            sliderTimer.Period         = 0.02; %10ms refresh
             sliderTimer.TimerFcn       = @SliderRoaming;
-            sliderTimer.StopFcn        = @SliderStartTrial;
+            sliderTimer.StopFcn        = @SliderRoamingStop;
             sliderTimer.ExecutionMode  = 'fixedSpacing';
-            sliderTimer.TasksToExecute = 20000;
+            Ntasks = sum(cellfun(@numel,sliderProperties.roamdecsteps));
+            sliderTimer.TasksToExecute = Ntasks;
             sliderTimer.start();
-        end
+         end
+
     %------------------------------------------------------------------
     case 10 % Flip screen and progress phase
         %------------------------------------------------------------------
@@ -66,6 +68,7 @@ if ID == 10
    if S.GUI.StimulusDuration >0
        displayTimer.TasksToExecute = round(S.GUI.StimulusDuration/displayTimer.Period);
        displayTimer.start();
+       fprintf('Presenting stimulus \n...')
    else
        displayTimer.TasksToExecute = 1;
    end 
@@ -73,6 +76,7 @@ if ID == 10
    % start slider if needed
    if ops.useSlider > 0
         sliderTimer.stop();
+        SliderStartTrial();
    end
    %-----------------------------------------------------------------------
 end

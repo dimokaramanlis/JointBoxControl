@@ -8,16 +8,17 @@ waitForMotor(myStepperBoard);
 roamtrialidx = 1 + mod(sliderProperties.iroamtrial - 1, numel(sliderProperties.roamdecsteps));
 stepscurr    = sliderProperties.roamdecsteps{roamtrialidx};
 peruse       = sliderProperties.roamspeeds{roamtrialidx};
-Ndec         = sliderProperties.roamnplatform(roamtrialidx);
+
+fprintf('Starting roaming movement, step %d\n...', sliderProperties.iroamstep)
 myStepperBoard.startMotorRotation(0, ...
     stepscurr(sliderProperties.iroamstep), peruse(sliderProperties.iroamstep));
 % fprintf('roam trial: %d, step: %d\n',roamtrialidx, stepscurr(sliderProperties.iroamstep))
 sliderProperties.iroamstep = sliderProperties.iroamstep + 1;
-if sliderProperties.iroamstep > Ndec
-   SendBpodSoftCode(11);
-else
-    SendBpodSoftCode(10);
-end
+% if sliderProperties.iroamstep > Ndec
+%    SendBpodSoftCode(11);
+% else
+%     SendBpodSoftCode(10);
+% end
 % move to next trial
 if sliderProperties.iroamstep > numel(sliderProperties.roamdecsteps{roamtrialidx})
     sliderProperties.iroamtrial = sliderProperties.iroamtrial + 1;

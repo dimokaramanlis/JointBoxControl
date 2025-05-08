@@ -73,6 +73,7 @@ while(True):
     #============================================================================
     # operations
     for imouse in range(0,2):
+        mousepins[imouse].value(False)
         mouseblob = img.find_blobs([bodyThresh[imouse]], merge = True,
         pixels_threshold=75, area_threshold=75, roi =myRegion[imouse])
         if len(mouseblob)>0:

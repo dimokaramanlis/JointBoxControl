@@ -84,7 +84,7 @@ else
     Nroamingtrials = 40;
 end
 
-roamdectimes = exprnd(2 * S.GUI.DTimeAvg/log(2), [Nroamingtrials 1]); % transform from median to mean
+roamdectimes = exprnd(3 * S.GUI.DTimeAvg/log(2), [Nroamingtrials 1]); % transform from median to mean
 roamdectimes = max(roamdectimes, mindt);  % minimum is 20 ms
 roamdectimes = min(roamdectimes, maxdt); 
 
@@ -122,12 +122,14 @@ for itrial = 1:Nroamingtrials
     else
         currchoice  = 2 * (rand(1)> 0.5) - 1;
         currdist    =  rand(1);
-        if currdist> 0.5
-            stepstake = ceil(sliderProperties.endstopdistance/2);
+        if currdist> 0.3
+            goshort   = false;
+            stepstake = floor(sliderProperties.endstopdistance/2);
         else
-            stepstake = ceil(sliderProperties.endstopdistance/4);
+            goshort   = true;
+            stepstake = floor(sliderProperties.endstopdistance/3);
         end
-        stepsspout  = currchoice * stepstake + sliderProperties.RoamingSD;
+        stepsspout = round(currchoice * stepstake - sum(decsteps));
 
 
 %         Ntospout    = ceil(sliderProperties.endstopdistance/sliderProperties.RoamingSD/2);
@@ -150,7 +152,11 @@ for itrial = 1:Nroamingtrials
     if roamingtype == 1
         returnsteps = [];
     else
-        returnsteps = -currchoice * stepstake;
+        if goshort
+            returnsteps = -currchoice * ceil(sliderProperties.endstopdistance/3);
+        else
+            returnsteps = -currchoice * ceil(sliderProperties.endstopdistance/2);
+        end
     end
     %----------------------------------------------------------------------
     allsteps             = cat(1, decsteps, stepsspout, waitsteps, returnsteps);
@@ -158,6 +164,7 @@ for itrial = 1:Nroamingtrials
 
     speedreturn          =  (1 + rand(1))* sliderProperties.maxspeed/2;
     speedsteps           = sliderProperties.maxspeed*ones(size(allsteps));
+    speedsteps(1:numel(decsteps)) = round(sliderProperties.maxspeed * 0.8);
     speedsteps(end-numel(returnsteps)+1:end)      = speedreturn;
     roamspeeds{itrial}   = speedsteps;
     %----------------------------------------------------------------------
