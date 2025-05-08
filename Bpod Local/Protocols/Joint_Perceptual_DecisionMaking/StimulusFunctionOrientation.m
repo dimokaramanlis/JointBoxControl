@@ -20,13 +20,12 @@ switch ID
         % make sure slider is back home
         if ops.useSlider > 0
             waitForMotor(myStepperBoard);
-%             SendBpodSoftCode(10);
-
+            SendBpodSoftCode(10);
             sliderTimer = timer;
             sliderTimer.stop();
             sliderTimer.Period         = 0.01; %10ms refresh
             sliderTimer.TimerFcn       = @SliderRoaming;
-            sliderTimer.StopFcn        = @SliderRoamingStop;
+            sliderTimer.StopFcn        = @SliderStartTrial;
             sliderTimer.ExecutionMode  = 'fixedSpacing';
             sliderTimer.TasksToExecute = 20000;
             sliderTimer.start();
@@ -73,10 +72,7 @@ if ID == 10
    %-----------------------------------------------------------------------
    % start slider if needed
    if ops.useSlider > 0
-%        SliderRoamingStop();
-% 
         sliderTimer.stop();
-        SliderStartTrial();
    end
    %-----------------------------------------------------------------------
 end

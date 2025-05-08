@@ -121,13 +121,17 @@ for itrial = 1:Nroamingtrials
         stepsspout = [];
     else
         currchoice  = 2 * (rand(1)> 0.5) - 1;
+        currdist    =  rand(1);
+        if currdist> 0.5
+            stepstake = ceil(sliderProperties.endstopdistance/2);
+        else
+            stepstake = ceil(sliderProperties.endstopdistance/4);
+        end
+        stepsspout  = currchoice * stepstake + sliderProperties.RoamingSD;
+
+
 %         Ntospout    = ceil(sliderProperties.endstopdistance/sliderProperties.RoamingSD/2);
 %         stepsspout  = currchoice * sliderProperties.RoamingSD * ones(Ntospout, 1);
-
-         stepsspout  = currchoice * ...
-             (ceil(sliderProperties.endstopdistance/2) + sliderProperties.RoamingSD);
-
-
 
 %     if sum(stepsspout) > Ntotal
 %         decsteps(end) = Ntotal - sliderProperties.RoamingSD *(Nstepstake-1);
@@ -146,7 +150,7 @@ for itrial = 1:Nroamingtrials
     if roamingtype == 1
         returnsteps = [];
     else
-        returnsteps = -currchoice * ceil(sliderProperties.endstopdistance/2);
+        returnsteps = -currchoice * stepstake;
     end
     %----------------------------------------------------------------------
     allsteps             = cat(1, decsteps, stepsspout, waitsteps, returnsteps);
@@ -155,7 +159,7 @@ for itrial = 1:Nroamingtrials
     speedreturn          =  (1 + rand(1))* sliderProperties.maxspeed/2;
     speedsteps           = sliderProperties.maxspeed*ones(size(allsteps));
     speedsteps(end-numel(returnsteps)+1:end)      = speedreturn;
-    roamspeeds{itrial}   =speedsteps;
+    roamspeeds{itrial}   = speedsteps;
     %----------------------------------------------------------------------
 end
 sliderProperties.roamdecsteps  = roamdecsteps;

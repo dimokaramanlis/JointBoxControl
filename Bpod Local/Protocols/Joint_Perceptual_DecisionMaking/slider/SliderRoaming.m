@@ -4,6 +4,7 @@ function SliderRoaming(~,~)
  %----------------------------------------------------------------------
 global myStepperBoard sliderProperties;
 %----------------------------------------------------------------------
+waitForMotor(myStepperBoard);
 roamtrialidx = 1 + mod(sliderProperties.iroamtrial - 1, numel(sliderProperties.roamdecsteps));
 stepscurr    = sliderProperties.roamdecsteps{roamtrialidx};
 peruse       = sliderProperties.roamspeeds{roamtrialidx};
@@ -11,7 +12,6 @@ Ndec         = sliderProperties.roamnplatform(roamtrialidx);
 myStepperBoard.startMotorRotation(0, ...
     stepscurr(sliderProperties.iroamstep), peruse(sliderProperties.iroamstep));
 % fprintf('roam trial: %d, step: %d\n',roamtrialidx, stepscurr(sliderProperties.iroamstep))
-waitForMotor(myStepperBoard);
 sliderProperties.iroamstep = sliderProperties.iroamstep + 1;
 if sliderProperties.iroamstep > Ndec
    SendBpodSoftCode(11);

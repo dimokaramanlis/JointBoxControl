@@ -3,15 +3,19 @@ function SliderStartTrial(~,~)
 
 global myStepperBoard sliderProperties;
 %----------------------------------------------------------------------
+myStepperBoard.stopMotorRotation(0);
+
 for istep = 1:numel(sliderProperties.decsteps)
     myStepperBoard.startMotorRotation(0, ...
         sliderProperties.decsteps(istep), sliderProperties.maxspeed);
     waitForMotor(myStepperBoard);
 end
+
 SendBpodSoftCode(11);
 %----------------------------------------------------------------------
 % first slider goes to spout with max speed
-moveToEndPoint(myStepperBoard, sliderProperties.sidemove, sliderProperties.maxspeed, false, round(sliderProperties.endstopdistance*1.1));
+moveToEndPoint(myStepperBoard, sliderProperties.sidemove, sliderProperties.maxspeed, ...
+    false, ceil(sliderProperties.endstopdistance*0.6));
 % Nsteps = floor(abs(sliderProperties.endval - x) * 0.99);
 % moveToEndPointSteps(myStepperBoard, sliderProperties.sidemove,...
 %     sliderProperties.maxspeed, Nsteps);
