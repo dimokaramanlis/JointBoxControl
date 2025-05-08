@@ -81,7 +81,7 @@ sliderProperties.perioduse    = roamstepduration;
 if roamingtype == 1
     Nroamingtrials = 1;
 else
-    Nroamingtrials = 40;
+    Nroamingtrials = 15;
 end
 
 roamdectimes = exprnd(3 * S.GUI.DTimeAvg/log(2), [Nroamingtrials 1]); % transform from median to mean

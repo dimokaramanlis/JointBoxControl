@@ -27,7 +27,7 @@ switch ID
             sliderTimer.TimerFcn       = @SliderRoaming;
             sliderTimer.StopFcn        = @SliderRoamingStop;
             sliderTimer.ExecutionMode  = 'fixedSpacing';
-            Ntasks = sum(cellfun(@numel,sliderProperties.roamdecsteps));
+            Ntasks = sum(cellfun(@numel,sliderProperties.roamdecsteps)) + 1;
             sliderTimer.TasksToExecute = Ntasks;
             sliderTimer.start();
          end

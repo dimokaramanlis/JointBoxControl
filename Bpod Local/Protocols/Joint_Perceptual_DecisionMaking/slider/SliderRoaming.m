@@ -9,7 +9,9 @@ roamtrialidx = 1 + mod(sliderProperties.iroamtrial - 1, numel(sliderProperties.r
 stepscurr    = sliderProperties.roamdecsteps{roamtrialidx};
 peruse       = sliderProperties.roamspeeds{roamtrialidx};
 
-fprintf('Starting roaming movement, step %d\n...', sliderProperties.iroamstep)
+
+fprintf('Starting roaming movement, trial %d, step %d\n...', ...
+    roamtrialidx, sliderProperties.iroamstep)
 myStepperBoard.startMotorRotation(0, ...
     stepscurr(sliderProperties.iroamstep), peruse(sliderProperties.iroamstep));
 % fprintf('roam trial: %d, step: %d\n',roamtrialidx, stepscurr(sliderProperties.iroamstep))
