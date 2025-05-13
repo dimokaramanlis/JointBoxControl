@@ -4,28 +4,25 @@ function SliderRoaming(~,~)
  %----------------------------------------------------------------------
 global myStepperBoard sliderProperties;
 %----------------------------------------------------------------------
-waitForMotor(myStepperBoard);
-roamtrialidx = 1 + mod(sliderProperties.iroamtrial - 1, numel(sliderProperties.roamdecsteps));
-stepscurr    = sliderProperties.roamdecsteps{roamtrialidx};
-peruse       = sliderProperties.roamspeeds{roamtrialidx};
+if sliderProperties.iroamtrial<numel(sliderProperties.roamdecsteps)+1 ...
+        && ~myStepperBoard.isMotorRunning(0)
 
+    stepscurr    = sliderProperties.roamdecsteps{sliderProperties.iroamtrial};
+    peruse       = sliderProperties.roamspeeds{sliderProperties.iroamtrial};
 
-fprintf('Starting roaming movement, trial %d, step %d\n...', ...
-    roamtrialidx, sliderProperties.iroamstep)
-myStepperBoard.startMotorRotation(0, ...
-    stepscurr(sliderProperties.iroamstep), peruse(sliderProperties.iroamstep));
-% fprintf('roam trial: %d, step: %d\n',roamtrialidx, stepscurr(sliderProperties.iroamstep))
-sliderProperties.iroamstep = sliderProperties.iroamstep + 1;
-% if sliderProperties.iroamstep > Ndec
-%    SendBpodSoftCode(11);
-% else
-%     SendBpodSoftCode(10);
-% end
-% move to next trial
-if sliderProperties.iroamstep > numel(sliderProperties.roamdecsteps{roamtrialidx})
-    sliderProperties.iroamtrial = sliderProperties.iroamtrial + 1;
-    sliderProperties.iroamstep  = 1;
+    myStepperBoard.startMotorRotation(0, ...
+        stepscurr(sliderProperties.iroamstep), peruse(sliderProperties.iroamstep));
+    
+    % move to next trial
+    sliderProperties.iroamstep = sliderProperties.iroamstep + 1;
+    if sliderProperties.iroamstep > numel(sliderProperties.roamdecsteps{sliderProperties.iroamtrial})
+        sliderProperties.iroamtrial = sliderProperties.iroamtrial + 1;
+        sliderProperties.iroamstep  = 1;
+    end
 end
+%----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
 
 end
 

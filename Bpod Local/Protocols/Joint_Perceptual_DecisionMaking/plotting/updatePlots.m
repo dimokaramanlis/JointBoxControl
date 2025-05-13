@@ -167,7 +167,6 @@ end
 %--------------------------------------------------------------------------
 plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts)
 plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis)
-
 %--------------------------------------------------------------------------
 if contains( subjectName, '_')
     iscall = mode(iscongr);

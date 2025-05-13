@@ -19,16 +19,13 @@ switch ID
 
         if ops.useSlider > 0
             %   make sure slider is back home
-            waitForMotor(myStepperBoard);
-
             sliderTimer = timer;
             sliderTimer.stop();
             sliderTimer.Period         = 0.02; %10ms refresh
             sliderTimer.TimerFcn       = @SliderRoaming;
             sliderTimer.StopFcn        = @SliderRoamingStop;
-            sliderTimer.ExecutionMode  = 'fixedSpacing';
-            Ntasks = sum(cellfun(@numel,sliderProperties.roamdecsteps)) + 1;
-            sliderTimer.TasksToExecute = Ntasks;
+            sliderTimer.ExecutionMode  = 'fixedRate';
+            sliderTimer.TasksToExecute = 1e6;
             sliderTimer.start();
          end
 

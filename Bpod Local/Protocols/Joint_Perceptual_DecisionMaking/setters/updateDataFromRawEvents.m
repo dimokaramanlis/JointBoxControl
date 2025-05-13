@@ -1,11 +1,8 @@
-function BpodSystem = updateDataFromRawEvents(BpodSystem,...
-                                              S,RawEvents,...
-                                              currentTrial,...
-                                              currStim,...
-                                              currReward,...
-                                              currRewardAmount,...
-                                              mousesetting,...
-                                              sliderstruct)
+function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTrial, ...
+                                              currStim,currReward, currRewardAmount,...
+                                              mousesetting, sliderstruct)
+    portids = [4 1; 3 2];
+    %-----------------------------------------------------------
     % handle general saving
     
     BpodSystem.Data = AddTrialEvents(BpodSystem.Data,RawEvents); % Computes trial events from raw data
@@ -15,6 +12,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem,...
     
      
     thisTrialRawEventStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
+    %-----------------------------------------------------------
     %% Data extracted from raw events (Dependent on the state machine running (mousesetting))
     if numel(mousesetting) == 1
         initiationTimeToSave = [nan nan];
@@ -163,17 +161,29 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem,...
         if isfield(pin, 'GlobalTimer1_Start')
             stimstart = pin.GlobalTimer1_Start;
             for ii = 1:2
-                currdfield = sprintf('BNC%dLow', ii);
-                if isfield(pin, currdfield)
-                    iuse = find(pin.(currdfield)-stimstart>0,1);
+                currdfield = sprintf('BNC%dHigh', ii);
+                portblue   = sprintf('Port%dIn', portids(ii, 1));
+                portred    = sprintf('Port%dIn', portids(ii, 2));
+                portevents = [];
+                if isfield(pin, portred)
+                    portevents = [portevents pin.(portred)];
+                end
+                if isfield(pin, portblue)
+                    portevents = [portevents pin.(portblue)];
+                end
+                portevents = sort(portevents, 'ascend');
+                idpoke     = find(portevents - stimstart> 0, 1);
+                if isfield(pin, currdfield) && ~isempty(idpoke)
+                    iuse = pin.(currdfield)-stimstart>0;
                     tout = pin.(currdfield)(iuse);
-                    if numel(tout)== 1
-                        decisionTimeToSave(ii) = tout - stimstart;
+                    ilast = find(portevents(idpoke) - tout > 0, 1,'last');
+                    if numel(ilast)== 1
+                        decisionTimeToSave(ii) = tout(ilast) - stimstart;
                     end
                 end
             end
         end
-        
+
         if isfield(sliderstruct, 'dectime')
             decisionTimeToSave(sliderstruct.side) = sliderstruct.dectime;
             BpodSystem.Data.DecisionSteps(currentTrial, :) = {sliderstruct.decsteps};
