@@ -58,15 +58,27 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         % 5. Decision Times
         pin = BpodSystem.Data.RawEvents.Trial{currentTrial}.Events;
         if isfield(pin, 'GlobalTimer1_Start')
-            stimstart = pin.GlobalTimer1_Start;
-            currdfield = sprintf('BNC%dLow',mousesetting);
-            if isfield(pin, currdfield)
-                iuse = find(pin.(currdfield)-stimstart>0,1);
-                tout = pin.(currdfield)(iuse);
-                if numel(tout)== 1
-                    decisionTimeToSave(mousesetting) = tout - stimstart;
-                end
+            stimstart  = pin.GlobalTimer1_Start;
+            currdfield = sprintf('BNC%dHigh',mousesetting);
+            portblue   = sprintf('Port%dIn', portids(mousesetting, 1));
+            portred    = sprintf('Port%dIn', portids(mousesetting, 2));
+            portevents = [];
+            if isfield(pin, portred)
+                portevents = [portevents pin.(portred)];
             end
+            if isfield(pin, portblue)
+                portevents = [portevents pin.(portblue)];
+            end
+            portevents = sort(portevents, 'ascend');
+            idpoke     = find(portevents - stimstart> 0, 1);
+            if isfield(pin, currdfield) && ~isempty(idpoke)
+                iuse = pin.(currdfield)-stimstart>0;
+                tout = pin.(currdfield)(iuse);
+                ilast = find(portevents(idpoke) - tout > 0, 1,'last');
+                if numel(ilast)== 1
+                    decisionTimeToSave(mousesetting) = tout(ilast) - stimstart;
+                end
+           end
         end
 
         BpodSystem.Data.TrialTypes(currentTrial,:)     = trialTypesToSave; % Adds the trial type of the current trial to data
