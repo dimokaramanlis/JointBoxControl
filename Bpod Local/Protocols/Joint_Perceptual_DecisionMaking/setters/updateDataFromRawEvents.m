@@ -59,7 +59,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         pin = BpodSystem.Data.RawEvents.Trial{currentTrial}.Events;
         if isfield(pin, 'GlobalTimer1_Start')
             stimstart  = pin.GlobalTimer1_Start;
-            currdfield = sprintf('BNC%dHigh',mousesetting);
+            currdfield = sprintf('BNC%dLow',mousesetting);
             portblue   = sprintf('Port%dIn', portids(mousesetting, 1));
             portred    = sprintf('Port%dIn', portids(mousesetting, 2));
             portevents = [];
@@ -173,7 +173,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         if isfield(pin, 'GlobalTimer1_Start')
             stimstart = pin.GlobalTimer1_Start;
             for ii = 1:2
-                currdfield = sprintf('BNC%dHigh', ii);
+                currdfield = sprintf('BNC%dLow', ii);
                 portblue   = sprintf('Port%dIn', portids(ii, 1));
                 portred    = sprintf('Port%dIn', portids(ii, 2));
                 portevents = [];
