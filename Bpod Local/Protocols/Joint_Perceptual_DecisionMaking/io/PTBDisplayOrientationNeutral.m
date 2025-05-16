@@ -9,7 +9,7 @@ end
 
 for iscreen = 1:2
    Screen('Flip', PTB.windows(iscreen)); 
-end
+end     
 
 end
 

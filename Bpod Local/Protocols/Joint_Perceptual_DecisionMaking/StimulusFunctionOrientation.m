@@ -63,7 +63,7 @@ if ID == 10
    displayTimer.ExecutionMode = 'fixedRate';
    displayTimer.StopFcn       = {@PTBDisplayOrientationNeutral};
    if S.GUI.StimulusDuration >0
-       displayTimer.TasksToExecute = round(S.GUI.StimulusDuration/displayTimer.Period);
+       displayTimer.TasksToExecute = ceil(S.GUI.StimulusDuration/displayTimer.Period);
        displayTimer.start();
        fprintf('Presenting stimulus \n...')
    else

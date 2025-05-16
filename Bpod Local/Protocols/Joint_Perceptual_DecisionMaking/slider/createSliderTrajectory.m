@@ -2,7 +2,7 @@ function sliderProperties = createSliderTrajectory(S, sliderProperties, currrewa
 %CREATEANDDRAWTEXTURES Takes the current trial types and creates the
 %appropriate textures on the screen.
 
-
+returnspeedminper = 0.6;
 sliderProperties.UncertaintySD = S.GUI.UncertaintySD;
 sliderProperties.UncertaintySD = round(max(sliderProperties.UncertaintySD, 0));
 maxspeed                       = max(S.GUI.MaxSpeed, 0);
@@ -19,21 +19,24 @@ sliderProperties.outcome = slideroutcome;
 mindt                     = sliderProperties.timepredictparams(1);
 maxdt                     = min(S.GUI.DecisionTime/2, 3); % maximum is 3 s or half of DT
 dtcurr                    = exprnd(S.GUI.DTimeAvg/log(2)); % transform from median to mean
-dtcurr                    = max(dtcurr, mindt);  % minimum is 20 ms
 dtcurr                    = min(dtcurr, maxdt); 
 sliderProperties.dectime  = dtcurr;
 %-----------------------------------------------------------------------------------------------------------------
 % steps for trajectory
-stepduration              = glmval(sliderProperties.timepredictparams, ...
-    sliderProperties.UncertaintySD/100, 'identity');
-Ntotal        = floor(sliderProperties.UncertaintySD * dtcurr/stepduration);
-Nstepstake    = ceil(dtcurr/stepduration);
-decsteps      = sliderProperties.UncertaintySD * ones(Nstepstake, 1);
-if sum(decsteps) > Ntotal
-    decsteps(end) = Ntotal - sliderProperties.UncertaintySD *(Nstepstake-1);
+if dtcurr < mindt*0.9
+    decsteps = [];
+else
+    stepduration              = glmval(sliderProperties.timepredictparams, ...
+        sliderProperties.UncertaintySD/100, 'identity');
+    Ntotal        = floor(sliderProperties.UncertaintySD * dtcurr/stepduration);
+    Nstepstake    = ceil(dtcurr/stepduration);
+    decsteps      = sliderProperties.UncertaintySD * ones(Nstepstake, 1);
+    if sum(decsteps) > Ntotal
+        decsteps(end) = Ntotal - sliderProperties.UncertaintySD *(Nstepstake-1);
+    end
+    decsigns = 2 * (rand(Nstepstake, 1)> 0.5) - 1;
+    decsteps = decsteps .* decsigns;
 end
-decsigns = 2 * (rand(Nstepstake, 1)> 0.5) - 1;
-decsteps = decsteps .* decsigns;
 sliderProperties.decsteps = decsteps;
 %-----------------------------------------------------------------------------------------------------------------
 % reward and return related
@@ -43,7 +46,7 @@ if sliderProperties.outcome > 0
 else
 	sliderProperties.spouttime = 0.3; % leave
 end
-speedreturn                  =  (1 + rand(1))* sliderProperties.maxspeed/2;
+speedreturn                  =  (returnspeedminper + rand(1)*(1 - returnspeedminper))* maxspeed;
 sliderProperties.speedreturn = speedreturn;
 %-----------------------------------------------------------------------------------------------------------------
 sliderchoice = currreward(sliderside);
@@ -85,7 +88,6 @@ else
 end
 
 roamdectimes = exprnd(3 * S.GUI.DTimeAvg/log(2), [Nroamingtrials 1]); % transform from median to mean
-roamdectimes = max(roamdectimes, mindt);  % minimum is 20 ms
 roamdectimes = min(roamdectimes, maxdt); 
 
 roamdecsteps  = cell(Nroamingtrials, 1);
@@ -162,10 +164,10 @@ for itrial = 1:Nroamingtrials
     allsteps             = cat(1, decsteps, stepsspout, waitsteps, returnsteps);
     roamdecsteps{itrial} = allsteps;
 
-    speedreturn          =  (1 + rand(1))* sliderProperties.maxspeed/2;
+    speedreturn          = (returnspeedminper + rand(1)*(1 - returnspeedminper))* maxspeed;
     speedsteps           = sliderProperties.maxspeed*ones(size(allsteps));
     speedsteps(1:numel(decsteps)) = round(sliderProperties.maxspeed * 0.8);
-    speedsteps(end-numel(returnsteps)+1:end)      = speedreturn;
+    speedsteps(end-numel(returnsteps)+1:end)  = speedreturn;
     roamspeeds{itrial}   = speedsteps;
     %----------------------------------------------------------------------
 end
