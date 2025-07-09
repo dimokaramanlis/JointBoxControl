@@ -65,7 +65,10 @@ prevcorr  = [False, False]
 #=================================================================================================
 while(True):
     clock.tick()
-    img = sensor.snapshot().median(2)
+    if final_config['median_blur']:
+        img = sensor.snapshot().median(3)
+    else:
+        img = sensor.snapshot()
     zeroedge    = [(0,0),(0,0),(0,0),(0,0)]
     mcorners    = [zeroedge, zeroedge];
     mouseinzone = [False, False]
@@ -117,8 +120,13 @@ while(True):
                 thetacorrect = math.fabs(thetadiff) < thetaRot[imouse]
                 mdist = math.sqrt((mx - locvec[imouse][0])**2 + (my - locvec[imouse][1])**2)
                 distcorr = mdist < Rtrigger[imouse]
+
+                # this is used for debug mode
+                if final_config['debug']:
+                    thetacorrect = True
+
                 if thetacorrect and distcorr and abs(vxest):
-                    print(abs(vxest))
+                    #print(abs(vxest))
                     mouseinzone[imouse] = True
                     mousepins[imouse].value(True)
                     prevcorr[imouse] = True

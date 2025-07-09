@@ -3,25 +3,27 @@
 
 def get_default_config():
     default_config = {
-        "sensor_window": (105,50,135,188),
+        "angle_requirement_deg": 40,
+        "debug":   False,
+        "draw_M1": (0, 0, 0),
+        "draw_M2": (100,100,100),
+        "history_alpha_x": 0.85,
+        "history_alpha_y": 0.99,
+        "median_blur": False,
+        "mouse_thres_int": (0, 65),
+        "platform_cent_M1": (84,   54),
+        "platform_cent_M2": (0,  79),
+        "region_M1": (0,   3,  188, 64),
+        "region_M2": (0 , 67,  188, 64),
+        "radius_M1_M2": (8 ,8),
         "sensor_brightness": 0,
-        "transpose_first": True,
+        "sensor_window": (105,50,135,188),
+        "slider_thres_int": (0, 65),
         "to_transpose": True,
         "to_hmirror":   True,
         "to_vflip":   False,
-        "mouse_thres_int": (0, 65),
-        "slider_thres_int": (0, 65),
-        "use_slider": 0,
-        "region_M1": (0,   3,  188, 64),
-        "platform_cent_M1": (84,   54),
-        "region_M2": (0 , 67,  188, 64),
-        "platform_cent_M2": (0,  79),
-        "radius_M1_M2": (8 ,8),
-        "angle_requirement_deg": 45,
-        "history_alpha_x": 0.85,
-        "history_alpha_y": 0.99,
-        "draw_M1": (0, 0, 0),
-        "draw_M2": (100,100,100)
+        "transpose_first": True,
+        "use_slider": 0
     }
     return default_config
 
