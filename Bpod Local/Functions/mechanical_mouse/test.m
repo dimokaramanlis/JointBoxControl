@@ -10,8 +10,9 @@
 %myStepperBoard = msb2302steppers(serialHandler, 0x58);
 %myStepperBoard2 = msb2302steppers(serialHandler, 0x59);
 
+
 serialportlist("available")
-myStepperBoard = msb2302steppers("COM7", 115200, 0x58);
+myStepperBoard = msb2302steppers_v2("COM7", 115200, 0x58);
 
 if myStepperBoard.isDeviceReady()
     disp('[MAIN] ----> Board ready ');
@@ -26,11 +27,11 @@ if myStepperBoard.isDeviceReady()
 %         pause(0.5);
 %     end    
     i = 0;
-    topFreq = 120;
+    topFreq = 160;
     while i < 5
         topFreq = topFreq + 20;
         fprintf('Set New top frequency to: %d Hz', topFreq);
-        myStepperBoard.setMotorTopFrequency(0, topFreq);
+        myStepperBoard.setMotorTopFrequency(0, topFreq, 1);
         myStepperBoard.startMotorRotation(0, 1250, 100);
         isRunning = myStepperBoard.isMotorRunning(0);
         disp('Waiting for motor stop...');

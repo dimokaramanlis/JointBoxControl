@@ -1,4 +1,4 @@
-classdef msb2302steppers
+classdef msb2302steppers_v2
     properties
         serialObj;                   % Objet série pour la connexion
         i2cAdr = 0x59;
@@ -22,7 +22,7 @@ classdef msb2302steppers
     methods
 
         % Constructeur avec handle de port série ou nom de port
-        function obj = msb2302steppers(portNameOrHandle, baudRate, boardAddr)
+        function obj = msb2302steppers_v2(portNameOrHandle, baudRate, boardAddr)
 
              obj.i2cAdr = boardAddr;
             if nargin == 0
