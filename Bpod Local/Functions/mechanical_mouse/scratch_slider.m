@@ -12,10 +12,10 @@
 
 serialportlist("available")
 
-myStepperBoard = msb2302steppers("COM7", 115200, 0x58);
+myStepperBoard = msb2302steppers_v2("COM7", 115200, 0x58);
 
-allpercent = [20 40 60 80 100];
-Nsteps = 100;
+allpercent = [40 60 80 100];
+Nsteps = 1000;
 if myStepperBoard.isDeviceReady()
     disp('[MAIN] ----> Board ready ');
     %motorNb, AccelRampEnable, EndStopsEnable, CWbreakEnable, CCWbreakEnable
@@ -29,9 +29,9 @@ if myStepperBoard.isDeviceReady()
 %         pause(0.5);
 %     end    
     i = 0;
-    topFreq = 200;
-    myStepperBoard.setMotorTopFrequency(0, topFreq);
+    topFreq = 260;
     for ii = 1:numel(allpercent)
+        myStepperBoard.setMotorTopFrequency(0, topFreq, 0);
         myStepperBoard.startMotorRotation(0, Nsteps, allpercent(ii));
         isRunning = myStepperBoard.isMotorRunning(0);
         disp('Waiting for motor stop...');
@@ -39,7 +39,7 @@ if myStepperBoard.isDeviceReady()
             isRunning = myStepperBoard.isMotorRunning(0);
             pause(0.1);
         end
-        pause(0.2);
+        pause(0.1);
 
         myStepperBoard.startMotorRotation(0, -(Nsteps+50), allpercent(ii));
         isRunning = myStepperBoard.isMotorRunning(0);
@@ -48,10 +48,10 @@ if myStepperBoard.isDeviceReady()
             isRunning = myStepperBoard.isMotorRunning(0);
             pause(0.1);
         end
-        pause(0.2);        
-
+        pause(0.1);        
+    
+        
     end
-
    
 
 else

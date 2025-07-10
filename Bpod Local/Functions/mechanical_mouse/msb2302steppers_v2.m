@@ -30,7 +30,7 @@ classdef msb2302steppers_v2
             elseif isprop(portNameOrHandle, 'BaudRate') && isprop(portNameOrHandle, 'Port')
              % Détecte un objet de type serialport
                 obj.serialObj = portNameOrHandle;
-                disp(sprintf('%s using GATEWAY serial communication handle', obj.BOARD_TYPE_LIBRARY));
+                fprintf('%s using GATEWAY serial communication handle', obj.BOARD_TYPE_LIBRARY);
             elseif ischar(portNameOrHandle) || isstring(portNameOrHandle)
                 % Vérifie si le port est déjà ouvert
                 if any(strcmp(serialportlist("all"), portNameOrHandle))
@@ -43,7 +43,7 @@ classdef msb2302steppers_v2
                 % Initialise le port série
                 obj.serialObj = serialport(portNameOrHandle, baudRate);
                 configureTerminator(obj.serialObj, "CR/LF"); % Configurer le terminateur
-                disp(sprintf('%s using serial port %s with %d baud rate.', obj.BOARD_TYPE_LIBRARY,  portNameOrHandle, baudRate));                
+                fprintf('%s using serial port %s with %d baud rate.', obj.BOARD_TYPE_LIBRARY,  portNameOrHandle, baudRate);                
                 disp('Cleaning buffer, please wait ... ');
                 pause(2); % Pause pour stabiliser la connexion
                 
@@ -66,7 +66,7 @@ classdef msb2302steppers_v2
             
             % Envoi d'une requête de lecture pour obtenir la valeur des
             % registre du module
-            disp(sprintf('Trying to detect board on address 0x%.2X...', obj.i2cAdr));
+            fprintf('Trying to detect board on address 0x%.2X...', obj.i2cAdr);
             reqRegistersSeq = [0x01, obj.i2cAdr];
             %reqRegistersSeq = [0x01, obj.BOARD_ADR];
             obj.writeSerialData(reqRegistersSeq); % Utilisation de la méthode définie ici
@@ -82,7 +82,7 @@ classdef msb2302steppers_v2
                 return;
             else
                 if ~strcmp(brdType, obj.BOARD_TYPE_LIBRARY)
-                    disp(sprintf('[ERROR] Incompatible detected board [%s] with this library [%s]', brdType, obj.BOARD_TYPE_LIBRARY));
+                    fprintf('[ERROR] Incompatible detected board [%s] with this library [%s]', brdType, obj.BOARD_TYPE_LIBRARY);
                     isReady = false;
                     return;
                 else
@@ -171,7 +171,7 @@ classdef msb2302steppers_v2
 
             % Envoi d'une requête d'écriture pour obtenir
             setRegistersSeq = [0x00, obj.i2cAdr, xstep_config_reg, devConfigValue];
-            disp(sprintf('Set xstep_config_reg to: %d ', devConfigValue));
+            fprintf('Set xstep_config_reg to: %d ', devConfigValue);
             obj.writeSerialData(setRegistersSeq); % Utilisation de la méthode définie ici
 
             % Lecture de la réponse
@@ -247,10 +247,16 @@ classdef msb2302steppers_v2
             end            
         end
 
-        function error = startMotorRotation(obj, motorNb, stepsDirection, speed)
-            msg = sprintf('Starting motor rotation for %d steps with speed %d', stepsDirection, speed);
-            disp(msg);
-
+        function error = startMotorRotation(obj, motorNb, stepsDirection, speed, varargin)
+            if nargin<4
+                verbose = true;
+            else
+                verbose = false;
+            end
+            if verbose
+                fprintf('Starting motor rotation for %d steps with speed %d\n', stepsDirection, speed);
+            end
+        
             regAdr=0x0C;    % Select motor A command register 0x0A(0x0B for motor B)
             regSteps=0x0E;  % Select motor A step registers 0x0E & 0x0F (0x10 & 0x11 for motor B)
             regSpeed=0x1A; % Select motor A speed register (0x1B for motor B)
@@ -444,7 +450,7 @@ classdef msb2302steppers_v2
                     %disp(['#Data received: ', sprintf('%02X ', newData)]);
                 else
                     % Si aucune donnée n'est disponible, faire une petite pause
-                    pause(0.1);
+                    pause(0.01);
                 end
             end
         
@@ -454,7 +460,7 @@ classdef msb2302steppers_v2
             end
         
             % Retourne les données accumulées
-            data;
+%             data;
         end
 
         function value = getDeviceRegisterValue(obj, regAdr)

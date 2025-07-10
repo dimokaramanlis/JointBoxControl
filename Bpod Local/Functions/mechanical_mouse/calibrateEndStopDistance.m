@@ -12,7 +12,7 @@ myStepperBoard = msb2302steppers(comport, 115200, 0x58);
 maxStepsToMap  = 3000;
 minStepsToMap  = 10;
 peruse = 95;
-topFreq = 230;
+topFreq = 260;
 
 if myStepperBoard.isDeviceReady()
 

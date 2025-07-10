@@ -25,13 +25,14 @@ if myStepperBoard.isDeviceReady()
 %     while true
 %         [P0, P1] = myStepperBoard.isEndStopsActive(0);
 %         pause(0.5);
+
 %     end    
     i = 0;
     topFreq = 160;
     while i < 5
         topFreq = topFreq + 20;
         fprintf('Set New top frequency to: %d Hz', topFreq);
-        myStepperBoard.setMotorTopFrequency(0, topFreq, 1);
+        myStepperBoard.setMotorTopFrequency(0, topFreq, 0);
         myStepperBoard.startMotorRotation(0, 1250, 100);
         isRunning = myStepperBoard.isMotorRunning(0);
         disp('Waiting for motor stop...');
