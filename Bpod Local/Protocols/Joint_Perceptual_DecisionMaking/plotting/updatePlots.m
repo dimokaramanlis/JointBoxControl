@@ -78,7 +78,7 @@ for imouse = 1:2
     if nnz(iuse) > 8 % at least some observations for fitting
         if nnz(~isnan(sum( Data.MouseChoice(iuse,:),2))) > 16
             % fit social model
-            xx1 = mousecontrast(iuse);
+            xx1 = contrastfun(mousecontrast(iuse));
             otherchoice  =  Data.MouseChoice(:, iother);
             otherreact   =  Data.ReactionTimes(:,iother);
             otherreactuse = decideFromSpout(otherreact(iuse), otherchoice(iuse));
@@ -90,7 +90,7 @@ for imouse = 1:2
             xx2 = otherchoice(iuse);
             xx2(mousereactuse < (otherreactuse + dtime)) = 0;
             
-            xx3 = (1-abs(xx1)).*xx2;
+            xx3 = xx2.* socialfun(xx1);
 
             xx = [xx1 xx2 xx3];
             xx(isnan(xx)) = 0;

@@ -4,11 +4,11 @@ xvals = linspace(-1, 1, 200);
 % choicem2(dectimeM1-dectimeM2<-0.2)=0;
 % xdata    = [allcon1(ic1)' choicem2];
 if numel(psychparams) > 2
-    xx  = [xvals' zeros(size(xvals))' zeros(size(xvals))'];
-    xxr = [xvals'  ones(size(xvals))'   1-abs(xvals)'];
-    xxl = [xvals' -ones(size(xvals))' -(1-abs(xvals)')];
+    xx  = [contrastfun(xvals)' zeros(size(xvals))' zeros(size(xvals))'];
+    xxr = [contrastfun(xvals)'  ones(size(xvals))' socialfun(xvals)'];
+    xxl = [contrastfun(xvals)' -ones(size(xvals))' -socialfun(xvals)'];
 else
-    xx = xvals';
+    xx =  contrastfun(xvals)';
 end
 
 alpha = 0.05;
