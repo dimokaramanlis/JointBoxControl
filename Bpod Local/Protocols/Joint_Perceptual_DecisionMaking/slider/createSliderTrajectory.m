@@ -18,9 +18,10 @@ sliderProperties.outcome = slideroutcome;
 % decision-time related
 mindt                     = sliderProperties.timepredictparams(1);
 maxdt                     = min(S.GUI.DecisionTime/2, 3); % maximum is 3 s or half of DT
-dtcurr                    = exprnd(S.GUI.DTimeAvg/log(2)); % transform from median to mean
+dtcurr                    = S.GUI.DTimeAvg; % transform from median to mean
 dtcurr                    = min(dtcurr, maxdt); 
-sliderProperties.dectime  = dtcurr;
+dt                  = generateDecisionTimeFromOutcome(slideroutcome, dtcurr*1e3, maxdt);
+sliderProperties.dectime  = dt*1e-3;
 %-----------------------------------------------------------------------------------------------------------------
 % steps for trajectory
 if dtcurr < mindt*0.9
