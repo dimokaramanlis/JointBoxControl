@@ -13,6 +13,8 @@
 
 serialportlist("available")
 myStepperBoard = msb2302steppers_v2("COM7", 115200, 0x58);
+rotationmode = 0;
+velocitiescheck = [180 200 220 260 260 260];
 
 if myStepperBoard.isDeviceReady()
     disp('[MAIN] ----> Board ready ');
@@ -27,12 +29,12 @@ if myStepperBoard.isDeviceReady()
 %         pause(0.5);
 
 %     end    
-    i = 0;
+    i = 1;
     topFreq = 160;
-    while i < 5
-        topFreq = topFreq + 20;
+    while i <= numel(velocitiescheck)
+        topFreq = velocitiescheck(i);
         fprintf('Set New top frequency to: %d Hz', topFreq);
-        myStepperBoard.setMotorTopFrequency(0, topFreq, 0);
+        myStepperBoard.setMotorTopFrequency(0, topFreq, rotationmode);
         myStepperBoard.startMotorRotation(0, 1250, 100);
         isRunning = myStepperBoard.isMotorRunning(0);
         disp('Waiting for motor stop...');
