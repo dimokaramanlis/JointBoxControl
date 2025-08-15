@@ -6,7 +6,7 @@ from pyb import Pin
 config_filename = "config.txt"
 final_config = openmv_funs.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
-M2Pin_P1 = Pin(Pin.board.P2, Pin.OUT_PP) # P1
+M2Pin_P1 = Pin(Pin.board.P2, Pin.OUT_PP) # PVVCDDGGGGG1
 mousepins = [M1Pin_P0, M2Pin_P1]
 mousepins[0].value(False)
 mousepins[1].value(False)
