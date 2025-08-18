@@ -22,7 +22,7 @@ for ii = 1:Ntrials
     mcurr       =  Data.TrialOutcome(ii, :);
     chcurr      =  Data.MouseChoice(ii, :);
 
-    dcurr         = any(isnan(chcurr));
+    dcurr         = all(isnan(chcurr));
     molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
     disengavg(ii, :) = molddiseng;
     

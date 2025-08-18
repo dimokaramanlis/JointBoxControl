@@ -8,6 +8,7 @@ else
 end
 
 %%
+
 myStepperBoard = msb2302steppers(comport, 115200, 0x58);
 maxStepsToMap  = 3000;
 minStepsToMap  = 10;
