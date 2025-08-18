@@ -101,8 +101,8 @@ for ii = 1:2
     title({'Psychometric with 95%% CI ', 'lapse blue = 0, red = 0'})
     %----------------------------------------------------------------------
     myPlots.WeightPlot(ii) = p(2,2,ii).select();
-    pbaspect([1.5 1 1]); xlim([0 1]); ylim([-1 1]*1.2)
-    yticks([-0.5 0 0.5]); xticks([0 0.5 1])
+    pbaspect([1.5 1 1]); xlim([-0.05 1]); ylim([-1 1])
+    yticks([-1 0 1]); xticks([0 0.5 1])
     yticklabels([]); xlabel('Contrast')
     if ii == 1
         ylabel('Weight')
@@ -114,14 +114,14 @@ end
 
 %==========================================================================
 myPlots.OrientationDecisionTimePlot = p(2,3,1).select();
-axis square; xlim([-1 1]*1.02); ylim([0 0.2])
+axis square; xlim([-1.05 1]); ylim([0 0.2])
 ylabel('Time (s)')
 yticks([0 0.5 1]); xticks([-1 -0.5 0 0.5 1])
 xlabel('Grating contrast')
 title('Time to leave platform')
 
 myPlots.OrientationReactionTimePlot = p(2,3,2).select();
-axis square; xlim([-1 1]*1.02); ylim([0.2 1.8])
+axis square; xlim([-1.05 1]); ylim([0.2 1.8])
 yticks([0.2 0.6 1 1.4 1.8]); xticks([-1 -0.5 0 0.5 1])
 xlabel('Grating contrast')
 title('Time to reach spout')

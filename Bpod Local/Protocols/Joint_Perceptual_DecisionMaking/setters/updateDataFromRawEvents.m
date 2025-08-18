@@ -11,7 +11,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
     BpodSystem.Data.Box(currentTrial)           = getBoxFromComputerName();
     
      
-    thisTrialRawEventStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
+    currTrialStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
     %-----------------------------------------------------------
     %% Data extracted from raw events (Dependent on the state machine running (mousesetting))
     if numel(mousesetting) == 1
@@ -27,29 +27,29 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         contrastToSave(mousesetting)= currStim;
         
         % 1. Initiation time
-        if all(isnan(thisTrialRawEventStates.SpontaneousStimulus))
-            timeinit = thisTrialRawEventStates.MouseInZone(1);
+        if all(isnan(currTrialStates.SpontaneousStimulus))
+            timeinit = currTrialStates.MouseInZone(1);
             isSpontaneous = false;
         else
-            timeinit = thisTrialRawEventStates.SpontaneousStimulus(1);
+            timeinit = currTrialStates.SpontaneousStimulus(1);
             isSpontaneous = true;
         end
 
         initiationTimeToSave(mousesetting) = timeinit;
         
         % 2. Trial Outcome
-        if ~isnan(thisTrialRawEventStates.Reward(1))
+        if ~isnan(currTrialStates.Reward(1))
             outcomeToSave(mousesetting) = 1;
-        elseif ~isnan(thisTrialRawEventStates.Punish(1))
+        elseif ~isnan(currTrialStates.Punish(1))
             outcomeToSave(mousesetting) = 0;
-        elseif isnan(thisTrialRawEventStates.MouseInZone(1))%No Start
+        elseif isnan(currTrialStates.MouseInZone(1))%No Start
             outcomeToSave(mousesetting) = -11;
         else %No Choice
             outcomeToSave(mousesetting) = -10;
         end
         
         % 3. Reaction Times
-        reactionTimeToSave(mousesetting) = thisTrialRawEventStates.MouseMakingDecision(2)-timeinit;
+        reactionTimeToSave(mousesetting) = currTrialStates.MouseMakingDecision(2)-timeinit;
         
         % 4. Mouse Choice (Redundant but nice to have).
         if outcomeToSave(mousesetting)>=0
@@ -93,8 +93,8 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         
     elseif numel(mousesetting)==2
         % 1. Initiation time
-        if ~isnan(thisTrialRawEventStates.BothMiceInZone(1))
-            initiationTimeToSave = repmat(thisTrialRawEventStates.BothMiceInZone(1),[1 2]);
+        if ~isnan(currTrialStates.BothMiceInZone(1))
+            initiationTimeToSave = repmat(currTrialStates.BothMiceInZone(1),[1 2]);
         else
             initiationTimeToSave = [nan nan];
         end
@@ -103,17 +103,28 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         outcomeToSave = [nan nan];
         reactToSave   = [nan nan];
         choiceToSave  = [nan nan];
+        currfields    = fields(currTrialStates);
         for imouse = 1:2
-            rewardfirst  = sprintf('RewardM%dFirst', imouse);
-            rewardsecond = sprintf('RewardM%dSecond', imouse);
-            mouserew     = min([thisTrialRawEventStates.(rewardfirst), ...
-                thisTrialRawEventStates.(rewardsecond)], [], 'omitnan');
+            rewardnames = {'BothRewarded', ...
+                sprintf('RewardM%dFirst', imouse),...
+                sprintf('RewardM%dSecond', imouse),...
+                sprintf('M%dRewarded', imouse)};
+            mouserew = nan;
+            validfields = currfields(contains(currfields, rewardnames));
+            for ifield = 1:numel(validfields)
+                mouserew = min(mouserew, min(currTrialStates.(validfields{ifield})));
+            end
             
-            punishfirst  = sprintf('PunishM%dFirst', imouse);
-            punishsecond = sprintf('PunishM%dSecond', imouse);
-            mousepun    = min([thisTrialRawEventStates.(punishfirst), ...
-                thisTrialRawEventStates.(punishsecond)], [], 'omitnan');
-
+            punishnames = {'BothPunished', ...
+                sprintf('PunishM%dFirst', imouse),...
+                sprintf('PunishM%dSecond', imouse),...
+                sprintf('M%dPunished', imouse)};
+            mousepun = nan;
+            validfields = currfields(contains(currfields, punishnames));
+            for ifield = 1:numel(validfields)
+                mousepun = min(mousepun, min(currTrialStates.(validfields{ifield})));
+            end
+            
             if ~isnan(mouserew)
                 outcomeToSave(imouse) = 1;
                 reactToSave(imouse)   = mouserew;
@@ -124,9 +135,10 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
                 reactToSave(imouse)   = mousepun;
                 choiceToSave(imouse)  = -currReward(imouse);
             end
-            
         end
        
+ 
+        
         % 5. Decision Times
         pin = BpodSystem.Data.RawEvents.Trial{currentTrial}.Events;
         decisionTimeToSave = [nan nan];
@@ -174,11 +186,11 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         rewcurr  = [0 0];
         for imouse = 1:2
             fieldfirst = sprintf('RewardM%dFirst', imouse);
-            if ~isnan(thisTrialRawEventStates.(fieldfirst))
+            if ~isnan(currTrialStates.(fieldfirst))
                 rewcurr(imouse) = currRewardAmount(imouse);
             end
             fieldsecond = sprintf('RewardM%dSecond', imouse);
-            if ~isnan(thisTrialRawEventStates.(fieldsecond))
+            if ~isnan(currTrialStates.(fieldsecond))
                 rewcurr(imouse) = currRewardAmount(imouse) * psecond;
             end
         end
