@@ -138,7 +138,7 @@ plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes);
 trialoutcomes =  Data.TrialOutcome;
 trialoutcomes(trialoutcomes<0) = NaN;
 perftot    = mean(trialoutcomes, 1, 'omitnan');
-rewtot     = sum( Data.RewardAmount, 1, 'omitnan');
+rewtot     = sum((Data.RewardAmount.*(trialoutcomes>0)), 1, 'omitnan');
 Nmax       = min(100, Ntrials);
 perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
@@ -149,8 +149,8 @@ plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
 
-rplus  = sum( Data.RewardAmount.*( Data.MouseChoice>0), 1, 'omitnan');
-rminus = sum( Data.RewardAmount.*( Data.MouseChoice<0), 1, 'omitnan');
+rplus  = sum( Data.RewardAmount.*( Data.MouseChoice>0).*(trialoutcomes>0), 1, 'omitnan');
+rminus = sum( Data.RewardAmount.*( Data.MouseChoice<0).*(trialoutcomes>0), 1, 'omitnan');
 plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus]);
 %--------------------------------------------------------------------------
 % plot fits
