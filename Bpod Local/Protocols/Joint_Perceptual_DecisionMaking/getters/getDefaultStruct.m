@@ -25,6 +25,12 @@ function S = getDefaultStruct(ops)
     S.GUI.RewardAmount = 8; % in ul
     S.GUIMeta.RewardAmount.Style = 'edit';
     S.GUIMeta.RewardAmount.String = 'Reward (ul)';
+
+%%%%%%%%%%% Start Beatriz Edited
+    S.GUI.RewardPercentageSecond = 1; % in %
+    S.GUIMeta.RewardPercentageSecond.Style = 'edit';
+    S.GUIMeta.RewardPercentageSecond.String = 'Reward (%)';
+%%%%%%%%%%% End Beatriz Edited
     
     S.GUI.ProtocolName  = 2;
     S.GUIMeta.ProtocolName.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
@@ -44,6 +50,7 @@ function S = getDefaultStruct(ops)
                         'ScreenSetting',...
                         'LEDIntensity',...
                         'RewardAmount',...
+                        'RewardPercentageSecond',...   %BA
                         'ProtocolName'};
     
     %% Stimulus Properties

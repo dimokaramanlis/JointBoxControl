@@ -22,7 +22,7 @@ for ii = 1:Ntrials
     mcurr       =  Data.TrialOutcome(ii, :);
     chcurr      =  Data.MouseChoice(ii, :);
 
-    dcurr = all(isnan(chcurr));
+    dcurr         = any(isnan(chcurr));
     molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
     disengavg(ii, :) = molddiseng;
     
@@ -80,6 +80,7 @@ for imouse = 1:2
             % fit social model
             xx1 = contrastfun(mousecontrast(iuse));
             otherchoice  =  Data.MouseChoice(:, iother);
+            otherchoice(isnan(otherchoice)) = 0;
             otherreact   =  Data.ReactionTimes(:,iother);
             otherreactuse = decideFromSpout(otherreact(iuse), otherchoice(iuse));
             mousereactuse = mousedecide(iuse);
@@ -137,7 +138,7 @@ plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes);
 trialoutcomes =  Data.TrialOutcome;
 trialoutcomes(trialoutcomes<0) = NaN;
 perftot    = mean(trialoutcomes, 1, 'omitnan');
-rewtot     = sum( Data.RewardAmount.*trialoutcomes, 1, 'omitnan');
+rewtot     = sum( Data.RewardAmount, 1, 'omitnan');
 Nmax       = min(100, Ntrials);
 perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
@@ -148,10 +149,8 @@ plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
 
-rplus  = sum( Data.RewardAmount.*trialoutcomes.*...
-    ( Data.MouseChoice>0), 1, 'omitnan');
-rminus = sum( Data.RewardAmount.*trialoutcomes.*...
-    ( Data.MouseChoice<0), 1, 'omitnan');
+rplus  = sum( Data.RewardAmount.*( Data.MouseChoice>0), 1, 'omitnan');
+rminus = sum( Data.RewardAmount.*( Data.MouseChoice<0), 1, 'omitnan');
 plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus]);
 %--------------------------------------------------------------------------
 % plot fits
