@@ -11,7 +11,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
     BpodSystem.Data.Box(currentTrial)           = getBoxFromComputerName();
     
      
-    thisTrialRawEventStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
+    currTrialStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
     %-----------------------------------------------------------
     %% Data extracted from raw events (Dependent on the state machine running (mousesetting))
     if numel(mousesetting) == 1
@@ -27,29 +27,29 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         contrastToSave(mousesetting)= currStim;
         
         % 1. Initiation time
-        if all(isnan(thisTrialRawEventStates.SpontaneousStimulus))
-            timeinit = thisTrialRawEventStates.MouseInZone(1);
+        if all(isnan(currTrialStates.SpontaneousStimulus))
+            timeinit = currTrialStates.MouseInZone(1);
             isSpontaneous = false;
         else
-            timeinit = thisTrialRawEventStates.SpontaneousStimulus(1);
+            timeinit = currTrialStates.SpontaneousStimulus(1);
             isSpontaneous = true;
         end
 
         initiationTimeToSave(mousesetting) = timeinit;
         
         % 2. Trial Outcome
-        if ~isnan(thisTrialRawEventStates.Reward(1))
+        if ~isnan(currTrialStates.Reward(1))
             outcomeToSave(mousesetting) = 1;
-        elseif ~isnan(thisTrialRawEventStates.Punish(1))
+        elseif ~isnan(currTrialStates.Punish(1))
             outcomeToSave(mousesetting) = 0;
-        elseif isnan(thisTrialRawEventStates.MouseInZone(1))%No Start
+        elseif isnan(currTrialStates.MouseInZone(1))%No Start
             outcomeToSave(mousesetting) = -11;
         else %No Choice
             outcomeToSave(mousesetting) = -10;
         end
         
         % 3. Reaction Times
-        reactionTimeToSave(mousesetting) = thisTrialRawEventStates.MouseMakingDecision(2)-timeinit;
+        reactionTimeToSave(mousesetting) = currTrialStates.MouseMakingDecision(2)-timeinit;
         
         % 4. Mouse Choice (Redundant but nice to have).
         if outcomeToSave(mousesetting)>=0
@@ -93,79 +93,51 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         
     elseif numel(mousesetting)==2
         % 1. Initiation time
-        if ~isnan(thisTrialRawEventStates.BothMiceInZone(1))
-            initiationTimeToSave = repmat(thisTrialRawEventStates.BothMiceInZone(1),[1 2]);
+        if ~isnan(currTrialStates.BothMiceInZone(1))
+            initiationTimeToSave = repmat(currTrialStates.BothMiceInZone(1),[1 2]);
         else
             initiationTimeToSave = [nan nan];
         end
         
-        % 2. Trial Outcome
-        if ~isnan(thisTrialRawEventStates.BothPunished(1))
-            outcomeToSave = [0 0];
-        elseif ~isnan(thisTrialRawEventStates.BothRewarded(1))
-            outcomeToSave = [1 1];
-        elseif ~isnan(thisTrialRawEventStates.M1RewardedM2Punished(1))
-            outcomeToSave = [1 0];
-        elseif ~isnan(thisTrialRawEventStates.M2RewardedM1Punished(1))
-            outcomeToSave = [0 1];
-        elseif ~isnan(thisTrialRawEventStates.BothMiceInZone(1))
-             outcomeToSave = [-11 -11];
-        else %%Special case of single mouse performing goes here
-            outcomeToSave = [-10 -10];
+        % 2. Trial Outcome, Reaction Time and Choice
+        outcomeToSave = [nan nan];
+        reactToSave   = [nan nan];
+        choiceToSave  = [nan nan];
+        currfields    = fields(currTrialStates);
+        for imouse = 1:2
+            rewardnames = {'BothRewarded', ...
+                sprintf('RewardM%dFirst', imouse),...
+                sprintf('RewardM%dSecond', imouse),...
+                sprintf('M%dRewarded', imouse)};
+            mouserew = nan;
+            validfields = currfields(contains(currfields, rewardnames));
+            for ifield = 1:numel(validfields)
+                mouserew = min(mouserew, min(currTrialStates.(validfields{ifield})));
+            end
+            
+            punishnames = {'BothPunished', ...
+                sprintf('PunishM%dFirst', imouse),...
+                sprintf('PunishM%dSecond', imouse),...
+                sprintf('M%dPunished', imouse)};
+            mousepun = nan;
+            validfields = currfields(contains(currfields, punishnames));
+            for ifield = 1:numel(validfields)
+                mousepun = min(mousepun, min(currTrialStates.(validfields{ifield})));
+            end
+            
+            if ~isnan(mouserew)
+                outcomeToSave(imouse) = 1;
+                reactToSave(imouse)   = mouserew;
+                choiceToSave(imouse)  = currReward(imouse);
+            end
+            if ~isnan(mousepun)
+                outcomeToSave(imouse) = 0;
+                reactToSave(imouse)   = mousepun;
+                choiceToSave(imouse)  = -currReward(imouse);
+            end
         end
-        
-        % 3. Reaction Times
-        stimTime = thisTrialRawEventStates.BothMiceInZone(1);
-        if all(outcomeToSave == [1 1]) %Both Rewarded
-            if ~isnan(thisTrialRawEventStates.RewardM1First(1))%%M1 Performed First
-                reactionTimeM1 = thisTrialRawEventStates.RewardM1First(1)  - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.RewardM2Second(1) - stimTime;
-            else %M2 PerformedFirst
-                reactionTimeM1 = thisTrialRawEventStates.RewardM1Second(1) - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.RewardM2First(1)  - stimTime;
-            end
-        elseif all(outcomeToSave == [0 0]) %Both Punished
-            if ~isnan(thisTrialRawEventStates.PunishM1First(1))%%M1 Performed First
-                reactionTimeM1 = thisTrialRawEventStates.PunishM1First(1) - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.PunishedM1PunishM2Second(1) - stimTime;
-            else %M2 PerformedFirst
-                reactionTimeM1 = thisTrialRawEventStates.PunishedM2PunishM1Second(1) - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.PunishM2First(1) - stimTime;
-            end
-        elseif all(outcomeToSave == [1 0]) %M1 Rewarded M2 Punished
-            if ~isnan(thisTrialRawEventStates.RewardM1First(1))%%M1 Performed First
-                reactionTimeM1 = thisTrialRawEventStates.RewardM1First(1) - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.PunishM2Second(1) - stimTime;
-            else %M2 PerformedFirst
-                reactionTimeM1 = thisTrialRawEventStates.PunishedM2RewardM1Second(1) - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.PunishM2First(1) - stimTime;
-            end
-        elseif all(outcomeToSave == [0 1]) %M2 Rewarded M1 Punished
-            if ~isnan(thisTrialRawEventStates.PunishM1First(1))%%M1 Performed First
-                reactionTimeM1 = thisTrialRawEventStates.PunishM1First(1)            - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.PunishedM1RewardM2Second(1) - stimTime;
-            else %M2 PerformedFirst
-                reactionTimeM1 = thisTrialRawEventStates.PunishM1Second(1) - stimTime;
-                reactionTimeM2 = thisTrialRawEventStates.RewardM2First(1)  - stimTime;
-            end
-        else %Special case of single mouse performing (not implemented)
-            reactionTimeM1 = nan;
-            reactionTimeM2 = nan;
-        end
-        
-        
-        % 4. Mouse Choice (Redundant but nice to have).
-        if all(outcomeToSave == [1 1]) %Both Rewarded
-            choiceToSave = currReward;
-        elseif all(outcomeToSave == [0 0]) %Both Punished
-            choiceToSave = currReward*-1;
-        elseif all(outcomeToSave == [1 0]) %M1 Rewarded M2 Punished
-            choiceToSave = currReward.*[1 -1];
-        elseif all(outcomeToSave == [0 1]) %M2 Rewarded M1 Punished
-            choiceToSave = currReward.*[-1 1];
-        else %Special case of single mouse performing (not implemented)
-            choiceToSave = [nan nan];
-        end
+       
+ 
         
         % 5. Decision Times
         pin = BpodSystem.Data.RawEvents.Trial{currentTrial}.Events;
@@ -204,10 +176,37 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         BpodSystem.Data.TrialTypes(   currentTrial,  :) = currReward;
         BpodSystem.Data.InitiationTime(currentTrial, :) = initiationTimeToSave;
         BpodSystem.Data.TrialOutcome(  currentTrial, :) = outcomeToSave;
-        BpodSystem.Data.ReactionTimes( currentTrial, :) = [reactionTimeM1 reactionTimeM2];
+        BpodSystem.Data.ReactionTimes( currentTrial, :) = reactToSave;
         BpodSystem.Data.DecisionTimes( currentTrial, :) = decisionTimeToSave;
         BpodSystem.Data.MouseChoice(   currentTrial, :) = choiceToSave;
-        BpodSystem.Data.RewardAmount(  currentTrial, :) = currRewardAmount.*(outcomeToSave>=0);
+
+        psecond            = min(S.GUI.RewardPercentageSecond, 1);
+        psecond            = max(psecond, 0);
+        %%%%% Start Beatriz Edited
+        rewcurr  = [0 0];
+        for imouse = 1:2
+            fieldfirst = sprintf('RewardM%dFirst', imouse);
+            if ~isnan(currTrialStates.(fieldfirst))
+                rewcurr(imouse) = currRewardAmount(imouse);
+            end
+            fieldsecond = sprintf('RewardM%dSecond', imouse);
+            if ~isnan(currTrialStates.(fieldsecond))
+                rewcurr(imouse) = currRewardAmount(imouse) * psecond;
+            end
+        end
+    
+        BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
+        
+        
+%         if all(outcomeToSave == [1 1]) % For both mice rewarded
+%             if ~isnan(thisTrialRawEventStates.RewardM1First(1)) % For M1 rewarded first
+%                 currRewardAmount(2) = currRewardAmount(2) * psecond;
+%             else % For M2 rewarded first
+%                 currRewardAmount(1) = currRewardAmount(1) * psecond;
+%             end
+%         end
+%         %%%%% End Beatriz Edited
+%         BpodSystem.Data.RewardAmount(  currentTrial, :) = currRewardAmount.*(outcomeToSave>=0);
         BpodSystem.Data.Contrast(      currentTrial, :) = currStim;
     else
         error('Incorrect mouse setting.');

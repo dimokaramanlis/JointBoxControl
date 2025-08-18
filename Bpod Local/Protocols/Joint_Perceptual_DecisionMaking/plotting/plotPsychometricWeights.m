@@ -18,8 +18,8 @@ else
 end
 
 
-% ymax = max(ftoplot, [], 'all');
-ymax = max(abs(ftoplot(1, :)));
+ymax = max(abs(ftoplot), [], 'all');
+% ymax = max(abs(ftoplot));
 
 % ylim(PsychWeightPlot, [-0.2 1])
 % yticks(PsychWeightPlot, [-0.2 0 1] )
