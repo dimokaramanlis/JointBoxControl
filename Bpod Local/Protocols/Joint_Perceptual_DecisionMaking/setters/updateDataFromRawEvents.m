@@ -104,7 +104,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         reactToSave   = [nan nan];
         choiceToSave  = [nan nan];
         currfields    = fields(currTrialStates);
-        stimTime = thisTrialRawEventStates.BothMiceInZone(1);
+        stimTime      = currTrialStates.BothMiceInZone(1);
         for imouse = 1:2
             rewardnames = {'BothRewarded', ...
                 sprintf('RewardM%dFirst', imouse),...
