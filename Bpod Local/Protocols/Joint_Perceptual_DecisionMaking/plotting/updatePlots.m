@@ -4,7 +4,7 @@ function myPlots = updatePlots(Data, subjectName, myPlots, graphics)
 %--------------------------------------------------------------------------
 % here one can do calculations relevant for each plot and pass them as
 % arguments
-beta       = 0.8; %0.9
+beta     = 0.8; %0.9
 Ntrials = max(Data.TrialNumber);
 %--------------------------------------------------------------------------
 % get running averages for performance, choice and disengagement
@@ -22,7 +22,7 @@ for ii = 1:Ntrials
     mcurr       =  Data.TrialOutcome(ii, :);
     chcurr      =  Data.MouseChoice(ii, :);
 
-    dcurr         = all(isnan(chcurr));
+    dcurr         = isnan(chcurr);
     molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
     disengavg(ii, :) = molddiseng;
     

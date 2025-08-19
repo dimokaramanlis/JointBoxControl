@@ -29,10 +29,11 @@ for imouse = 1:2
     mousecol = graphics.mouseColor(imouse, :);
     line(taskEngagementPlot, 1:Ntrials, choiceavg(:, imouse), ...
         'Marker', '.', 'Color', [mousecol 0.5], 'LineWidth', 1,'MarkerSize',3);
+    redcol = 0.4*[1 0 0] + 0.6 *mousecol;
+    line(taskEngagementPlot, 1:Ntrials, disengavg(:, imouse), ...
+        'Marker', '.', 'Color', [redcol 0.5], 'LineWidth', 1,'MarkerSize',3);
 end
 
-line(taskEngagementPlot, 1:Ntrials, disengavg, ...
-        'Marker', '.', 'Color', 'r', 'LineWidth', 1,'MarkerSize',3);
 text(taskEngagementPlot, 1, 0.1, 'Disengagement', 'Color', 'r', 'Fontsize',10)
 
 end
