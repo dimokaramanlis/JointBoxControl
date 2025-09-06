@@ -140,6 +140,12 @@ if numel(mousesetting)==2
     conditions.CheckZoneOut = {'BNC1Low','BothMiceMakingDecision',...
         'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
     %----------------------------------------------------------------------
+    conditions.RewardSecondM1={choices.m1CorrectValve,1};
+    conditions.RewardSecondM2={choices.m2CorrectValve,1};
+    if S.GUI.RewardPercentageSecond == 0
+        conditions.RewardSecondM1={choices.m1CorrectValve,0};
+        conditions.RewardSecondM2={choices.m2CorrectValve,0};
+    end
     
     if ops.useSlider > 0
         % here we assign slider actions
