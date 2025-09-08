@@ -185,17 +185,18 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         psecond            = max(psecond, 0);
         %%%%% Start Beatriz Edited
         rewcurr  = [0 0];
+        iother   = mod(imouse, 2) + 1;
         for imouse = 1:2
-            fieldfirst = sprintf('RewardM%dFirst', imouse);
-            if ~isnan(currTrialStates.(fieldfirst))
-                rewcurr(imouse) = currRewardAmount(imouse);
+            if isnan(reactToSave(imouse))
+                continue
             end
-            fieldsecond = sprintf('RewardM%dSecond', imouse);
-            if ~isnan(currTrialStates.(fieldsecond))
+            rewcurr(imouse) = currRewardAmount(imouse);
+
+            if reactToSave(imouse) > reactToSave(iother)
                 rewcurr(imouse) = currRewardAmount(imouse) * psecond;
             end
         end
-    
+   
         BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
         
         
