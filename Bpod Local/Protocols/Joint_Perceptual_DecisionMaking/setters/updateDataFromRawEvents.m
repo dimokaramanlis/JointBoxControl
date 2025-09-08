@@ -185,13 +185,12 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         psecond            = max(psecond, 0);
         %%%%% Start Beatriz Edited
         rewcurr  = [0 0];
-        iother   = mod(imouse, 2) + 1;
         for imouse = 1:2
             if isnan(reactToSave(imouse))
                 continue
             end
             rewcurr(imouse) = currRewardAmount(imouse);
-
+            iother   = mod(imouse, 2) + 1;
             if reactToSave(imouse) > reactToSave(iother)
                 rewcurr(imouse) = currRewardAmount(imouse) * psecond;
             end
