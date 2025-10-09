@@ -21,10 +21,10 @@ contrain     = [0.5, 1];
 coneasy      = [0.12, 0.24, 0.50, 1];
 conhard      = [0.06, 0.12, 0.24, 0.50, 1];
 conhard0     = [0, 0.06, 0.12, 0.24, 0.50, 1]; 
-conhard0w50  = [0, 0.06, 0.12, 0.24, 1]; 
+conhard0w50  = [0, 0.06, 0.12, 1]; 
 stimsets     = {confull, contrain, coneasy, conhard, conhard0, conhard0w50};
 stimsetnames = {'Con100', 'Con100_50', 'Con100_to_12', ...
-    'Con100_to_6', 'Con100_to_0', 'Con100_to_0_wo50'};
+    'Con100_to_6', 'Con100_to_0', 'Con100,12,6,0'};
 %----------------------------------------------------------------------------
 % set global options
 ops.degPositive  = 45;
