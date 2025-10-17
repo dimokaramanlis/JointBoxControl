@@ -18,8 +18,6 @@ allerrs = NaN(numel(respcell), 2);
 for ii = 1:numel(respcell)
     [~, allerrs(ii, :)] = binofit(sum(respcell{ii}),numel(respcell{ii}), alpha);
 end
-lpos = NaN;
-lneg = NaN;
 
 cla(PsychometricPlot);
 line(PsychometricPlot, [-1 1], [1 1]*0.5, 'Color', 'k', 'LineStyle','--', 'LineWidth',0.5)
@@ -43,9 +41,8 @@ errorbar(PsychometricPlot, convec, allresp, allresp-allerrs(:,1), allerrs(:,2)-a
     'Marker', 'o','MarkerFaceColor', mousecol, 'CapSize',2,'LineStyle','none',...
     'MarkerEdgeColor','k','LineWidth',0.5, 'Color', mousecol)
 tstr1 = sprintf('Pcychometric with %d%% CI', (1-alpha)*100);
-tstr2 = sprintf('lapse blue = %2.2f, red = %2.2f', lpos, lneg);
 
-title(PsychometricPlot, {tstr1, tstr2});
+title(PsychometricPlot, tstr1);
 
 end
 
