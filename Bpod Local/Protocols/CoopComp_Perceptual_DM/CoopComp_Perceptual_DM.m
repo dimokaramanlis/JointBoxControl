@@ -1,12 +1,12 @@
-function Joint_Perceptual_DecisionMaking
+function CoopComp_Perceptual_DM
 %--------------------------------------------------------------------------
 % Written and designed by Anas Masood and Dimokratis Karamanlis
 % 202502: Major slider support
 % -------------------------------------------------------------------------
-global BpodSystem PTB S displayTimer GratingProperties ops...
-    myStepperBoard sliderProperties sliderTimer;
+global BpodSystem PTB S displayTimer GratingProperties ops;
 %----------------------------------------------------------------------------
-protocolpath = which('Joint_Perceptual_DecisionMaking');
+% originalPath = path;
+protocolpath = which('CoopComp_Perceptual_DM');
 addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
@@ -34,7 +34,6 @@ ops.sliderCOM    = sprintf("COM%d", localsettings.sliderCOM);
 % ops.degNegative  = 135;
 ops.pulseWinWidth = localsettings.pulseWinWidth;
 ops.useAIM        = localsettings.useAIM;
-ops.useSlider     = localsettings.useMouseSlider;
 ops.degPerPixel   = 92/1280;
 ops.screenFs      = 60; % make sure this matches your screen refresh rates!
 ops.stimsets      = stimsets;
@@ -49,6 +48,15 @@ ops.valves.m2Red     = 'Valve2';
 ops.nosepokes.m2Red  = 'Port2In';
 ops.valves.m2Blue    = 'Valve3';
 ops.nosepokes.m2Blue = 'Port3In';
+
+%%%%%%%%%%% Start Beatriz Added
+% out of nosepoke map
+ops.pokeOut.m1Red  = 'Port1Out';
+ops.pokeOut.m1Blue = 'Port4Out';
+ops.pokeOut.m2Red  = 'Port2Out';
+ops.pokeOut.m2Blue = 'Port3Out';
+%%%%%%%%%%% End Beatriz Added
+
 %---------------------------------------------- ------------------------------
 % initialize screens
 [screenIds, screenInvGammaTables] = checkMonitorIdentity('C:\BoxSettings', true);
@@ -73,14 +81,6 @@ if localsettings.useAIM ~=0
     A.scope_StartStop % Start USB streaming + data logging
 end
 %----------------------------------------------------------------------------
-% initialize Mouse Slider
-if localsettings.useMouseSlider > 0
-    sliderinfo = getSliderInfo('C:\BoxSettings', ops.sliderCOM);
-    [myStepperBoard, xstart] = initializeSliderPosition(sliderinfo, ops.sliderCOM);
-	sliderProperties         = sliderinfo;
-    sliderProperties.xpos    = xstart;
-end
-%----------------------------------------------------------------------------
 questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
@@ -96,7 +96,6 @@ for currentTrial = 1:10000
     S = BpodParameterGUI('sync', S); % Sync parameters with BpodParameterGUI plugin
     ops.degPositive = S.GUI.Angle;
     ops.degNegative = -S.GUI.Angle;
-    sliderstruct = struct();
     %----------------------------------------------------------------------------
     % same for mouse setting
     if ~isequal(mousesetting, getmousesetting(S.GUI.MouseSetting))
@@ -145,17 +144,6 @@ for currentTrial = 1:10000
         % set reward side
         currreward = getTrialReward(currstim, isdependent); % find rewarded sides and correct for zero contrast.
     end
-    %----------------------------------------------------------------------
-    % initialize slider
-    if ops.useSlider > 0
-        sliderProperties = createSliderTrajectory(S, sliderProperties, currreward,...
-            ops.useSlider);
-        sliderProperties.side = ops.useSlider;
-        if Nmice == 2
-            prevstim = currstim(:, ops.useSlider);
-            currstim(:, ops.useSlider) = eps * sign(prevstim);
-        end
-    end
     %----------------------------------------------------------------------------
      % initialize gratings
     [PTB, GratingProperties] = createAndDrawTextures(...
@@ -167,13 +155,10 @@ for currentTrial = 1:10000
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
     if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)
-        if ops.useSlider > 0
-            sliderstruct = sliderProperties;
-        end
         BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                              RawEvents,currentTrial,...
                                              currstim, currreward,currRewardAmount,...
-                                             mousesetting, sliderstruct);
+                                             mousesetting);
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)
@@ -184,16 +169,6 @@ for currentTrial = 1:10000
     %----------------------------------------------------------------------
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.
     if BpodSystem.Status.BeingUsed == 0  % If protocol was stopped, exit the loop
-        %----------------------------------------------------------------------
-        % we first stop the slider
-        if ops.useSlider > 0 && exist("sliderTimer",'var')
-            if any(contains(fieldnames(sliderTimer), 'StopFcn'))
-                if ~isempty(sliderTimer.StopFcn)
-                    sliderTimer.stop();
-                end
-            end
-            delete(sliderTimer);
-        end
         %----------------------------------------------------------------------
         % we then clear the screen
         Screen('CloseAll');
@@ -221,13 +196,9 @@ for currentTrial = 1:10000
         end
     
         %==================================================================
-        if localsettings.useMouseSlider
-            myStepperBoard.close();
-        end
+        rmpath(genpath(fileparts(protocolpath))); %remove path from list
         %==================================================================
         questdlg('Stop all recordings and video', 'Stop dialog', 'OK','OK');
-        %----------------------------------------------------------------------
-        rmpath(genpath(fileparts(protocolpath))); %remove path from list
         %----------------------------------------------------------------------
         if localsettings.useAIM ~=0
             A.scope_StartStop; % Stop Oscope GUI
@@ -239,14 +210,4 @@ for currentTrial = 1:10000
         return
     end
 end
-
-
-
-
-
-
-
-
-
-
 
