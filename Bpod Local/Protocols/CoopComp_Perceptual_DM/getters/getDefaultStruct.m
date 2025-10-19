@@ -201,40 +201,7 @@ function S = getDefaultStruct(ops)
                                 'ProbabilitySetting',...
                                 'ProbabilityBlue'};
 
-    %% Slider properties
-    if ops.useSlider
-
-
-        S.GUI.Performance = 0.8; 
-        S.GUIMeta.Performance.Style='edit';
-        S.GUIMeta.Performance.String = "Performance";
-
-        S.GUI.MaxSpeed = 100; 
-        S.GUIMeta.MaxSpeed.Style='edit';
-        S.GUIMeta.MaxSpeed.String = "MaxSpeed(%)";
-
-        S.GUI.DTimeAvg = 0.3; 
-        S.GUIMeta.DTimeAvg.Style='edit';
-        S.GUIMeta.DTimeAvg.String = "DTimeMean";
-
-        S.GUI.UncertaintySD = 50; 
-        S.GUIMeta.UncertaintySD.Style='edit';
-        S.GUIMeta.UncertaintySD.String = "UncertaintySD(steps)";
-
-
-        S.GUI.RewardStayTime = 3; 
-        S.GUIMeta.RewardStayTime.Style='edit';
-        S.GUIMeta.RewardStayTime.String = "RewardStayTime";
-        
-        S.GUI.RoamingType  = 2;
-        S.GUIMeta.RoamingType.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
-        S.GUIMeta.RoamingType.String = {'Platform',...
-                                         'Full'};
-
-        S.GUIPanels.Slider = {'Performance', 'MaxSpeed', ...
-            'DTimeAvg', 'UncertaintySD', 'RewardStayTime', 'RoamingType'};
-    end
-
+  
   
      %% Plotting
 %      S.GUI.betaavg =0.8;

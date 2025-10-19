@@ -1,6 +1,6 @@
 function StimulusFunctionOrientation(ID)
 %--------------------------------------------------------------------------
-global PTB S ops displayTimer sliderTimer myStepperBoard sliderProperties;
+global PTB S ops displayTimer myStepperBoard;
 
 %--------------------------------------------------------------------------
 switch ID
@@ -17,18 +17,7 @@ switch ID
            Screen('Flip', PTB.windows(iscreen)); 
         end
 
-        if ops.useSlider > 0
-            %   make sure slider is back home
-            sliderTimer = timer;
-            sliderTimer.stop();
-            sliderTimer.Period         = 0.02; %10ms refresh
-            sliderTimer.TimerFcn       = @SliderRoaming;
-            sliderTimer.StopFcn        = @SliderRoamingStop;
-            sliderTimer.ExecutionMode  = 'fixedRate';
-            sliderTimer.TasksToExecute = 1e6;
-            sliderTimer.start();
-         end
-
+      
     %------------------------------------------------------------------
     case 10 % Flip screen and progress phase
         %------------------------------------------------------------------
@@ -69,12 +58,7 @@ if ID == 10
    else
        displayTimer.TasksToExecute = 1;
    end 
-   %-----------------------------------------------------------------------
-   % start slider if needed
-   if ops.useSlider > 0
-        sliderTimer.stop();
-        SliderStartTrial();
-   end
+
    %-----------------------------------------------------------------------
 end
 
