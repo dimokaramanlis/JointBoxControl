@@ -236,6 +236,8 @@ if contains( subjectName, '_')
             extrastr = 'Random';
         case 3
             extrastr = 'Anticorrelated';
+        case 4
+            extrastr = 'Complementary';
     end
     title(myPlots.panhandle, ...
         {sprintf('%s %s %s', strrep( subjectName,'_',' '), date, extrastr), ' '});
