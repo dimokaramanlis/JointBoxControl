@@ -15,8 +15,9 @@ function S = getDefaultStruct(ops)
 
     S.GUI.Dependent = 1;
     S.GUIMeta.Dependent.Style = 'popupmenu';
-    S.GUIMeta.Dependent.String = {'Congruent', 'Random', 'Anticorrelated'};
+    S.GUIMeta.Dependent.String = {'Congruent', 'Random', 'Anticorrelated','Complementary'};
     % day of anticorrelated introduction 27/11/2024
+    % day of complementary introduction 20/10/2025
     
     S.GUI.FlipStimulusOrientation = 0;
     S.GUIMeta.FlipStimulusOrientation.Style = 'checkbox';

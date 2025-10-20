@@ -22,8 +22,19 @@ if numel(mousesetting) == 2
         finalset(irem, :) = [];
     end
     if isdependent < 0
-        irem = prod(finalset, 2) > 0;
-        finalset(irem, :) = [];
+        if isdependent == -2
+            %ctb_idx = [~, idx] = min(abs(conset - (100-cta))) %CTB is always complementary to CTA
+            
+            idxremove = find(abs(finalset(:,1)) < 0.5 & abs(finalset(:,2)) < 0.5);
+            finalset(idxremove, :) = [];
+            
+            irem = prod(finalset, 2) < 0;
+            finalset(irem, :) = [];
+            
+        else
+            irem = prod(finalset, 2) > 0;
+            finalset(irem, :) = [];
+        end
     end
 end
 %--------------------------------------------------------------------------
