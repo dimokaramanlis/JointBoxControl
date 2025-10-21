@@ -1,4 +1,4 @@
-function [sma,currRewardAmount]= getStateMachine(S,currreward,mousesetting,ops)
+function [sma,currRewardAmount]= getStateMachine(S, currreward, mousesetting, isopto, ops)
 %% Trial specific timing values
 LEDIntensity = S.GUI.LEDIntensity;
 
@@ -47,6 +47,12 @@ times.ITI                   = (S.GUI.ITIMax-S.GUI.ITIMin).*rand + S.GUI.ITIMin;
 times.DecisionTimeout       = S.GUI.DecisionTime;
 times.RewardStimulusTimeout = S.GUI.RewardStimulusTimeout;
 %--------------------------------------------------------------------------
+if isopto
+    times.OptoDuration = S.GUI.OptoDuration;
+else
+    times.OptoDuration = 0;
+end
+%--------------------------------------------------------------------------
 %% Trial Specific ports, reward actions, punish actions, and stimulus settings
 AllLightsOnAction  = {'PWM1', LEDIntensity,'PWM2', LEDIntensity,'PWM3', LEDIntensity,'PWM4', LEDIntensity};
 AllLightsOffAction = {'PWM1', 0,'PWM2', 0,'PWM3', 0,'PWM4', 0};
@@ -54,6 +60,10 @@ StimulusPresentationAction = {'SoftCode',10, 'GlobalTimerTrig', 1};
 if ops.useAIM
     StimulusPresentationAction = [StimulusPresentationAction {'AnalogIn1', ['#' 0]}];
 end
+if isopto
+    StimulusPresentationAction = [StimulusPresentationAction {'GlobalTimerTrig', 2}];
+end
+
 greyScreenSoftCode  = 100;
 blackScreenSoftCode = 200;
 if S.GUI.BlackScreen
@@ -66,6 +76,7 @@ PunishOutputAction = [{'SoftCode',PunishOutputSoftCode} AllLightsOffAction];
 ITIAction          = [{'SoftCode',greyScreenSoftCode} AllLightsOffAction];
 WaitingAction      = AllLightsOnAction;
 StimulusPresentationActionToUse = [StimulusPresentationAction AllLightsOnAction]; %%Binary string for 
+
 
 actions.StartAction                = StartAction;
 actions.PunishOutputAction         = PunishOutputAction;
@@ -95,7 +106,6 @@ if numel(mousesetting)==2
     currTrialTypeM1 = currreward(1);
     currTrialTypeM2 = currreward(2);
 
-%%%%%%%%%%% Start Beatriz Added *marked with BA  
     if currTrialTypeM1 == 1 %% Blue
         choices.m1CorrectChoice   = nosepokes.m1Blue;
         choices.m1CorrectValve    = valves.m1Blue;        
@@ -127,8 +137,6 @@ if numel(mousesetting)==2
     else
         error('Incorrect trial type for M2. Please check currReward variable');
     end
-
-%%%%%%%%%%% End Beatriz Added
     %----------------------------------------------------------------------
     % here we change the conditions for initiation
     conditions.ZoneChangeCondition = {'BNC1High', 'WaitingforMouse2',...
@@ -159,7 +167,6 @@ if numel(mousesetting)==2
         end
     end
     %----------------------------------------------------------------------
-%%%%%%%%%%% Start Beatriz Edited
         
     sma = getTwoMiceStateMachine(choices,actions,times,conditions);
 
@@ -172,8 +179,6 @@ if numel(mousesetting)==2
 %     for ii = 1:2
 %         currRewardAmountSecond(ii) = reshrewSecond(ii, 1 + (1 - currreward(ii)) / 2);
 %     end
-
-%%%%%%%%%%% End Beatriz Edited
 
 else
     currTrialType = currreward;

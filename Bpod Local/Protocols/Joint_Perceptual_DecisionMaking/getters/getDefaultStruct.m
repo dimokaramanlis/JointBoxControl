@@ -194,7 +194,18 @@ function S = getDefaultStruct(ops)
         S.GUIPanels.Slider = {'Performance', 'MaxSpeed', ...
             'DTimeAvg', 'UncertaintySD', 'RewardStayTime', 'RoamingType'};
     end
+    %% Opto Properties
+    if ops.useOpto
+        S.GUI.ProbOpto  = 0.3;
+        S.GUIMeta.ProbOpto.Style = 'edit';
+        S.GUIMeta.ProbOpto.String = {'ProbabilityOpto'};
 
+        S.GUI.OptoDuration  = 0.5;
+        S.GUIMeta.OptoDuration.Style = 'edit';
+        S.GUIMeta.OptoDuration.String = {'OptoDuration'};
+
+        S.GUIPanels.Opto = {'ProbOpto', 'OptoDuration'};
+    end
   
      %% Plotting
 %      S.GUI.betaavg =0.8;
