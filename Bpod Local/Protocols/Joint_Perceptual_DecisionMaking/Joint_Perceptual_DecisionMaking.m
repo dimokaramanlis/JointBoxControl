@@ -8,48 +8,13 @@ global BpodSystem PTB S displayTimer GratingProperties ops...
 %----------------------------------------------------------------------------
 protocolpath = which('Joint_Perceptual_DecisionMaking');
 addpath(addpath(genpath(fileparts(protocolpath))));
-
-% local settings for each box
+%----------------------------------------------------------------------------
+% local settings for each box and global options
 localsettings = loadLocalSettings();
+ops = getGlobalOptions(localsettings);
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
-%----------------------------------------------------------------------------
-% define contrast sets
-confull      = 1;
-contrain     = [0.5, 1];
-coneasy      = [0.12, 0.24, 0.50, 1];
-conhard      = [0.06, 0.12, 0.24, 0.50, 1];
-conhard0     = [0, 0.06, 0.12, 0.24, 0.50, 1]; 
-conhard0w50  = [0, 0.06, 0.12, 1]; 
-stimsets     = {confull, contrain, coneasy, conhard, conhard0, conhard0w50};
-stimsetnames = {'Con100', 'Con100_50', 'Con100_to_12', ...
-    'Con100_to_6', 'Con100_to_0', 'Con100,12,6,0'};
-%----------------------------------------------------------------------------
-% set global options
-ops.degPositive  = 45;
-ops.degNegative  = -45;
-ops.sliderCOM    = sprintf("COM%d", localsettings.sliderCOM);
-% ops.degPositive  = 45;
-% ops.degNegative  = 135;
-ops.pulseWinWidth = localsettings.pulseWinWidth;
-ops.useAIM        = localsettings.useAIM;
-ops.useSlider     = localsettings.useMouseSlider;
-ops.useOpto       = localsettings.useOpto;
-ops.degPerPixel   = 92/1280;
-ops.screenFs      = 60; % make sure this matches your screen refresh rates!
-ops.stimsets      = stimsets;
-ops.stimsetnames  = stimsetnames;
-ops.probsettings  = {'Pseudorandom','Alternate','RepeatTrials'};
-% nosepoke map
-ops.valves.m1Red     = 'Valve1';
-ops.nosepokes.m1Red  = 'Port1In';
-ops.valves.m1Blue    = 'Valve4';
-ops.nosepokes.m1Blue = 'Port4In';
-ops.valves.m2Red     = 'Valve2';
-ops.nosepokes.m2Red  = 'Port2In';
-ops.valves.m2Blue    = 'Valve3';
-ops.nosepokes.m2Blue = 'Port3In';
 %---------------------------------------------- ------------------------------
 % initialize screens
 [screenIds, screenInvGammaTables] = checkMonitorIdentity('C:\BoxSettings', true);
@@ -61,7 +26,7 @@ ops.nosepokes.m2Blue = 'Port3In';
 if localsettings.useAIM ~=0
     BpodSystem.assertModule('AnalogIn', 1); % The second argument (1) indicates that AnalogIn must be paired with its USB serial port
     A = BpodAnalogIn(BpodSystem.ModuleUSB.AnalogIn1);
-    A.SamplingRate = 10000; % Hz
+    A.SamplingRate    = 10000; % Hz
     A.nActiveChannels = 3; % Record from up to 3 channels
     A.Stream2USB(localsettings.useAIM) = 1; % Configure only channels 1 and 3 for USB streaming
     anlgstremfile = fullfile('D:\ExtraData', sprintf('%s_%s_analog.mat', ...
@@ -85,7 +50,7 @@ end
 questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
-setchoose    = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}};
+setchoose    = {ops.stimsets{S.GUI.ContrastSet1}, ops.stimsets{S.GUI.ContrastSet2}};
 isdependent  = (2 - S.GUI.Dependent);
 renewprob    = true;
 currreward   = -1; % for debug mode
@@ -97,7 +62,8 @@ for currentTrial = 1:10000
     S = BpodParameterGUI('sync', S); % Sync parameters with BpodParameterGUI plugin
     ops.degPositive = S.GUI.Angle;
     ops.degNegative = -S.GUI.Angle;
-    sliderstruct = struct();
+    sliderstruct    = struct();
+    isopto          = false;
     %----------------------------------------------------------------------------
     % same for mouse setting
     if ~isequal(mousesetting, getmousesetting(S.GUI.MouseSetting))
@@ -108,8 +74,8 @@ for currentTrial = 1:10000
     Nmice = numel(mousesetting);
 
     % update contrast set if altered
-    if ~isequal(setchoose, {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}})
-        setchoose = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}}; 
+    if ~isequal(setchoose, {ops.stimsets{S.GUI.ContrastSet1}, ops.stimsets{S.GUI.ContrastSet2}})
+        setchoose = {ops.stimsets{S.GUI.ContrastSet1}, ops.stimsets{S.GUI.ContrastSet2}}; 
         renewprob = true;
     end
  
@@ -119,7 +85,6 @@ for currentTrial = 1:10000
         renewprob = true;
     end
     %----------------------------------------------------------------------------
-
     % get trial set
     trialset    = getTrialSet(setchoose,  mousesetting, isdependent);
     if renewprob
@@ -158,12 +123,18 @@ for currentTrial = 1:10000
         end
     end
     %----------------------------------------------------------------------------
-     % initialize gratings
+    if ops.useOpto > 0
+        if rand(1) < S.GUI.ProbOpto
+            isopto = true;
+        end
+    end
+    %----------------------------------------------------------------------------
+    % initialize gratings
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
     %----------------------------------------------------------------------------
     % prepare and run state machine
-    [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
+    [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, isopto, ops);
     SendStateMatrix(sma); % Send the state matrix to the Bpod device
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
@@ -174,7 +145,7 @@ for currentTrial = 1:10000
         BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                              RawEvents,currentTrial,...
                                              currstim, currreward,currRewardAmount,...
-                                             mousesetting, sliderstruct);
+                                             mousesetting, isopto, sliderstruct);
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)

@@ -1,6 +1,6 @@
-function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTrial, ...
+function BpodSystem = updateDataFromRawEvents(BpodSystem, S, RawEvents, currentTrial, ...
                                               currStim,currReward, currRewardAmount,...
-                                              mousesetting, sliderstruct)
+                                              mousesetting, isopto, sliderstruct)
     portids = [4 1; 3 2];
     %-----------------------------------------------------------
     % handle general saving
@@ -90,6 +90,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         BpodSystem.Data.RewardAmount(currentTrial,:)   = currRewardAmount.*(outcomeToSave>=0);
         BpodSystem.Data.Contrast(currentTrial,:)       = contrastToSave;
         BpodSystem.Data.isSpontaneous(currentTrial,:)  = isSpontaneous;
+        BpodSystem.Data.isOpto(currentTrial,:)         = isopto;
         
     elseif numel(mousesetting)==2
         % 1. Initiation time
@@ -180,6 +181,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         BpodSystem.Data.ReactionTimes( currentTrial, :) = reactToSave;
         BpodSystem.Data.DecisionTimes( currentTrial, :) = decisionTimeToSave;
         BpodSystem.Data.MouseChoice(   currentTrial, :) = choiceToSave;
+        BpodSystem.Data.isOpto(currentTrial,:)          = isopto;
 
         psecond            = min(S.GUI.RewardPercentageSecond, 1);
         psecond            = max(psecond, 0);
