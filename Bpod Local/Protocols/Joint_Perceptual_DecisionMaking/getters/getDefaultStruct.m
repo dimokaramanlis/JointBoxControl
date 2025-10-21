@@ -194,7 +194,10 @@ function S = getDefaultStruct(ops)
         S.GUIPanels.Slider = {'Performance', 'MaxSpeed', ...
             'DTimeAvg', 'UncertaintySD', 'RewardStayTime', 'RoamingType'};
     end
+    %% Opto Properties
+    if ops.useOpto
 
+    end
   
      %% Plotting
 %      S.GUI.betaavg =0.8;

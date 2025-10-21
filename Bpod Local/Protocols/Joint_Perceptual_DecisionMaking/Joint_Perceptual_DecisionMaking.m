@@ -35,6 +35,7 @@ ops.sliderCOM    = sprintf("COM%d", localsettings.sliderCOM);
 ops.pulseWinWidth = localsettings.pulseWinWidth;
 ops.useAIM        = localsettings.useAIM;
 ops.useSlider     = localsettings.useMouseSlider;
+ops.useOpto       = localsettings.useOpto;
 ops.degPerPixel   = 92/1280;
 ops.screenFs      = 60; % make sure this matches your screen refresh rates!
 ops.stimsets      = stimsets;

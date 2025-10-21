@@ -20,6 +20,7 @@ function localsettings = loadLocalSettings()
     defaults.pulseWindow    = false;
     defaults.useMouseSlider = 0; % Default is 0, can be 0, 1, or 2
     defaults.sliderCOM      = 7;
+    defaults.useOpto        = 0; % Default is 0, can be 0, 1, or 2
     % Initialize localsettings with defaults
     localsettings = defaults;
     %----------------------------------------------------------------------
@@ -96,6 +97,13 @@ function localsettings = loadLocalSettings()
                                         'Invalid value "%d" for useMouseSlider on line %d (must be 0, 1, or 2). Using default.', parsedValue, lineNumber);
                                 continue; % Skip - keep default
                             end
+
+                             % Specific validation for useMouseSlider
+                            if strcmp(fieldName, 'useOpto') && ~ismember(parsedValue, [0, 1, 2])
+                                warning('loadLocalSettings:InvalidOptoValue', ...
+                                        'Invalid value "%d" for useOpto on line %d (must be 0, 1, or 2). Using default.', parsedValue, lineNumber);
+                                continue; % Skip - keep default
+                            end
                         else
                              warning('loadLocalSettings:UnsupportedType', ...
                                      'Settings type for "%s" (line %d) is not supported (must be logical or numeric). Using default.', fieldName, lineNumber);
@@ -147,6 +155,7 @@ function localsettings = loadLocalSettings()
                fprintf(fid_write, '%s = %s\n', 'useFrame2TTL', mat2str(defaults.useFrame2TTL));
                fprintf(fid_write, '%s = %s\n', 'pulseWindow', mat2str(defaults.pulseWindow));
                fprintf(fid_write, '%s = %d\n', 'useMouseSlider', defaults.useMouseSlider); % Write numeric directly
+               fprintf(fid_write, '%s = %d\n', 'useOpto', defaults.useOpto); % Write numeric directly
                % Add other settings here if you have more defaults
                fclose(fid_write);
                disp(['Created default settings file with instructions: ', dpfilesettings]);
