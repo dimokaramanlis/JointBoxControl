@@ -14,7 +14,11 @@ if nnz(currstim==0)==1
         trialreward = irand;
     else
         if abs(isdependent) > 0
-            trialreward(currstim==0) =  sign(isdependent) * trialreward(currstim~=0);
+            if isdependent == -2
+                trialreward(currstim==0) =  1 * trialreward(currstim~=0);
+            else
+                trialreward(currstim==0) =  sign(isdependent) * trialreward(currstim~=0);
+            end
         else
             trialreward(currstim==0) = irand;
         end
