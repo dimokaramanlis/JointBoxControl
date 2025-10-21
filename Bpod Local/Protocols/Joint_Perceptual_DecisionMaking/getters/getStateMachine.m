@@ -60,9 +60,6 @@ StimulusPresentationAction = {'SoftCode',10, 'GlobalTimerTrig', 1};
 if ops.useAIM
     StimulusPresentationAction = [StimulusPresentationAction {'AnalogIn1', ['#' 0]}];
 end
-if isopto
-    StimulusPresentationAction = [StimulusPresentationAction {'GlobalTimerTrig', 2}];
-end
 
 greyScreenSoftCode  = 100;
 blackScreenSoftCode = 200;
@@ -71,17 +68,21 @@ if S.GUI.BlackScreen
 else
     PunishOutputSoftCode = greyScreenSoftCode;
 end
-StartAction        = [{'SoftCode',101} AllLightsOnAction];
-PunishOutputAction = [{'SoftCode',PunishOutputSoftCode} AllLightsOffAction];
+StartAction        = [{'SoftCode',101}, AllLightsOnAction];
+PunishOutputAction = [{'SoftCode',PunishOutputSoftCode}, AllLightsOffAction];
 ITIAction          = [{'SoftCode',greyScreenSoftCode} AllLightsOffAction];
 WaitingAction      = AllLightsOnAction;
 StimulusPresentationActionToUse = [StimulusPresentationAction AllLightsOnAction]; %%Binary string for 
-
+WaitingActionAfterStim = WaitingAction;
+if isopto
+    WaitingActionAfterStim = [WaitingActionAfterStim {'GlobalTimerTrig', 2}];
+end
 
 actions.StartAction                = StartAction;
 actions.PunishOutputAction         = PunishOutputAction;
 actions.ITIAction                  = ITIAction;
 actions.WaitingAction              = WaitingAction;
+actions.WaitingActionAfterStim     = WaitingActionAfterStim;
 actions.StimulusPresentationAction = StimulusPresentationActionToUse;
 actions.AllLightsOnAction          = AllLightsOnAction;
 actions.AllLightsOffAction         = AllLightsOffAction;
