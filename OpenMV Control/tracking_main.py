@@ -29,7 +29,6 @@ else:
     sensor.set_vflip(final_config['to_vflip'])
     sensor.set_transpose(final_config['to_transpose'])
 sensor.set_windowing(final_config['sensor_window'])
-sensor.skip_frames(time = 500)
 sensor.set_brightness(final_config['sensor_brightness'])
 clock = time.clock()
 #=================================================================================================
