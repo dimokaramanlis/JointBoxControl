@@ -1,4 +1,4 @@
-function plotReactionTimes(OrientationReactionTimePlot, graphics, convec, reactcell)
+function plotReactionTimes(OrientationReactionTimePlot, graphics, convec, reactcell, runsimple)
 %PLOTREACTIONTIMES Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,8 +13,11 @@ for imouse = 1:2
 
     if isempty(reactcell{imouse}), continue, end
     meanreact = cellfun(@(x) median(x,'omitnan'), reactcell{imouse});
-    semreact  = cellfun(@(x) 1.4826 * mad(x(~isnan(x)), 1)/sqrt(nnz(~isnan(x))), reactcell{imouse});
-
+    if ~runsimple
+        semreact  = cellfun(@(x) 1.4826 * mad(x(~isnan(x)), 1)/sqrt(nnz(~isnan(x))), reactcell{imouse});
+    else
+        semreact  = cellfun(@(x) std(x(~isnan(x)), 1)/sqrt(nnz(~isnan(x))), reactcell{imouse});
+    end
     errorbar(OrientationReactionTimePlot,...
         convec{imouse}, meanreact, semreact,...
         'Marker', 'o', 'MarkerSize',6,...

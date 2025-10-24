@@ -71,7 +71,7 @@ for imouse = 1:2
     mousecontrast =  Data.Contrast(:, imouse);
         
     
-    iuse = ~isnan(mousechoice) & ~isopto;
+    iuse = ~isnan(mousechoice);
     if all(isnan(mousechoice)), continue, end
     [respcons{imouse}, ~, ic] = unique(mousecontrast(iuse));
     respcells{imouse}  = accumarray(ic, mousechoice(iuse)==1, [], @(x) {x});
@@ -164,8 +164,8 @@ for imouse = 1:2
     plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
 end
 %--------------------------------------------------------------------------
-plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts)
-plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis)
+plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts, runsimple)
+plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple)
 %--------------------------------------------------------------------------
 if contains( subjectName, '_')
     iscall = mode(iscongr);

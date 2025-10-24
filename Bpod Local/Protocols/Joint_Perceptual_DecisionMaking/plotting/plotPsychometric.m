@@ -22,7 +22,6 @@ if ~runsimple
 end
 
 cla(PsychometricPlot);
-line(PsychometricPlot, [-1 1], [1 1]*0.5, 'Color', 'k', 'LineStyle','--', 'LineWidth',0.5)
 if ~isempty(psychparams)
     psychvals  = glmval(psychparams, xx, 'logit');
     line(PsychometricPlot, xvals, psychvals, 'Color', [0 0 0 0.6], 'LineWidth', 1,...
@@ -42,6 +41,9 @@ end
 errorbar(PsychometricPlot, convec, allresp, allresp-allerrs(:,1), allerrs(:,2)-allresp,...
     'Marker', 'o','MarkerFaceColor', mousecol, 'CapSize',2,'LineStyle','none',...
     'MarkerEdgeColor','k','LineWidth',0.5, 'Color', mousecol)
+line(PsychometricPlot, [-1 1], [1 1]*0.5, 'Color', 'k', 'LineStyle','--', 'LineWidth',0.5)
+line(PsychometricPlot, [0 0], [0 1], 'Color', 'k', 'LineStyle','--', 'LineWidth',0.5)
+
 tstr1 = sprintf('Pcychometric with %d%% CI', (1-alpha)*100);
 
 title(PsychometricPlot, tstr1);
