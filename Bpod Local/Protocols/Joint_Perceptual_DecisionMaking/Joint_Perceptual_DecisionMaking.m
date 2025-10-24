@@ -151,7 +151,7 @@ for currentTrial = 1:10000
         if ~ishandle(myPlots.PerformanceFigure)
             [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
         end
-        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics);
+        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots);
     end
     %----------------------------------------------------------------------
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.

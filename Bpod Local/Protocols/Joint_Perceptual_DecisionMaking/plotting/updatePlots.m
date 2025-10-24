@@ -1,4 +1,4 @@
-function myPlots = updatePlots(Data, subjectName, myPlots, graphics)
+function myPlots = updatePlots(Data, subjectName, myPlots, graphics, runsimple)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %--------------------------------------------------------------------------
@@ -48,7 +48,12 @@ for ii = 1:Ntrials
 
     
 end
-%%
+%--------------------------------------------------------------------------
+if isfield(Data, 'isOpto')
+    isopto = Data.isOpto;
+else
+    isopto = false(Ntrials, 1);
+end
 %--------------------------------------------------------------------------
 % do the fits
 respcells   = cell(1,2);
@@ -62,17 +67,16 @@ dtime = 0.02;
 for imouse = 1:2
     mousechoice   =  Data.MouseChoice(:,imouse);
     mousereact    =  Data.ReactionTimes(:,imouse);
-    mousedecide   = decideFromSpout(mousereact, mousechoice); % Data.DecisionTimes(:,imouse);
+    mousedecide   =  decideFromSpout(mousereact, mousechoice); % Data.DecisionTimes(:,imouse);
     mousecontrast =  Data.Contrast(:, imouse);
         
     
-    iuse = ~isnan(mousechoice);
+    iuse = ~isnan(mousechoice) & ~isopto;
     if all(isnan(mousechoice)), continue, end
     [respcons{imouse}, ~, ic] = unique(mousecontrast(iuse));
     respcells{imouse}  = accumarray(ic, mousechoice(iuse)==1, [], @(x) {x});
     respreacts{imouse} = accumarray(ic, mousereact(iuse), [], @(x) {x});
     respdecis{imouse}  = accumarray(ic, mousedecide(iuse), [], @(x) {x});
-    % Data.ReactionTimes
      
     iother      = 2-mod(1,imouse);
     if nnz(iuse) > 8 % at least some observations for fitting
@@ -100,14 +104,10 @@ for imouse = 1:2
             xx = mousecontrast(iuse);
         end
         %temporary fix 
-%         psychparams{imouse} = []; 
-
-%         [bfit, binfo] = lassoglm(xx, mousechoice(iuse)==1, 'binomial', 'Alpha', 1e-5,'NumLambda', 20);
-%         psychparams{imouse} = [0;0;bfit(:,1);binfo.Intercept(1)];
-%         
-        bfit = glmfit(xx, mousechoice(iuse)==1, 'binomial');
-        psychparams{imouse} =bfit;
-
+        if ~runsimple
+            bfit = glmfit(xx, mousechoice(iuse)==1, 'binomial');
+            psychparams{imouse} =bfit;
+        end
 %         psychparams{imouse} = fitPsychologisticML(xx, mousechoice(iuse)==1, myPlots.psychparams{imouse});
         if ~isempty(psychparams{imouse})
             modelpred   = glmval(psychparams{imouse}, xx, 'logit') > 0.5;
@@ -144,7 +144,7 @@ perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
 
 plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
-    perfavg, perfmax, perftot, rewtot)
+    perfavg, perfmax, perftot, rewtot, isopto)
 %--------------------------------------------------------------------------
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
@@ -160,7 +160,7 @@ for imouse = 1:2
     
     if isempty(respcells{imouse}), continue, end
     plotPsychometric(myPlots.PsychometricPlot(imouse), mousecol, ...
-        respcons{imouse}, respcells{imouse}, psychparams{imouse})
+        respcons{imouse}, respcells{imouse}, psychparams{imouse}, runsimple)
     plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
 end
 %--------------------------------------------------------------------------

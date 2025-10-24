@@ -185,7 +185,6 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S, RawEvents, currentT
 
         psecond            = min(S.GUI.RewardPercentageSecond, 1);
         psecond            = max(psecond, 0);
-        %%%%% Start Beatriz Edited
         rewcurr  = [0 0];
         for imouse = 1:2
             if isnan(reactToSave(imouse))
@@ -199,17 +198,6 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S, RawEvents, currentT
         end
    
         BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
-        
-        
-%         if all(outcomeToSave == [1 1]) % For both mice rewarded
-%             if ~isnan(thisTrialRawEventStates.RewardM1First(1)) % For M1 rewarded first
-%                 currRewardAmount(2) = currRewardAmount(2) * psecond;
-%             else % For M2 rewarded first
-%                 currRewardAmount(1) = currRewardAmount(1) * psecond;
-%             end
-%         end
-%         %%%%% End Beatriz Edited
-%         BpodSystem.Data.RewardAmount(  currentTrial, :) = currRewardAmount.*(outcomeToSave>=0);
         BpodSystem.Data.Contrast(      currentTrial, :) = currStim;
     else
         error('Incorrect mouse setting.');

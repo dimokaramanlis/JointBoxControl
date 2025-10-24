@@ -21,6 +21,7 @@ function localsettings = loadLocalSettings()
     defaults.useMouseSlider = 0; % Default is 0, can be 0, 1, or 2
     defaults.sliderCOM      = 7;
     defaults.useOpto        = 0; % Default is 0, can be 0, 1, or 2
+    defaults.runSimplePlots = false; % Default is 0, can be 0, 1, or 2
     % Initialize localsettings with defaults
     localsettings = defaults;
     %----------------------------------------------------------------------
@@ -156,6 +157,7 @@ function localsettings = loadLocalSettings()
                fprintf(fid_write, '%s = %s\n', 'pulseWindow', mat2str(defaults.pulseWindow));
                fprintf(fid_write, '%s = %d\n', 'useMouseSlider', defaults.useMouseSlider); % Write numeric directly
                fprintf(fid_write, '%s = %d\n', 'useOpto', defaults.useOpto); % Write numeric directly
+               fprintf(fid_write, '%s = %d\n', 'runSimplePlots', defaults.runSimplePlots); % Write numeric directly
                % Add other settings here if you have more defaults
                fclose(fid_write);
                disp(['Created default settings file with instructions: ', dpfilesettings]);
