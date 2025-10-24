@@ -1,4 +1,4 @@
-function myPlots = updatePlots(Data, subjectName, myPlots, graphics)
+function myPlots = updatePlots(Data, subjectName, myPlots, graphics, runsimple)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %--------------------------------------------------------------------------
@@ -115,14 +115,11 @@ for imouse = 1:2
             % fit contrast model
             xx = mousecontrast(iuse);
         end
-        %temporary fix 
-%         psychparams{imouse} = []; 
 
-%         [bfit, binfo] = lassoglm(xx, mousechoice(iuse)==1, 'binomial', 'Alpha', 1e-5,'NumLambda', 20);
-%         psychparams{imouse} = [0;0;bfit(:,1);binfo.Intercept(1)];
-%         
-        bfit = glmfit(xx, mousechoice(iuse)==1, 'binomial');
-        psychparams{imouse} =bfit;
+        if ~runsimple
+            bfit = glmfit(xx, mousechoice(iuse)==1, 'binomial');
+            psychparams{imouse} =bfit;
+        end
 
 %         psychparams{imouse} = fitPsychologisticML(xx, mousechoice(iuse)==1, myPlots.psychparams{imouse});
         if ~isempty(psychparams{imouse})
@@ -160,7 +157,7 @@ perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
 
 plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
-    perfavg, perfmax, perftot, rewtot)
+    perfavg, perfmax, perftot, rewtot, runsimple)
 %--------------------------------------------------------------------------
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
@@ -176,12 +173,12 @@ for imouse = 1:2
     
     if isempty(respcells{imouse}), continue, end
     plotPsychometric(myPlots.PsychometricPlot(imouse), mousecol, ...
-        respcons{imouse}, respcells{imouse}, psychparams{imouse})
+        respcons{imouse}, respcells{imouse}, psychparams{imouse}, runsimple)
     plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
 end
 %--------------------------------------------------------------------------
-plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts)
-plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis)
+plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple)
+plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple)
 
 
 %--------------------------------------------------------------------------

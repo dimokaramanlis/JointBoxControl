@@ -1,4 +1,4 @@
-function plotPsychometric(PsychometricPlot, mousecol, convec, respcell, psychparams)
+function plotPsychometric(PsychometricPlot, mousecol, convec, respcell, psychparams, runsimple)
 
 xvals = linspace(-1, 1, 200);
 % choicem2(dectimeM1-dectimeM2<-0.2)=0;
@@ -15,8 +15,10 @@ alpha = 0.05;
 allresp = cellfun(@mean, respcell);
 % binomial confidence intervals
 allerrs = NaN(numel(respcell), 2);
-for ii = 1:numel(respcell)
-    [~, allerrs(ii, :)] = binofit(sum(respcell{ii}),numel(respcell{ii}), alpha);
+if ~runsimple
+    for ii = 1:numel(respcell)
+        [~, allerrs(ii, :)] = binofit(sum(respcell{ii}),numel(respcell{ii}), alpha);
+    end
 end
 lpos = NaN;
 lneg = NaN;
