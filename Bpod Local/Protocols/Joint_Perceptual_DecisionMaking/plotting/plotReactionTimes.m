@@ -16,7 +16,7 @@ for imouse = 1:2
     if ~runsimple
         semreact  = cellfun(@(x) 1.4826 * mad(x(~isnan(x)), 1)/sqrt(nnz(~isnan(x))), reactcell{imouse});
     else
-        semreact  = cellfun(@(x) std(x(~isnan(x)), 1)/sqrt(nnz(~isnan(x))), reactcell{imouse});
+        semreact  = cellfun(@(x) std(x(~isnan(x)))/sqrt(nnz(~isnan(x))), reactcell{imouse});
     end
     errorbar(OrientationReactionTimePlot,...
         convec{imouse}, meanreact, semreact,...
