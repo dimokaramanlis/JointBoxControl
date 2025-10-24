@@ -157,7 +157,7 @@ perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
 
 plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
-    perfavg, perfmax, perftot, rewtot, runsimple)
+    perfavg, perfmax, perftot, rewtot)
 %--------------------------------------------------------------------------
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);

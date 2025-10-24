@@ -1,5 +1,5 @@
 function plotPercentageCorrect(percentageCorrectPlot, graphics, ...
-    perfavg, perfmax, perftot, rewtot)
+    perfavg, perfmax, perftot, rewtot )
 
 
 Ntrials  = size(perfavg, 1);

@@ -15,11 +15,13 @@ end
 
 line(percentageCorrectPlot,1:Ntrials, 0.5 * ones(1,Ntrials), 'LineStyle', '--', 'Color', 'k',...
     'LineWidth', 0.5)
-xopto = find(isopto);
-xplot = (xopto*[1 1 nan])';
-yplot =  repmat([0;1;nan], [1, numel(xopto)]);
 
-line(percentageCorrectPlot, xplot(:), yplot(:), 'Color', [0.7 0.7 1])
+xopto = find(isopto);
+if numel(xopto) > 0
+    xplot = (xopto*[1 1 nan])';
+    yplot =  repmat([0;1;nan], [1, numel(xopto)]);
+    line(percentageCorrectPlot, xplot(:), yplot(:), 'Color', [0.7 0.7 1])
+end
 
 for imouse = 1:2
     mousecol = graphics.mouseColor(imouse, :);
