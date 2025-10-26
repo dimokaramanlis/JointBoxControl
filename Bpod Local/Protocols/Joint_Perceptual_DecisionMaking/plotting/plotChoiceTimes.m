@@ -11,7 +11,7 @@ if currxlim(2) < Ntrials
     xticks(choiceTimePlot,[1 newmax/4 newmax/2 3*newmax/4 newmax])
 end
 
-ymax = max([quantilese(choicetimes(:), 0.95) 1e-3]);
+ymax = max([prctile(choicetimes(:), 95) 1e-3]);
 ymax = ceil(ymax);
 ylim(choiceTimePlot, [0 ymax])
 yticks(choiceTimePlot, [0 ymax/2 ymax])
