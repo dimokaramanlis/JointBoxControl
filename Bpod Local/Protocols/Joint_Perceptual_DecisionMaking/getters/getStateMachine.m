@@ -11,7 +11,9 @@ psecond            = max(psecond, 0);
 for ii = 1:4
 
     rewvalve           = S.GUI.RewardAmount * getfield(S.GUI,sprintf('RewardMultiplier%d', ii));
+    rewvalve           = rewvalve * (rewvalve > 0);
     rewvalveSecond     = psecond * rewvalve;
+    rewvalveSecond     = rewvalveSecond * (rewvalveSecond > 0);
     if rewvalve > 80
         valvetimes(ii) = 1;
     else
@@ -29,6 +31,8 @@ for ii = 1:4
     valverewards(ii) = rewvalve;
 %     valverewardsSecond(ii) = rewvalveSecond;
 end
+valvetimes       = valvetimes.*(valvetimes > 0);
+valvetimesSecond = valvetimesSecond.*(valvetimesSecond > 0);
 reshrew       = valverewards([4, 1; 3, 2]);
 % reshrewSecond = valverewardsSecond([4, 1; 3, 2]);
 %--------------------------------------------------------------------------
