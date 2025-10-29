@@ -31,10 +31,17 @@ for ii = 1:Ntrials
     
     % abort invalid trials
     if any(mcurr<0), continue,  end
-    % regress to 0.5 when task setting changes...
-    if ~isequal(isnan(mcurr), isnan(moldperf))
-        moldperf = ~isnan(mcurr) * 0.5;
+    % regress to 0.5 when task setting changes... ???????????
+%     if ~isequal(isnan(mcurr), isnan(moldperf))
+%         moldperf = ~isnan(mcurr) * 0.5;
+%     end
+    for this_mouse = 1:length(moldperf)
+        if isnan(moldperf(this_mouse)) && ~isnan(mcurr(this_mouse))           
+            last_notnan = find(~isnan(perfavg(:,this_mouse)),1,'last');
+            moldperf(this_mouse) = perfavg(last_notnan,this_mouse);
+        end
     end
+    
     moldperf    = beta * moldperf + (1 - beta) * mcurr;
     perfavg(ii, :) = moldperf;
 
@@ -46,11 +53,19 @@ for ii = 1:Ntrials
     if ~isequal(isnan(chcurr), isnan(moldchoice))
         moldchoice = ~isnan(chcurr) * 0.5;
     end
+    
     moldchoice    = beta * moldchoice + (1 - beta) * chcurr;
     choiceavg(ii, :) = moldchoice;
     
     
-    rewout(isnan(rewout)) = 0; 
+    rewout(isnan(rewout)) = 0;
+%     for this_mouse = 1:length(moldrew)
+%         if isnan(moldrew(this_mouse)) && ~isnan(rewout(this_mouse))           
+%             last_notnan = find(~isnan(rewardavg(:,this_mouse)),1,'last');
+%             moldrew(this_mouse) = rewardavg(last_notnan,this_mouse);
+%         end
+%     end
+%     
     moldrew    = beta * moldrew + (1 - beta) * rewout;
     rewardavg(ii, :) = moldrew;
    
@@ -188,39 +203,47 @@ rewtot    = mean(rewardoutcomes, 1, 'omitnan');
 Nmax       = min(100, Ntrials);
 rewmax    = max(movmean(rewardoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
 
+similar_response = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials;
+
+% Just for the coop average value: amount of times both rewarded
 coopoutcomes = all(Data.RewardOutcome == 1, 2);  % vector of shared reward
+%coopoutcomes = all(Data.TrialOutcome == 1, 2);  % vector of shared reward
 coopoutcomes = [coopoutcomes coopoutcomes];  % duplicate for 2 mice
 
 cooptot = mean(coopoutcomes, 1, 'omitnan');
 coopmax = max(movmean(coopoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
 
-% mouseallreacts = NaN(Ntrials, 2);
-% for imouse = 1:2
-%     if iscell(respreacts{1,imouse})
-%          mouseallreacts(:,imouse) = cell2mat(respreacts{1,imouse});
-%     elseif isa(respreacts{1,imouse}, 'double')
-%          mouseallreacts (:,imouse) = respreacts{1,imouse}{1};
-%     else
-%         mouseallreacts(:,imouse) = respreacts{imouse};
-%     end
-%  end
-% trialoutcomes(trialoutcomes<0) = NaN;
-% 
-% coopoutcomes = all(Data.TrialOutcome == 1, 2);  % vector of shared reward
-% 
-% mousewin = NaN(Ntrials,1);
-% for iTrial = 1:Ntrials
-%     if coopoutcomes(iTrial) == 1
-%         [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]);
-%         mousewin(iTrial) = idxWin;
-%     end
-% end
+%mousewin=1;
+
+    % mouseallreacts = NaN(Ntrials, 2);
+    % for imouse = 1:2
+         
+    %     if iscell(respreacts{1,imouse})
+    %          mouseallreacts(:,imouse) = cell2mat(respreacts{1,imouse});
+    %     elseif isa(respreacts{1,imouse}, 'double')
+    %          mouseallreacts (:,imouse) = respreacts{1,imouse}{1};
+    %     else
+    %         mouseallreacts(:,imouse) = respreacts{imouse};
+    %     end
+    %  end
+    % trialoutcomes(trialoutcomes<0) = NaN;
+    
+    mouseallreacts = Data.ReactionTimes;
+    trialoutcomes = all(Data.TrialOutcome == 1, 2);  % vector of shared reward
+    
+    mousewin = zeros(Ntrials,1);
+    for iTrial = 1:Ntrials
+        if coopoutcomes(iTrial) == 1
+            [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]);
+            mousewin(iTrial) = idxWin;
+        end
+    end
+
 %fprintf(mousewin);
 %figure(55); plot(mousewin);
 
-mousewin=1;
 plotCompCoop(myPlots.CooperationORCompetitionPerformance,graphics, ...
-    rewardavg, rewmax, rewtot, cooptot, coopmax, mousewin)
+    rewardavg, rewmax, rewtot, cooptot, coopmax, mousewin,similar_response)
 
 
 %--------------------------------------------------------------------------

@@ -229,18 +229,16 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
             for ifield = 1:numel(validfields)
                 secondmouserew = min(secondmouserew, min(currTrialStates.(validfields{ifield})));
             end
-            
-            
-            if ~isnan(mouserew)
-                rewcurr(imouse) = currRewardAmount(imouse);
-                RewardOutcome (imouse) = 1;
-                
-            elseif ~isnan(secondmouserew)
+               
+            if ~isnan(secondmouserew)
                 psecond  = min(S.GUI.RewardPercentageSecond, 1);
                 psecond  = max(psecond, 0);
                 rewcurr(imouse) = currRewardAmount(imouse) * psecond;
                 RewardOutcome (imouse) = 0;
-            end
+            elseif ~isnan(mouserew)
+                rewcurr(imouse) = currRewardAmount(imouse);
+                RewardOutcome (imouse) = 1;
+             end
 
 
         end
