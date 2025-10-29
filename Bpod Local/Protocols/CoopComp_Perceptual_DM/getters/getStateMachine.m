@@ -180,6 +180,7 @@ if numel(mousesetting)==2
 
     if any(selected_task == [3, 4])     % coopertaion or cooperative competition    
         MouseTerminate  = {'GlobalTimer2_End','customExit'};
+        MouseTerminateFirst  = {'GlobalTimer2_End','customExit'};
          
          if S.GUI.Terminate         
              MouseTerminateFirst = {choices.m1IncorrectChoice,'M1WrongFirstBothPunished',...

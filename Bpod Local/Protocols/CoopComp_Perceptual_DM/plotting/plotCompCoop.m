@@ -50,8 +50,8 @@ plot(percentageCorrectPlot,M2wins, y_position2, 'o', 'MarkerFaceColor', graphics
 tstr1    = sprintf('Winning, max/avg m1: %2.2f/%2.2f, m2: %2.2f/%2.2f',...
     perfmax(1),perftot(1),  perfmax(2), perftot(2));
 
-tstr2    = sprintf('Cooperation, max/avg m1: %2.2f/%2.2f, m2: %2.2f/%2.2f. Similarity: %2.2f.',...
-    coopmax(1),cooptot(1),  coopmax(2), cooptot(2),similar_response);
+tstr2    = sprintf('Both rewarded max/avg m1: %2.2f/%2.2f. Similarity: %2.2f.',...
+    coopmax(1),cooptot(1), similar_response);
 title(percentageCorrectPlot, {tstr1 tstr2})
 
 
