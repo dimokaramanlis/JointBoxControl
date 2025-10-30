@@ -11,7 +11,7 @@ end
 %--------------------------------------------------------------------------
 fload = load(fullfile(dp, fname));
 [myPlots, graphics] =  initializePlots('regenfile');
-myPlots = updatePlots(fload.SessionData, 'regenfile', myPlots, graphics);
+myPlots = updatePlots(fload.SessionData, 'regenfile', myPlots, graphics, false);
 [~, cftitle, ~] = fileparts(fname);
 
 print(myPlots.PerformanceFigure, fullfile(dp, [cftitle '.jpeg']),'-djpeg','-r600');
