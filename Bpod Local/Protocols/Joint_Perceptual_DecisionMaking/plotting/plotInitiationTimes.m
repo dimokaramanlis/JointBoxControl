@@ -13,8 +13,8 @@ if currxlim(2) < Ntrials
     xticks(initationTimePlot, [1 newmax/4 newmax/2 3*newmax/4 newmax])
 end
 
-ymax = max([prctile(initiationtimes(:), 95) 1e-3]);
-%ymax = max(initiationtimes, [], 'all');
+% ymax = max([prctile(initiationtimes(:), 95) 1e-3]);
+ymax = min(max(initiationtimes, [], 'all'), 3*median(initiationtimes, 'all', 'omitnan'));
 
 ymax = ceil(ymax);
 ylim(initationTimePlot, [0 ymax])
