@@ -27,7 +27,7 @@ for imouse = 1:2
     %----------------------------------------------------------------------
     % normal data
     [res.respcons{1,  imouse}, ~, ic] = unique(mousecontrast(iuse & ~mouseopto));
-    res.respcells{1,  imouse}         = accumarray(ic, mousechoice(iuse & ~mouseopto)==1, [], @(x) {x});
+    res.respcells{1,  imouse}         = accumarray(ic, mousechoice(iuse & ~mouseopto), [], @(x) {x});
     res.respreacts{1, imouse}         = accumarray(ic, mousereact(iuse  & ~mouseopto),    [], @(x) {x});
     res.respdecis{1,  imouse}         = accumarray(ic, mousedecide(iuse & ~mouseopto),    [], @(x) {x});
     %----------------------------------------------------------------------
