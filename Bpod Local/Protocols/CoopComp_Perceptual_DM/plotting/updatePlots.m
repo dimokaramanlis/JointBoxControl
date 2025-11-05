@@ -38,7 +38,11 @@ for ii = 1:Ntrials
     for this_mouse = 1:length(moldperf)
         if isnan(moldperf(this_mouse)) && ~isnan(mcurr(this_mouse))           
             last_notnan = find(~isnan(perfavg(:,this_mouse)),1,'last');
-            moldperf(this_mouse) = perfavg(last_notnan,this_mouse);
+            if isempty(last_notnan)
+                moldperf(this_mouse) = 0.5;
+            else
+                moldperf(this_mouse) = perfavg(last_notnan,this_mouse);
+            end
         end
     end
     
