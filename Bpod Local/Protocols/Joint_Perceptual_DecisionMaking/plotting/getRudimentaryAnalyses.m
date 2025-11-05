@@ -26,16 +26,22 @@ for imouse = 1:2
     if all(isnan(mousechoice)), continue, end
     %----------------------------------------------------------------------
     % normal data
-    [res.respcons{1,  imouse}, ~, ic] = unique(mousecontrast(iuse & ~mouseopto));
-    res.respcells{1,  imouse}         = accumarray(ic, mousechoice(iuse & ~mouseopto), [], @(x) {x});
-    res.respreacts{1, imouse}         = accumarray(ic, mousereact(iuse  & ~mouseopto),    [], @(x) {x});
-    res.respdecis{1,  imouse}         = accumarray(ic, mousedecide(iuse & ~mouseopto),    [], @(x) {x});
+    isnormaltrial = iuse & ~mouseopto;
+    if nnz(isnormaltrial) > 0
+        [res.respcons{1,  imouse}, ~, ic] = unique(mousecontrast(isnormaltrial));
+        res.respcells{1,  imouse}         = accumarray(ic, mousechoice(isnormaltrial)==1, [], @(x) {x});
+        res.respreacts{1, imouse}         = accumarray(ic, mousereact(isnormaltrial),    [], @(x) {x});
+        res.respdecis{1,  imouse}         = accumarray(ic, mousedecide(isnormaltrial),    [], @(x) {x});
+    end
     %----------------------------------------------------------------------
     % opto data
-    [res.respcons{2, imouse}, ~, icopto] = unique(mousecontrast(iuse & mouseopto));
-    res.respcells{2, imouse}             = accumarray(icopto, mousechoice(iuse & mouseopto)==1, [], @(x) {x});
-    res.respreacts{2, imouse}            = accumarray(icopto, mousereact(iuse  & mouseopto),    [], @(x) {x});
-    res.respdecis{2, imouse}             = accumarray(icopto, mousedecide(iuse & mouseopto),    [], @(x) {x});
+    isoptotrial = iuse & mouseopto;
+    if nnz(isoptotrial) > 0
+        [res.respcons{2, imouse}, ~, icopto] = unique(mousecontrast(isoptotrial));
+        res.respcells{2, imouse}             = accumarray(icopto, mousechoice(isoptotrial)==1, [], @(x) {x});
+        res.respreacts{2, imouse}            = accumarray(icopto, mousereact(isoptotrial),     [], @(x) {x});
+        res.respdecis{2, imouse}             = accumarray(icopto, mousedecide(isoptotrial),    [], @(x) {x});
+    end
     %----------------------------------------------------------------------
     iother      = 2-mod(1,imouse);
     if nnz(iuse) > 8 % at least some observations for fitting
