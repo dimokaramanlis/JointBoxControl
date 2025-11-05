@@ -35,21 +35,21 @@ end
 alpha   = 0.05;
 edgecol = [0 0 0; mousecol(2, :)];
 for iplot = 1:2
-
-    % calculate confidence intervals
-    allresp = cellfun(@mean, respcell{iplot});
-    % binomial confidence intervals
-    allerrs = NaN(numel(respcell{iplot}), 2);
-    if ~runsimple
-        for ii = 1:numel(respcell{iplot})
-            [~, allerrs(ii, :)] = binofit(sum(respcell{iplot}{ii}),numel(respcell{iplot}{ii}), alpha);
+    if ~isempty(respcell{iplot})
+        % calculate confidence intervals
+        allresp = cellfun(@mean, respcell{iplot});
+        % binomial confidence intervals
+        allerrs = NaN(numel(respcell{iplot}), 2);
+        if ~runsimple
+            for ii = 1:numel(respcell{iplot})
+                [~, allerrs(ii, :)] = binofit(sum(respcell{iplot}{ii}),numel(respcell{iplot}{ii}), alpha);
+            end
         end
+    
+        errorbar(PsychometricPlot, convec{iplot}, allresp, allresp-allerrs(:,1), allerrs(:,2)-allresp,...
+            'Marker', 'o','MarkerFaceColor', mousecol(1, :), 'CapSize',2,'LineStyle','none',...
+            'MarkerEdgeColor',edgecol(iplot,:),'LineWidth',0.5, 'Color', edgecol(iplot,:), 'MarkerSize', 5)
     end
-
-    errorbar(PsychometricPlot, convec{iplot}, allresp, allresp-allerrs(:,1), allerrs(:,2)-allresp,...
-        'Marker', 'o','MarkerFaceColor', mousecol(1, :), 'CapSize',2,'LineStyle','none',...
-        'MarkerEdgeColor',edgecol(iplot,:),'LineWidth',0.5, 'Color', edgecol(iplot,:))
-
 end
 %==========================================================================
 tstr1 = sprintf('Pcychometric with %d%% CI', (1-alpha)*100);

@@ -38,7 +38,7 @@ for imouse = 1:2
         'Marker', '.', 'Color', [mousecol 0.5], 'LineWidth', 1,'MarkerSize',3);
     redcol = 0.4*[1 0 0] + 0.6 *mousecol;
     line(taskEngagementPlot, 1:Ntrials, disengavg(:, imouse), ...
-        'Marker', '.', 'Color', [redcol 0.5], 'LineWidth', 1,'MarkerSize',3);
+        'Marker', '.', 'Color', [redcol 0.5], 'LineWidth', 1.2,'MarkerSize',3);
 end
 
 text(taskEngagementPlot, 1, 0.1, 'Disengagement', 'Color', 'r', 'Fontsize',10)

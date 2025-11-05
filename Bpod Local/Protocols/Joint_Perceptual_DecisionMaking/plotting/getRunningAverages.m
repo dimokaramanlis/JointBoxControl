@@ -1,15 +1,15 @@
 function runavg = getRunningAverages(Data, beta)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
-
 %----------------------------------------------------------------------
+Ntrials       = max(Data.TrialNumber);
+runavg.isopto = nan(Ntrials, 2);
 if isfield(Data, 'isOpto')
-    runavg.isopto = Data.isOpto;
-else
-    runavg.isopto = nan(Ntrials, 2);
+    if any(Data.isOpto,"all")
+        runavg.isopto = Data.isOpto;
+    end
 end
 %----------------------------------------------------------------------
-Ntrials    = max(Data.TrialNumber);
 moldperf   =  [1 1] * 0.5;
 moldchoice =  [1 1] * 0.5;
 molddiseng =  0;

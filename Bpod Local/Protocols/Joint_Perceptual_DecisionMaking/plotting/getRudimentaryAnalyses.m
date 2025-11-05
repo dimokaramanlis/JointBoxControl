@@ -19,7 +19,8 @@ for imouse = 1:2
     mousereact    = Data.ReactionTimes(:,imouse);
     mousedecide   = decideFromSpout(mousereact, mousechoice); % Data.DecisionTimes(:,imouse);
     mousecontrast = Data.Contrast(:, imouse);
-    mouseopto     = isopto(:, imouse);
+    mouseopto     = ~isnan(isopto(:, imouse));
+    mouseopto(mouseopto) = isopto(mouseopto, imouse);
     %----------------------------------------------------------------------
     iuse = ~isnan(mousechoice);
     if all(isnan(mousechoice)), continue, end
