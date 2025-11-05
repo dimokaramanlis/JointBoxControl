@@ -9,9 +9,9 @@ else
     [dp, fname] = fileparts(dp);
 end
 %--------------------------------------------------------------------------
-fload = load(fullfile(dp, fname));
-[myPlots, graphics] =  initializePlots('regenfile');
-myPlots = updatePlots(fload.SessionData, 'regenfile', myPlots, graphics, false);
+fload   = load(fullfile(dp, fname));
+myPlots = initializePlots('regenfile');
+myPlots = updatePlots(fload.SessionData, 'regenfile', myPlots, false);
 [~, cftitle, ~] = fileparts(fname);
 
 print(myPlots.PerformanceFigure, fullfile(dp, [cftitle '.jpeg']),'-djpeg','-r600');

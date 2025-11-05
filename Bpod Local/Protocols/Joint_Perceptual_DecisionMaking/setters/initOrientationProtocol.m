@@ -1,4 +1,4 @@
-function [PTB,S,BpodSystem,graphics,myPlots] = initOrientationProtocol(BpodSystem, screenIds, invgamma, ops)
+function [PTB, S, BpodSystem, myPlots] = initOrientationProtocol(BpodSystem, screenIds, invgamma, ops)
 
 %% Load previous parameters (if exist)
 [sessionDir,~,~] = fileparts(BpodSystem.Path.CurrentDataFile);
@@ -65,6 +65,6 @@ end
 BpodSystem.SoftCodeHandlerFunction = 'StimulusFunctionOrientation';
 %==========================================================================
 % Setup figure
-[myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+myPlots = initializePlots(BpodSystem.Status.CurrentSubjectName);
 %==========================================================================
 end

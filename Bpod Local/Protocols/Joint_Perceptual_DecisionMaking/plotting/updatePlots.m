@@ -1,140 +1,39 @@
-function myPlots = updatePlots(Data, subjectName, myPlots, graphics, runsimple)
+function myPlots = updatePlots(Data, subjectName, myPlots, runsimple)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %--------------------------------------------------------------------------
 % here one can do calculations relevant for each plot and pass them as
 % arguments
-beta     = 0.8; %0.9
+beta    = 0.8; %0.9
 Ntrials = max(Data.TrialNumber);
-%--------------------------------------------------------------------------
+%=========================================================================
 % get running averages for performance, choice and disengagement
-%%
-moldperf   =  [1 1] * 0.5;
-moldchoice =  [1 1] * 0.5;
-molddiseng =  0;
-
-perfavg    = NaN(Ntrials, 2);
-choiceavg  = NaN(Ntrials, 2);
-disengavg  = NaN(Ntrials, 2);
-iscongr    = zeros(Ntrials, 1);
-for ii = 1:Ntrials
-    iscongr(ii) =  Data.TrialSettings(ii).GUI.Dependent;
-    mcurr       =  Data.TrialOutcome(ii, :);
-    chcurr      =  Data.MouseChoice(ii, :);
-
-    dcurr         = isnan(chcurr);
-    molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
-    disengavg(ii, :) = molddiseng;
-    
-    % abort invalid trials
-    if any(mcurr<0), continue,  end
-    % regress to 0.5 when task setting changes...
-    if ~isequal(isnan(mcurr), isnan(moldperf))
-        moldperf = ~isnan(mcurr) * 0.5;
-    end
-    moldperf    = beta * moldperf + (1 - beta) * mcurr;
-    perfavg(ii, :) = moldperf;
-
-    
-    % abort invalid trials
-    if all(isnan(chcurr)), continue,  end
-    chcurr = (chcurr+1)/2;
-    % regress to 0.5 when task setting changes...
-    if ~isequal(isnan(chcurr), isnan(moldchoice))
-        moldchoice = ~isnan(chcurr) * 0.5;
-    end
-    moldchoice    = beta * moldchoice + (1 - beta) * chcurr;
-    choiceavg(ii, :) = moldchoice;
-
-    
-end
-%--------------------------------------------------------------------------
-if isfield(Data, 'isOpto')
-    isopto = Data.isOpto;
-else
-    isopto = false(Ntrials, 1);
-end
-%--------------------------------------------------------------------------
+runavg = getRunningAverages(Data, beta);
+%=========================================================================
 % do the fits
-respcells   = cell(1,2);
-respcons    = cell(1,2);
-respreacts  = cell(1,2);
-respdecis   = cell(1,2);
-
-psychparams = cell(1,2);
-mdlaccuracy = NaN(1, 2);
-dtime = 0.02;
-for imouse = 1:2
-    mousechoice   =  Data.MouseChoice(:,imouse);
-    mousereact    =  Data.ReactionTimes(:,imouse);
-    mousedecide   =  decideFromSpout(mousereact, mousechoice); % Data.DecisionTimes(:,imouse);
-    mousecontrast =  Data.Contrast(:, imouse);
-        
-    
-    iuse = ~isnan(mousechoice);
-    if all(isnan(mousechoice)), continue, end
-    [respcons{imouse}, ~, ic] = unique(mousecontrast(iuse));
-    respcells{imouse}  = accumarray(ic, mousechoice(iuse)==1, [], @(x) {x});
-    respreacts{imouse} = accumarray(ic, mousereact(iuse), [], @(x) {x});
-    respdecis{imouse}  = accumarray(ic, mousedecide(iuse), [], @(x) {x});
-     
-    iother      = 2-mod(1,imouse);
-    if nnz(iuse) > 8 % at least some observations for fitting
-        if nnz(~isnan(sum( Data.MouseChoice(iuse,:),2))) > 16
-            % fit social model
-            xx1 = contrastfun(mousecontrast(iuse));
-            otherchoice  =  Data.MouseChoice(:, iother);
-            otherchoice(isnan(otherchoice)) = 0;
-            otherreact   =  Data.ReactionTimes(:,iother);
-            otherreactuse = decideFromSpout(otherreact(iuse), otherchoice(iuse));
-            mousereactuse = mousedecide(iuse);
-
-%             otherreactuse = otherreact(iuse) - quantile(otherreact(iuse),0.02);
-%             mousereactuse = mousereact(iuse) - quantile(mousereact(iuse),0.02);
-
-            xx2 = otherchoice(iuse);
-            xx2(mousereactuse < (otherreactuse + dtime)) = 0;
-            
-            xx3 = xx2.* socialfun(xx1);
-
-            xx = [xx1 xx2 xx3];
-            xx(isnan(xx)) = 0;
-        else
-            % fit contrast model
-            xx = mousecontrast(iuse);
-        end
-        %temporary fix 
-        if ~runsimple
-            bfit = glmfit(xx, mousechoice(iuse)==1, 'binomial');
-            psychparams{imouse} =bfit;
-        end
-%         psychparams{imouse} = fitPsychologisticML(xx, mousechoice(iuse)==1, myPlots.psychparams{imouse});
-        if ~isempty(psychparams{imouse})
-            modelpred   = glmval(psychparams{imouse}, xx, 'logit') > 0.5;
-            mdlaccuracy(imouse) = mean(modelpred == (mousechoice(iuse)==1));
-        end
-    end       
-end
-myPlots.psychparams = psychparams;
-%--------------------------------------------------------------------------
-% do plotting
+res = getRudimentaryAnalyses(Data, runavg.isopto, runsimple);
+myPlots.psychparams = res.psychparams;
+%=========================================================================
+% plot initiation time
 initiationtimes =  Data.InitiationTime;
 if isfield( Data, 'isSpontaneous')
-    isspontaneous   =  Data.isSpontaneous;
+    isspontaneous = Data.isSpontaneous;
 else
     isspontaneous = false([size(initiationtimes,1),1]);
 end
-plotInitiationTimes(myPlots.initationTimePlot, graphics, initiationtimes, isspontaneous)
+plotInitiationTimes(myPlots.initationTimePlot, myPlots.graphics, initiationtimes, isspontaneous)
 %--------------------------------------------------------------------------
-decidetimes =  Data.DecisionTimes;
+% plot time to leave platform
+decidetimes = Data.DecisionTimes;
 decidetimes(isnan( Data.MouseChoice)) = NaN;
-
-plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes);
+plotChoiceTimes(myPlots.decisionTimePlot, myPlots.graphics, decidetimes);
 %--------------------------------------------------------------------------
+% plot time to spout
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
-plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes);
+plotChoiceTimes(myPlots.choiceTimePlot, myPlots.graphics, choicetimes);
 %--------------------------------------------------------------------------
+% plot task performance
 trialoutcomes =  Data.TrialOutcome;
 trialoutcomes(trialoutcomes<0) = NaN;
 perftot    = mean(trialoutcomes, 1, 'omitnan');
@@ -143,32 +42,36 @@ Nmax       = min(100, Ntrials);
 perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
 
-plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
-    perfavg, perfmax, perftot, rewtot, isopto)
+plotPercentageCorrect(myPlots.percentageCorrectPlot, myPlots.graphics, ...
+    runavg.perfavg, perfmax, perftot, rewtot, runavg.isopto)
 %--------------------------------------------------------------------------
+% plot task engagement
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
 
 rplus  = sum( Data.RewardAmount.*( Data.MouseChoice>0).*(trialoutcomes>0), 1, 'omitnan');
 rminus = sum( Data.RewardAmount.*( Data.MouseChoice<0).*(trialoutcomes>0), 1, 'omitnan');
-plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus]);
+plotTaskEngagement(myPlots.taskEngagementPlot, myPlots.graphics,...
+    runavg.choiceavg, choicetot, runavg.disengavg, [rplus;rminus], runavg.isopto);
 %--------------------------------------------------------------------------
 % plot fits
 for imouse = 1:2
     % plots
-    mousecol = graphics.mouseColor(imouse, :);
-    
-    if isempty(respcells{imouse}), continue, end
+    mousecol   = [myPlots.graphics.mouseColor(imouse, :); myPlots.graphics.optoColor];
+    mousecells = res.respcells(:, imouse);
+    mousecon   = res.respcons(:, imouse);
+    if all(cellfun(@isempty, mousecells)), continue, end
+
     plotPsychometric(myPlots.PsychometricPlot(imouse), mousecol, ...
-        respcons{imouse}, respcells{imouse}, psychparams{imouse}, runsimple)
-    plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
+        mousecon, mousecells, res.psychparams{imouse}, runsimple)
+    plotPsychometricWeights(myPlots.WeightPlot(imouse), res.psychparams{imouse}, res.mdlaccuracy(imouse))
 end
 %--------------------------------------------------------------------------
-plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts, runsimple)
-plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple)
+plotReactionTimes(myPlots.OrientationReactionTimePlot, myPlots.graphics, res.respcons, res.respreacts, runsimple)
+plotReactionTimes(myPlots.OrientationDecisionTimePlot, myPlots.graphics, res.respcons, res.respdecis, runsimple)
 %--------------------------------------------------------------------------
 if contains( subjectName, '_')
-    iscall = mode(iscongr);
+    iscall = mode(runavg.iscongr);
     switch iscall
         case 1
             extrastr = 'Congruent';

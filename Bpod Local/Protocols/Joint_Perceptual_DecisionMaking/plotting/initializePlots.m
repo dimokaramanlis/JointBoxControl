@@ -1,4 +1,4 @@
-function [myPlots, graphics] = initializePlots(subjectName)
+function myPlots = initializePlots(subjectName)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %==========================================================================
@@ -12,6 +12,7 @@ graphics.leftUnrewardedColor  = [0.75,0.55,0.55];
 graphics.rightChoiceColor     = [0.15 0.15 0.5];
 graphics.rightRewardedColor   = [0.1,0.3,0.75];
 graphics.rightUnrewardedColor = [0.55,0.55,0.75];
+graphics.optoColor            = [0.7 0.7 1];
 %==========================================================================
 set(groot, 'DefaultAxesTickDir', 'out');
 set(groot, 'DefaultAxesTickDirMode', 'manual');
@@ -130,8 +131,9 @@ p.fontsize = 10;
 p.title({...
     sprintf('%s %s', strrep(subjectName,'_',' '), date),' '})
 %==========================================================================
-myPlots.panhandle  = p;
+myPlots.panhandle   = p;
 myPlots.psychparams = {[], []};
+myPlots.graphics    = graphics;
 %==========================================================================
 
 end

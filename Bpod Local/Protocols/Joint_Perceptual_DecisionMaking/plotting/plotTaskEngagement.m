@@ -1,4 +1,4 @@
-function plotTaskEngagement(taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, rewass)
+function plotTaskEngagement(taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, rewass, isopto)
 
 
 Ntrials = size(choiceavg, 1);
@@ -24,6 +24,13 @@ title(taskEngagementPlot, {tstr1 tstr2})
 
 line(taskEngagementPlot,1:Ntrials, 0.5 * ones(1,Ntrials),...
     'LineStyle', '--', 'Color', 'k', 'LineWidth', 0.5)
+
+xopto = find(any(isopto, 2));
+if numel(xopto) > 0
+    xplot = (xopto*[1 1 nan])';
+    yplot = repmat([0;1;nan], [1, numel(xopto)]);
+    line(taskEngagementPlot, xplot(:), yplot(:), 'Color', graphics.optoColor)
+end
 
 for imouse = 1:2
     mousecol = graphics.mouseColor(imouse, :);

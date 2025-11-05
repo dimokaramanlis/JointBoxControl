@@ -20,7 +20,7 @@ BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
 [screenIds, screenInvGammaTables] = checkMonitorIdentity('C:\BoxSettings', true);
 %----------------------------------------------------------------------------
 % initialize bpod system
-[PTB, S, BpodSystem, graphics, myPlots] = initOrientationProtocol(BpodSystem, screenIds, screenInvGammaTables,ops);
+[PTB, S, BpodSystem, myPlots] = initOrientationProtocol(BpodSystem, screenIds, screenInvGammaTables,ops);
 %----------------------------------------------------------------------------
 % initialize Analog Input Module
 if localsettings.useAIM ~=0
@@ -60,10 +60,13 @@ currreward   = -1; % for debug mode
 for currentTrial = 1:10000
     %----------------------------------------------------------------------------
     S = BpodParameterGUI('sync', S); % Sync parameters with BpodParameterGUI plugin
-    ops.degPositive = S.GUI.Angle;
-    ops.degNegative = -S.GUI.Angle;
-    sliderstruct    = struct();
-    isopto          = false;
+    ops.degPositive   = S.GUI.Angle;
+    ops.degNegative   = -S.GUI.Angle;
+    %----------------------------------------------------------------------------
+    sliderstruct        = struct();
+    optostruct          = struct(); 
+    optostruct.isopto   = false;
+    optostruct.optoside = ops.useOpto;
     %----------------------------------------------------------------------------
     % same for mouse setting
     if ~isequal(mousesetting, getmousesetting(S.GUI.MouseSetting))
@@ -125,7 +128,7 @@ for currentTrial = 1:10000
     %----------------------------------------------------------------------------
     if ops.useOpto > 0
         if rand(1) < S.GUI.ProbOpto
-            isopto = true;
+            optostruct.isopto = true;
         end
     end
     %----------------------------------------------------------------------------
@@ -134,7 +137,7 @@ for currentTrial = 1:10000
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
     %----------------------------------------------------------------------------
     % prepare and run state machine
-    [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, isopto, ops);
+    [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, optostruct.isopto, ops);
     SendStateMatrix(sma); % Send the state matrix to the Bpod device
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
@@ -145,13 +148,13 @@ for currentTrial = 1:10000
         BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                              RawEvents,currentTrial,...
                                              currstim, currreward,currRewardAmount,...
-                                             mousesetting, isopto, sliderstruct);
+                                             mousesetting, optostruct, sliderstruct);
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)
-            [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+            myPlots = initializePlots(BpodSystem.Status.CurrentSubjectName);
         end
-        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots);
+        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, localsettings.runSimplePlots);
     end
     %----------------------------------------------------------------------
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.
@@ -173,9 +176,9 @@ for currentTrial = 1:10000
             delete(displayTimer); 
         end
         %----------------------------------------------------------------------
-        MouseName = BpodSystem.GUIData.SubjectName;
-        ProtocolName =  [S.GUIMeta.ProtocolName.String{S.GUI.ProtocolName}];
-        fileName = [datestr(datetime('now'),'yyyymmdd_HHMM_') MouseName];
+        MouseName    = BpodSystem.GUIData.SubjectName;
+        ProtocolName = [S.GUIMeta.ProtocolName.String{S.GUI.ProtocolName}];
+        fileName     = [datestr(datetime('now'),'yyyymmdd_HHMM_') MouseName];
         if exist('PerformanceFigure','var')
             %myPlots.panhandle.export();
             print(myPlots.PerformanceFigure,[sessionDir filesep MouseName '_' datestr(datetime('now'),'yyyy.mm.dd.HH.MM') '.jpeg'],'-djpeg','-r600');
@@ -199,14 +202,16 @@ for currentTrial = 1:10000
         %==================================================================
         questdlg('Stop all recordings and video', 'Stop dialog', 'OK','OK');
         %----------------------------------------------------------------------
-        rmpath(genpath(fileparts(protocolpath))); %remove path from list
-        %----------------------------------------------------------------------
         if localsettings.useAIM ~=0
             A.scope_StartStop; % Stop Oscope GUI
             A.endAcq; % Close Oscope GUI
             A.stopReportingEvents; % Stop sendi
             copyfile(anlgstremfile, behpath); % copy analog input path
         end
+        %----------------------------------------------------------------------
+        warning off;
+        rmpath(genpath(fileparts(protocolpath))); %remove path from list
+        warning on;
         %----------------------------------------------------------------------
         return
     end
