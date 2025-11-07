@@ -11,30 +11,40 @@ Ntrials = max(Data.TrialNumber);
 %%
 moldperf   =  [1 1] * 0.5;
 moldchoice =  [1 1] * 0.5;
-moldrew  =  [1 1] * 0.5; moldrewcoop = moldrew;
+moldwin =  [1 1] * 0.5;
+%moldrew  =  [1 1] * 0.5; moldrewcoop = moldrew;
+moldrew  =  0.5;
 molddiseng =  0;
 
 perfavg    = NaN(Ntrials, 2);
 choiceavg  = NaN(Ntrials, 2);
 disengavg  = NaN(Ntrials, 2);
-rewardavg  = NaN(Ntrials, 2);
+winavg    = NaN(Ntrials, 2);
+%rewardavg  = NaN(Ntrials, 2);
+rewardavg  = NaN(Ntrials, 1);
 iscongr    = zeros(Ntrials, 1);
+
 for ii = 1:Ntrials
     iscongr(ii) =  Data.TrialSettings(ii).GUI.Dependent;
     mcurr       =  Data.TrialOutcome(ii, :);
     chcurr      =  Data.MouseChoice(ii, :);
-    rewout      =  Data.RewardOutcome(ii, :);
+    %rewout      =  Data.RewardOutcome(ii, :);
 
     dcurr         = isnan(chcurr);
     molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
     disengavg(ii, :) = molddiseng;
-    
+
+    %--------------------------------------------------------------------------
+    %PERFORMANCE MOVING AVERAGE
     % abort invalid trials
     if any(mcurr<0), continue,  end
     % regress to 0.5 when task setting changes... ???????????
 %     if ~isequal(isnan(mcurr), isnan(moldperf))
 %         moldperf = ~isnan(mcurr) * 0.5;
 %     end
+
+
+%instead of all of this, maybe just jump nan trials?? TEST NEXT
     for this_mouse = 1:length(moldperf)
         if isnan(moldperf(this_mouse)) && ~isnan(mcurr(this_mouse))           
             last_notnan = find(~isnan(perfavg(:,this_mouse)),1,'last');
@@ -49,38 +59,58 @@ for ii = 1:Ntrials
     moldperf    = beta * moldperf + (1 - beta) * mcurr;
     perfavg(ii, :) = moldperf;
 
-    
+    %--------------------------------------------------------------------------
+    %CHOICE MOVING AVERAGE
     % abort invalid trials
     if all(isnan(chcurr)), continue,  end
     chcurr = (chcurr+1)/2;
     % regress to 0.5 when task setting changes...
-    if ~isequal(isnan(chcurr), isnan(moldchoice))
-        moldchoice = ~isnan(chcurr) * 0.5;
-    end
+%     if ~isequal(isnan(chcurr), isnan(moldchoice))
+%         moldchoice = ~isnan(chcurr) * 0.5;
+%     end
     
+    for this_mouse = 1:length(moldchoice)
+        if isnan(moldchoice(this_mouse)) && ~isnan(chcurr(this_mouse))           
+            last_nonnan = find(~isnan(choiceavg(:,this_mouse)),1,'last');
+            if isempty(last_nonnan)
+                moldchoice(this_mouse) = 0.5;
+            else
+                moldchoice(this_mouse) = choiceavg(last_nonnan,this_mouse);
+            end
+        end
+    end
     moldchoice    = beta * moldchoice + (1 - beta) * chcurr;
     choiceavg(ii, :) = moldchoice;
     
+    %--------------------------------------------------------------------------
+    %COOPERATION MOVING AVERAGE
+    trialout = Data.TrialOutcome(ii, :); %it is not real cooperation, but wheter both were coreect. FIX AFTER FIGURING!!
+    rewout = all(trialout == 1);
     
-    rewout(isnan(rewout)) = 0;
-%     for this_mouse = 1:length(moldrew)
-%         if isnan(moldrew(this_mouse)) && ~isnan(rewout(this_mouse))           
-%             last_notnan = find(~isnan(rewardavg(:,this_mouse)),1,'last');
-%             moldrew(this_mouse) = rewardavg(last_notnan,this_mouse);
-%         end
-%     end
-%     
+    if any(isnan(trialout)); continue,  end
+
     moldrew    = beta * moldrew + (1 - beta) * rewout;
     rewardavg(ii, :) = moldrew;
-   
-
-%     % Shared reward logic (cooperation task)
-%     shared_rew = all(rewout == 1);   % 1 if both rewarded, else 0
-%     rewcoop = [shared_rew shared_rew]; % identical for both
-%     % Moving average update
-%     moldrewcoop = beta * moldrewcoop + (1 - beta) * rewcoop;
-%     rewardcoopavg(ii, :) = moldrewcoop;
-
+    
+    %--------------------------------------------------------------------------
+    %WINNING MOVING AVERAGE
+    mouseallreacts = Data.ReactionTimes(ii, :);
+    winout = [nan,nan];
+    if rewout == 1
+        if mouseallreacts(1) < mouseallreacts(2)
+            winout(1)=1;
+            winout(2)=0;
+        else
+            winout(1)=0;
+            winout(2)=1;
+        end
+    else % one was wrong
+        continue        
+    end
+    
+    moldwin    = beta * moldwin + (1 - beta) * winout;
+    winavg(ii, :) = moldwin;
+    
     
 end
 %%
@@ -148,8 +178,9 @@ for imouse = 1:2
     end       
 end
 myPlots.psychparams = psychparams;
+
 %--------------------------------------------------------------------------
-% do plotting
+% PLOTTING INITIATION TIME PER TRIAL
 initiationtimes =  Data.InitiationTime;
 if isfield( Data, 'isSpontaneous')
     isspontaneous   =  Data.isSpontaneous;
@@ -157,16 +188,22 @@ else
     isspontaneous = false([size(initiationtimes,1),1]);
 end
 plotInitiationTimes(myPlots.initationTimePlot, graphics, initiationtimes, isspontaneous)
+
 %--------------------------------------------------------------------------
+% PLOTTING DECISION TIME PER TRIAL
 decidetimes =  Data.DecisionTimes;
 decidetimes(isnan( Data.MouseChoice)) = NaN;
 
 plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes);
+
 %--------------------------------------------------------------------------
+% PLOTTING REACTION TIME PER TRIAL
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
 plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes);
+
 %--------------------------------------------------------------------------
+% PLOTTING PERFORMANCE PER TRIAL
 trialoutcomes =  Data.TrialOutcome;
 trialoutcomes(trialoutcomes<0) = NaN;
 perftot    = mean(trialoutcomes, 1, 'omitnan');
@@ -177,15 +214,18 @@ perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
 
 plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
     perfavg, perfmax, perftot, rewtot)
+
 %--------------------------------------------------------------------------
+% PLOTTING CHOICE PER TRIAL
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
 
 rplus  = sum( Data.RewardAmount.*( Data.MouseChoice>0).*(trialoutcomes>0), 1, 'omitnan');
 rminus = sum( Data.RewardAmount.*( Data.MouseChoice<0).*(trialoutcomes>0), 1, 'omitnan');
 plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus]);
+
 %--------------------------------------------------------------------------
-% plot fits
+% PLOTTING PSYCHOMETRIC CURVE (CHOICE X CONTRAST) AND GLM WEIGHTS
 for imouse = 1:2
     % plots
     mousecol = graphics.mouseColor(imouse, :);
@@ -195,60 +235,53 @@ for imouse = 1:2
         respcons{imouse}, respcells{imouse}, psychparams{imouse}, runsimple)
     plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
 end
+
 %--------------------------------------------------------------------------
+% PLOTTING DECISION AND REACTION TIME PER CONTRAST
 plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple)
 plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple)
 
-
 %--------------------------------------------------------------------------
-rewardoutcomes =  Data.RewardOutcome;
-
-rewtot    = mean(rewardoutcomes, 1, 'omitnan');
+% PLOTTING COOPERATION AND COMPETITION DATA
+rewardoutcomes =  Data.RewardOutcome;            %Both rewarded
+trialoutcomes = all(Data.TrialOutcome == 1, 2);  % Both correct
 Nmax       = min(100, Ntrials);
-rewmax    = max(movmean(rewardoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
 
-similar_response = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials;
+similar_response = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials; %how many times mice did the same
 
-% Just for the coop average value: amount of times both rewarded
-coopoutcomes = all(Data.RewardOutcome == 1, 2);  % vector of shared reward
-%coopoutcomes = all(Data.TrialOutcome == 1, 2);  % vector of shared reward
-coopoutcomes = [coopoutcomes coopoutcomes];  % duplicate for 2 mice
+%Amount of time each mouse was rewarded
+rewtot    = mean(rewardoutcomes, 1, 'omitnan');
+rewmax    = max(movmean(rewardoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1); %how many times both mice were rewarded
+%this gives m1 m2
 
-cooptot = mean(coopoutcomes, 1, 'omitnan');
-coopmax = max(movmean(coopoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
+%Amount of wins
+wintot    = mean(winavg, 1, 'omitnan');
+winmax    = max(movmean(winavg, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1); %how many times both mice were rewarded
+%this gives m1 m2
 
-%mousewin=1;
+% Amount of times mice cooperated (for now: correct trials)
+cooptot    = mean(trialoutcomes, 1, 'omitnan');
+coopmax    = max(movmean(trialoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1); %how many times both mice were correct
+%this gives 1 value
 
-    % mouseallreacts = NaN(Ntrials, 2);
-    % for imouse = 1:2
-         
-    %     if iscell(respreacts{1,imouse})
-    %          mouseallreacts(:,imouse) = cell2mat(respreacts{1,imouse});
-    %     elseif isa(respreacts{1,imouse}, 'double')
-    %          mouseallreacts (:,imouse) = respreacts{1,imouse}{1};
-    %     else
-    %         mouseallreacts(:,imouse) = respreacts{imouse};
-    %     end
-    %  end
-    % trialoutcomes(trialoutcomes<0) = NaN;
+%Amount of time both mice were rewarded
+bothrew = all(Data.RewardOutcome == 1, 2);
+bothtot    = mean(bothrew, 1, 'omitnan');
+bothmax    = max(movmean(bothrew, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1); %how many times both mice were rewarded
+%this gives 1 value
     
-    mouseallreacts = Data.ReactionTimes;
-    trialoutcomes = all(Data.TrialOutcome == 1, 2);  % vector of shared reward
+    mouseallreacts = Data.ReactionTimes;       
     
     mousewin = zeros(Ntrials,1);
     for iTrial = 1:Ntrials
-        if coopoutcomes(iTrial) == 1
-            [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]);
+        if trialoutcomes(iTrial) == 1 %if both correct
+            [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]); %who was faster
             mousewin(iTrial) = idxWin;
         end
     end
 
-%fprintf(mousewin);
-%figure(55); plot(mousewin);
-
 plotCompCoop(myPlots.CooperationORCompetitionPerformance,graphics, ...
-    rewardavg, rewmax, rewtot, cooptot, coopmax, mousewin,similar_response)
-
+    rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similar_response, bothtot, bothmax, rewtot,rewmax)
 
 %--------------------------------------------------------------------------
 if contains( subjectName, '_')

@@ -13,7 +13,7 @@ if currxlim(2) < Ntrials
     xticks(initationTimePlot, [1 newmax/4 newmax/2 3*newmax/4 newmax])
 end
 
-ymax = max([quantilese(initiationtimes(:), 0.95) 1e-3]);
+ymax = max([quantilese(initiationtimes(:), 0.95) 1e-3]); %%%CHECK
 %ymax = max(initiationtimes, [], 'all');
 
 ymax = ceil(ymax);
