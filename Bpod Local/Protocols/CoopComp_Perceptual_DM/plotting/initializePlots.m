@@ -66,14 +66,14 @@ xticks([1 (1:4)*Ntrials/4]); yticks([0 4 8 12])
 xticklabels([])
 
 myPlots.decisionTimePlot = p(1,2).select();
-ylim([0 1]); xlim([0.5 Ntrials]);
+ylim([0 2]); xlim([0.5 Ntrials]);
 title('Time to leave platform')
 ylabel('Time (s)'); 
 xticks([1 (1:4)*Ntrials/4]);  yticks([0 0.5 1]);
 xticklabels([])
 
 myPlots.choiceTimePlot = p(1,3).select();
-ylim([0 6]); xlim([0.5 Ntrials]);
+ylim([0 2]); xlim([0.5 Ntrials]);
 title('Time to spout')
 ylabel('Time (s)'); 
 xticks([1 (1:4)*Ntrials/4]);  yticks([0 2 4 6]);
