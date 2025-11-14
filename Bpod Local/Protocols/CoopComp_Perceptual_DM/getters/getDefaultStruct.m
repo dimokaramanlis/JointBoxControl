@@ -11,7 +11,8 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.TaskType.String = {'Normal',...               1
                                  'Competition',...          2
                                  'Cooperation',...          3
-                                 'CooperativeCompetition'};%4
+                                 'CooperativeCompetition',... 4
+                                 'OneMouseNoGlass'};%5
 
     S.GUI.Dependent = 1;
     S.GUIMeta.Dependent.Style = 'popupmenu';

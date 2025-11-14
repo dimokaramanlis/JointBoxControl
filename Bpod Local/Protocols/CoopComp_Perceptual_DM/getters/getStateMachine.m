@@ -158,6 +158,9 @@ if numel(mousesetting)==2
         'BNC2Low', 'WaitingforBothMiceStart','Tup','customExit'};
     conditions.CheckZoneOut = {'BNC1Low','BothMiceMakingDecision',...
         'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
+    
+    conditions.NoGlassChangeCondition = {'BNC1High', 'BothMiceInZone',...
+        'BNC2High', 'BothMiceInZone','Tup', 'customExit'};
     %----------------------------------------------------------------------
     
     %This determines if the valve will make a sound or not
@@ -235,6 +238,9 @@ if numel(mousesetting)==2
         conditions.M2Terminate = {'Tup','RewardedM2WaitingM1'};
         
         sma = getTwoMiceStateMachineCompetition(choices,actions,times,conditions);
+    elseif selected_task == 5
+        sma = getNoGlassOneMouseStateMachine(choices,actions,times,conditions);
+
     end   
  %%%%%%%%%%% End Beatriz Edited
  
