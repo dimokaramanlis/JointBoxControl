@@ -1,4 +1,4 @@
-function [sma,currRewardAmount]= getStateMachine(S,currreward,mousesetting,ops)
+function [sma,currRewardAmount]= getStateMachine2(S,currreward,mousesetting,ops)
 %% Trial specific timing values
 LEDIntensity = S.GUI.LEDIntensity;
 
@@ -170,9 +170,19 @@ if numel(mousesetting)==2
         'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
     
     conditions.NoGlassChangeCondition = {'BNC1High', 'BothMiceInZone',...
-        'BNC2High', 'BothMiceInZone','Tup', 'customExit'}; % here a mouse can initiate trials from either side of the box
+        'BNC2High', 'BothMiceInZone','Tup', 'customExit'};
+% 
+%     conditions.CorrectSideCrossed = {choices.m1correctCross, 'WaitingCrossMouse2',...
+%                                     choices.m2correctCross, 'WaitingCrossMouse1',...
+%                                     choices.m1IncorrectCross, 'M1WrongFirstBothPunished',...
+%                                     choices.m2IncorrectCross, 'M2WrongFirstBothPunished'};
+        % But I still want to collect the poke, that is the decision, so I
+        % can-t cancel the trial here, I just need to use this to define
+        % that the first mouse will get reward!
+
 
     %----------------------------------------------------------------------
+    
     %This determines if the valve will make a sound or not
     conditions.RewardSecondM1={choices.m1CorrectValve,1};
     conditions.RewardSecondM2={choices.m2CorrectValve,1};
@@ -180,6 +190,7 @@ if numel(mousesetting)==2
         conditions.RewardSecondM1={choices.m1CorrectValve,0};
         conditions.RewardSecondM2={choices.m2CorrectValve,0};
     end
+    
     
     %----------------------------------------------------------------------
 
@@ -226,12 +237,12 @@ if numel(mousesetting)==2
         conditions.MouseTerminate = MouseTerminate;
         conditions.MouseTerminateFirst = MouseTerminateFirst;
         
-        sma = getTwoMiceStateMachineCompetitiveCooperation(choices,actions,times,conditions);
-%         if S.GUI.SustainedPoke
-%             sma = getTwoMiceStateMachineCooperationOutOfPoke(choices,actions,times,conditions);
-%         else   
-%             sma = getTwoMiceStateMachineCooperation(choices,actions,times,conditions);
-%         end
+        
+        if S.GUI.SustainedPoke
+            sma = getTwoMiceStateMachineCooperationOutOfPoke(choices,actions,times,conditions);
+        else   
+            sma = getTwoMiceStateMachineCooperation(choices,actions,times,conditions);
+        end
         
     elseif selected_task == 1 %Normal 
             
@@ -273,7 +284,7 @@ else
             choices.OutOfPoke = pokeOut.m1Blue;       %BA
             
             choices.m1correctCross='AnalogIn1_2';
-            choices.m1IncorrectCross='AnalogIn1_3';
+            choices.m1IncorrectCross='AnalogIn1_4';
 
             
         elseif currTrialType == -1 % red side
@@ -284,7 +295,7 @@ else
             
             choices.OutOfPoke = pokeOut.m1Red;       %BA
 
-            choices.m1correctCross='AnalogIn1_3';
+            choices.m1correctCross='AnalogIn1_4';
             choices.m1IncorrectCross='AnalogIn1_2';
 
         end
@@ -299,8 +310,8 @@ else
             
             choices.OutOfPoke = pokeOut.m2Blue;       %BA
 
-            choices.m1correctCross='AnalogIn1_4';
-            choices.m1IncorrectCross='AnalogIn1_5';
+            choices.m1correctCross='AnalogIn1_2';
+            choices.m1IncorrectCross='AnalogIn1_4';
             
         elseif currTrialType == -1 % red side
             choices.CorrectChoice   = nosepokes.m2Red;
@@ -309,8 +320,8 @@ else
             choices.IncorrectChoice = nosepokes.m2Blue;
             
             choices.OutOfPoke = pokeOut.m2Red;       %BA
-            choices.m1correctCross='AnalogIn1_5';
-            choices.m1IncorrectCross='AnalogIn1_4';
+            choices.m1correctCross='AnalogIn1_4';
+            choices.m1IncorrectCross='AnalogIn1_2';
         end
     else
         error('Incorrect mouse setting provided. Mouse setting can only be 1,2, or [1,2]');
@@ -356,8 +367,8 @@ else
     end
     actions.RewardAction  = RewardAction;
 
-    sma = getSingleMiceStateMachine(choices,actions,times,conditions);
-    %sma = getSingleMiceStateMachineStartingLine(choices,actions,times,conditions);
+    %sma = getSingleMiceStateMachine(choices,actions,times,conditions);
+    sma = getSingleMiceStateMachine2(choices,actions,times,conditions);
     currRewardAmount = [nan nan];
 %     currRewardAmountSecond = [nan nan];
     currRewardAmount(mousesetting) = reshrew(mousesetting, 1+(1-currreward)/2);

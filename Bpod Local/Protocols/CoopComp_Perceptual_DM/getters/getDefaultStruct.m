@@ -131,6 +131,8 @@ function S = getDefaultStruct(ops)
     S.GUI.SoftDelay = 0; % in %
  
     S.GUI.OutOfPokeWindow = 10000;
+
+    S.GUI.NoCrossTimeout = 1000;
     %%%%%%%%%%% End Beatriz Added
     
     S.GUIPanels.Timers = {  'InitiationTimeout',...
@@ -139,7 +141,9 @@ function S = getDefaultStruct(ops)
                             'ITIMin',...
                             'ITIMax',...
                             'CooperationTimeout',...
-                            'SoftDelay'};
+                            'SoftDelay',...
+                            'OutOfPokeWindow',...
+                            'NoCrossTimeout'};
     %% Training Aids
   
     S.GUI.RewardStimulusTimeout = 0;

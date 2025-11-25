@@ -5,18 +5,18 @@ import openmv_funs
 from pyb import Pin
 #=================================================================================================
 # set configuration and pins
-config_filename = "config.txt"
+config_filename = "config2.txt"
 final_config = openmv_funs.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
-M2Pin_P1 = Pin(Pin.board.P2, Pin.OUT_PP) # PVVCDD1
+M2Pin_P1 = Pin(Pin.board.P1, Pin.OUT_PP) # PVVCDD1
 mousepins = [M1Pin_P0, M2Pin_P1]
 mousepins[0].value(False)
 mousepins[1].value(False)
 
 ## Start Beatriz Added
 #Blue side
-M1BluePin_P3 = Pin(Pin.board.P3, Pin.OUT_PP) #
-M2BluePin_P4 = Pin(Pin.board.P4, Pin.OUT_PP) #
+M1BluePin_P3 = Pin(Pin.board.P2, Pin.OUT_PP) #
+M2BluePin_P4 = Pin(Pin.board.P3, Pin.OUT_PP) #
 
 #Red side
 M1RedPin_P5 = Pin(Pin.board.P5, Pin.OUT_PP) #
@@ -75,7 +75,7 @@ if final_config['use_slider']>0:
     if final_config['use_slider'] == 2:
             myRegion[1][1] = myRegion[1][1] + int(myRegion[1][3]/2)
             myRegion[1][3] = int(myRegion[1][3]/2)
-
+#=================================================================================================
 ## Start Beatriz Added
 if final_config['StartingLine'] == 1:
     StartLineSize = final_config['StartLineSize']  # (w, h)
@@ -105,6 +105,7 @@ else:
     start_rois = [[(0, 0, 0, 0), (0, 0, 0, 0)],
                   [(0, 0, 0, 0), (0, 0, 0, 0)]]
 
+
 ## End Beatriz Added
 
 #=================================================================================================
@@ -116,7 +117,8 @@ maxspeed  = [2, 2]
 mouseeli  = [[0, 0], [0, 0]]
 n         = [0, 0]
 prevcorr  = [False, False]
-
+in_blue = [False, False]    #BA
+in_red  = [False, False]    #BA
 while(True):
     clock.tick()
     if final_config['median_blur']:
@@ -128,8 +130,8 @@ while(True):
     mouseinzone = [False, False]
     ismouseblob = [False, False]
 
-    in_blue = [False, False]    #BA
-    in_red  = [False, False]    #BA
+    #in_blue = [False, False]    #BA
+    #in_red  = [False, False]    #BA
 
     for imouse in range(0,2):
         mousepins[imouse].value(False)
@@ -200,24 +202,40 @@ while(True):
                 #----------------------------------------------------------------------------------
                 ## Start Beatriz Added
                 # for checking the start lines
+
+                #mice corners
+                x1_corner=mcorners[imouse][0][0] #[mouse], [corner], [x-y]
+                x2_corner=mcorners[imouse][1][0] #x1
+                y1_corner=mcorners[imouse][0][1] #x1
+                y3_corner=mcorners[imouse][2][1] #x1
+
+
+                Blue_rec = [BlueStartLine[imouse][0],
+                    BlueStartLine[imouse][1],
+                    StartLineSize[0],
+                    StartLineSize[1]]
+                Red_rec = [RedStartLine[imouse][0],
+                    RedStartLine[imouse][1],
+                    StartLineSize[0],
+                    StartLineSize[1]]
+
                 if final_config['StartingLine'] == 1:
 
-                    # BLUE side
-                    bx, by, bw, bh = start_rois[imouse][0]
-                    if (bx <= mx <= bx + bw) and (by <= my <= by + bh):
-                        in_blue[imouse] = True
-                        StartLinepins[0][imouse].value(True)
-                    else:
-                        StartLinepins[0][imouse].value(False)
+                    in_blue[imouse] = False
+                    in_red[imouse] = False
+                    for x in range(x1_corner, x2_corner + 1):
+                        for y in range(y1_corner, y3_corner + 1):
+                            # BLUE side
+                            bx, by, bw, bh = Blue_rec #start_rois[imouse][0]
+                            if bx <= x <= bx + bw and by <= y <= by + bh:
+                                in_blue[imouse] = True
+                                StartLinepins[0][imouse].value(True)
 
-
-                    # RED side
-                    rx, ry, rw, rh = start_rois[imouse][1]
-                    if (rx <= mx <= rx + rw) and (ry <= my <= ry + rh):
-                        in_red[imouse] = True
-                        StartLinepins[1][imouse].value(True)
-                    else:
-                        StartLinepins[1][imouse].value(False)
+                            # RED side
+                            rx, ry, rw, rh = Red_rec #start_rois[imouse][1]
+                            if (rx <= x <= rx + rw) and (ry <= y <= ry + rh):
+                                in_red[imouse] = True
+                                StartLinepins[1][imouse].value(True)
 
                 ## End Beatriz Added
         else:
@@ -241,6 +259,13 @@ while(True):
             y1 = int(y0 +  20*math.sin(plotdir))
             img.draw_arrow(x0, y0, x1, y1, color = (180,180,180), thickness=1)
 
+            if in_blue[imouse]:
+                img.draw_arrow(x0, y0, x1, y1, color = (250,250,250), thickness=1)
+                img.draw_edges(mcorners[imouse], color = (250,250,250))
+            if in_red[imouse]:
+                img.draw_arrow(x0, y0, x1, y1, color = (250,250,250), thickness=1)
+                img.draw_edges(mcorners[imouse], color = (250,250,250))
+
         if mouseinzone[imouse]:
            img.draw_arrow(x0, y0, x1, y1, color = (250,250,250), thickness=1)
            img.draw_edges(mcorners[imouse], color = (250,250,250))
@@ -248,13 +273,13 @@ while(True):
     ## Start Beatriz Added
         if final_config['StartingLine'] == 1:
             Blue_rec = [BlueStartLine[imouse][0],
-                        BlueStartLine[imouse][1],
-                        StartLineSize[0],
-                        StartLineSize[1]]
+                BlueStartLine[imouse][1],
+                StartLineSize[0],
+                StartLineSize[1]]
             Red_rec = [RedStartLine[imouse][0],
-                       RedStartLine[imouse][1],
-                       StartLineSize[0],
-                       StartLineSize[1]]
+                RedStartLine[imouse][1],
+                StartLineSize[0],
+                StartLineSize[1]]
 
             img.draw_rectangle(Blue_rec, colmouse[imouse], 1, False)
             img.draw_rectangle(Red_rec,  colmouse[imouse], 1, False)
