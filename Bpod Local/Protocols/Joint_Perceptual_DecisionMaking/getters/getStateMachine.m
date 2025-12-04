@@ -153,11 +153,25 @@ if numel(mousesetting)==2
     conditions.CheckZoneOut = {'BNC1Low','BothMiceMakingDecision',...
         'BNC2Low','BothMiceMakingDecision','Tup','customExit'};
     %----------------------------------------------------------------------
-    conditions.RewardSecondM1={choices.m1CorrectValve,1};
-    conditions.RewardSecondM2={choices.m2CorrectValve,1};
+     for imouse = 1:2
+        rewfirsttext           = sprintf('RewardFirstM%d',   imouse);
+        punfirsttext           = sprintf('PunishFirstM%d',   imouse);
+        rewsectext             = sprintf('RewardSecondM%d', imouse);
+        correctvalve           = sprintf('m%dCorrectValve', imouse);
+        actions.(rewfirsttext) = {choices.(correctvalve), 1};
+        actions.(punfirsttext) = actions.WaitingAction;
+        actions.(rewsectext)   = {choices.(correctvalve), 1, 'SoftCode',100};
+
+        if ops.useAIM
+            actions.(rewfirsttext) = [actions.(rewfirsttext)  {'AnalogIn1', ['#' imouse]}];
+            actions.(punfirsttext) = [actions.(punfirsttext)  {'AnalogIn1', ['#' imouse]}];
+            actions.(rewsectext)   = [actions.(rewsectext)    {'AnalogIn1', ['#' imouse]}];
+        end
+    end
+
     if S.GUI.RewardPercentageSecond == 0
-        conditions.RewardSecondM1={choices.m1CorrectValve,0};
-        conditions.RewardSecondM2={choices.m2CorrectValve,0};
+        actions.RewardSecondM1={choices.m1CorrectValve,0};
+        actions.RewardSecondM2={choices.m2CorrectValve,0};
     end
     
     if ops.useSlider > 0
@@ -172,7 +186,15 @@ if numel(mousesetting)==2
         end
     end
     %----------------------------------------------------------------------
-        
+    if ops.useAIM
+        for imouse = 1:2
+            rewfirsttext = sprintf('RewardFirstM%d',   imouse);
+            rewsectext   = sprintf('.RewardSecondM%d', imouse);
+            actions.(rewfirsttext) = [actions.(rewfirsttext)  {'AnalogIn1', ['#' imouse]}];
+            actions.(rewsectext)   = [actions.(rewsectext)    {'AnalogIn1', ['#' imouse]}];
+        end
+    end
+    %----------------------------------------------------------------------
     sma = getTwoMiceStateMachine(choices,actions,times,conditions);
 
     currRewardAmount = NaN(1, 2);
