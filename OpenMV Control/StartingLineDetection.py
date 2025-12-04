@@ -13,7 +13,7 @@ mousepins = [M1Pin_P0, M2Pin_P1]
 mousepins[0].value(False)
 mousepins[1].value(False)
 
-## Start Beatriz Added
+## Start Beatriz Added 123
 #Blue side
 M1BluePin_P3 = Pin(Pin.board.P2, Pin.OUT_PP) #
 M2BluePin_P4 = Pin(Pin.board.P3, Pin.OUT_PP) #
