@@ -65,16 +65,6 @@ thetaRot    = [math.radians(final_config['angle_requirement_deg']),
                math.radians(final_config['angle_requirement_deg'])] # keep at 45
 hisx        = final_config['history_alpha_x']
 hisy        = final_config['history_alpha_y']
-
-if final_config['use_slider']>0:
-    bodyThresh[final_config['use_slider']-1] = final_config['slider_thres_int']
-    thetaRot[final_config['use_slider']-1]   = 2*math.pi
-    if final_config['use_slider'] == 1:
-        myRegion[0][1] = myRegion[0][1] + int(myRegion[0][3]/2)
-        myRegion[0][3] = int(myRegion[0][3]/2)
-    if final_config['use_slider'] == 2:
-            myRegion[1][1] = myRegion[1][1] + int(myRegion[1][3]/2)
-            myRegion[1][3] = int(myRegion[1][3]/2)
 #=================================================================================================
 ## Start Beatriz Added
 if final_config['StartingLine'] == 1:
