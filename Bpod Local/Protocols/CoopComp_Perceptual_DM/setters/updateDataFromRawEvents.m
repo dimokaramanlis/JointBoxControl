@@ -124,7 +124,13 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
                                  sprintf('RewardM%dFirst', imouse),... Comp
                                  sprintf('FullRewardM%d', imouse),... Comp
                                  sprintf('M%dCorrectAfterEnd', imouse),... Coop
-                                 sprintf('PunishedM%dRewardM%dSecond', other_mouse, imouse)}; %Comp                             
+                                 sprintf('PunishedM%dRewardM%dSecond', other_mouse, imouse),... %Comp
+                                 sprintf('CorrectM%dWaitM%dCross', imouse, other_mouse),... Coop
+                                 sprintf('M%dCorrectFirstBothPunished', imouse),... Coop
+                                 sprintf('M%dCorrectSecondBothPunished', imouse),... Coop
+                                 sprintf('BothCorrect'),... Coop
+                                 sprintf('M%dRewardedTerminal', imouse)}; %Coop
+            
                              
             WrongChoiceNames = {sprintf('M%dWrongFirstBothPunished', imouse),... Coop
                         sprintf('M%dWrongBothPunished', imouse),... Coop
@@ -133,7 +139,10 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
                         sprintf('PunishM%dSecond', imouse),... Comp
                         sprintf('M%dPunished', imouse),...
                         sprintf('M%dWrongAfterEnd', imouse),... Coop
-                        sprintf('PunishedM%dPunishM%dSecond', other_mouse, imouse)}; %Comp
+                        sprintf('PunishedM%dPunishM%dSecond', other_mouse, imouse),... %Comp
+                        sprintf('M%dWrongWait', imouse),...
+                        sprintf('M%dWrongTerminal', imouse),...
+                        sprintf('M%dWrong', imouse)};
                     
             
             mouseCor = nan;
@@ -213,6 +222,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
             fullrewardnames = {sprintf('RewardM%dFirst', imouse),... Comp
                                sprintf('FullRewardM%d', imouse),... Comp
                                sprintf('PunishedM%dRewardM%dSecond', other_mouse, imouse),... Comp
+                               sprintf('RewardOnlyM%d', imouse),... CompCoop
                                sprintf('BothFirstRewardM%d', imouse)};
             
             secondrewardnames = {sprintf('RewardM%dSecond', imouse)}; %Comp and Coop

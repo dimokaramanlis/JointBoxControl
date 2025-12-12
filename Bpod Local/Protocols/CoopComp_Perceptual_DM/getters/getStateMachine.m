@@ -205,14 +205,22 @@ if numel(mousesetting)==2
                               
          end
         
-
+        conditions.MouseTerminate = MouseTerminate;
+        conditions.MouseTerminateFirst = MouseTerminateFirst;
+        
          if selected_task == 3 %cooperation
              times.SoftDelay = 0;
              
              conditions.M1CooperationOrCompetition = {choices.m2CorrectChoice, 'BothFirstRewardM1',...
                                                     'Tup','AgainBothMiceMakingDecision'};
              conditions.M2CooperationOrCompetition = {choices.m1CorrectChoice, 'BothFirstRewardM2',...
-                                                    'Tup','AgainBothMiceMakingDecision'};
+                                                    'Tup','AgainBothMiceMakingDecision'};                                               
+
+            if S.GUI.SustainedPoke
+                sma = getTwoMiceStateMachineCooperationOutOfPoke(choices,actions,times,conditions);
+            else   
+                sma = getTwoMiceStateMachineCooperation(choices,actions,times,conditions);
+            end                                               
                                                 
          elseif selected_task == 4 %cooperative competition
              conditions.M1CooperationOrCompetition = {choices.m2CorrectChoice, 'RewardM1First',...
@@ -221,17 +229,9 @@ if numel(mousesetting)==2
                                                     'Tup','customExit'};
              
              times.CooperationTimeout = times.DecisionTimeout;    %make sure cooperation doesnt loop (which would let the first mouse make several choices) 
-             
+             sma = getTwoMiceStateMachineCompetitiveCooperation(choices,actions,times,conditions);
          end      
-        conditions.MouseTerminate = MouseTerminate;
-        conditions.MouseTerminateFirst = MouseTerminateFirst;
-        
-        sma = getTwoMiceStateMachineCompetitiveCooperation(choices,actions,times,conditions);
-%         if S.GUI.SustainedPoke
-%             sma = getTwoMiceStateMachineCooperationOutOfPoke(choices,actions,times,conditions);
-%         else   
-%             sma = getTwoMiceStateMachineCooperation(choices,actions,times,conditions);
-%         end
+
         
     elseif selected_task == 1 %Normal 
             
@@ -252,7 +252,6 @@ if numel(mousesetting)==2
 
     end   
  %%%%%%%%%%% End Beatriz Edited
- 
  
     currRewardAmount = NaN(1, 2);
     for ii = 1:2
