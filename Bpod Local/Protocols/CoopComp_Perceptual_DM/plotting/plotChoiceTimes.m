@@ -1,4 +1,4 @@
-function plotChoiceTimes(choiceTimePlot, graphics, choicetimes)
+function plotChoiceTimes(choiceTimePlot, graphics, choicetimes,lims_y)
 
 Ntrials = size(choicetimes, 1);
 %-------------------------------------------------------------------------
@@ -13,8 +13,9 @@ end
 
 ymax = max([quantilese(choicetimes(:), 0.95) 1e-3]);
 ymax = ceil(ymax);
-ylim(choiceTimePlot, [0 ymax])
-yticks(choiceTimePlot, [0 ymax/2 ymax])
+ylim(choiceTimePlot, [0 lims_y])
+%ylim(choiceTimePlot, [0 ymax])
+yticks(choiceTimePlot, [0 lims_y/2 lims_y])
 
 %-------------------------------------------------------------------------
 % draw stim

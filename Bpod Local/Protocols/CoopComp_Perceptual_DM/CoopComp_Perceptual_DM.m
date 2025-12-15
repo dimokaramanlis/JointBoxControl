@@ -132,8 +132,8 @@ for currentTrial = 1:10000
         renewprob = false;
     end
     %----------------------------------------------------------------------------
-    % debugging options    
-    debugmode = (S.GUI.ProbabilityBlue~=0.5 || S.GUI.ProbabilitySetting > 1) & (Nmice==1);        
+    % debugging options  
+    debugmode = (S.GUI.ProbabilityBlue~=0.5 || S.GUI.ProbabilitySetting > 1) & (Nmice==1);  %BA: please remove the condition for only one mouse      
     %----------------------------------------------------------------------
     if debugmode
         if isfield(BpodSystem.Data, 'Contrast')

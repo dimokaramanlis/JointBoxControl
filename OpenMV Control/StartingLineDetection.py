@@ -5,7 +5,7 @@ import openmv_funs
 from pyb import Pin
 #=================================================================================================
 # set configuration and pins
-config_filename = "config2.txt"
+config_filename = "configBeatriz.txt"
 final_config = openmv_funs.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
 M2Pin_P1 = Pin(Pin.board.P1, Pin.OUT_PP) # PVVCDD1
@@ -16,7 +16,8 @@ mousepins[1].value(False)
 ## Start Beatriz Added 123
 #Blue side
 M1BluePin_P3 = Pin(Pin.board.P2, Pin.OUT_PP) #
-M2BluePin_P4 = Pin(Pin.board.P3, Pin.OUT_PP) #
+M2BluePin_P4 = Pin(Pin.board.P4
+, Pin.OUT_PP) #
 
 #Red side
 M1RedPin_P5 = Pin(Pin.board.P5, Pin.OUT_PP) #

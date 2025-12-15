@@ -1,4 +1,4 @@
-function plotReactionTimes(OrientationReactionTimePlot, graphics, convec, reactcell, runsimple)
+function plotReactionTimes(OrientationReactionTimePlot, graphics, convec, reactcell, runsimple,lims_y)
 %PLOTREACTIONTIMES Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -27,7 +27,7 @@ for imouse = 1:2
     ymax = max([ymax max(meanreact+semreact)]);
 end
 
-ymax = max([ceil(ymax/0.2)*0.2 0.2]);
+ymax = lims_y;% max([ceil(ymax/0.2)*0.2 0.2]);
 ylim(OrientationReactionTimePlot, [0 ymax]);
 yticks(OrientationReactionTimePlot, [0 ymax/4 ymax/2 3*ymax/4 ymax]);
 
