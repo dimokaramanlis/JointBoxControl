@@ -1,32 +1,37 @@
 function plotPsychometricWeights(PsychWeightPlot, psychparams, mdlacc)
 
-if isempty(psychparams), return, end
+emptyvals = cellfun(@isempty, psychparams);
+if emptyvals(1), return, end
 xvals = linspace(0, 1, 100);
 
 cla(PsychWeightPlot);
 
 currcols = [0 0 0; 0 1 0];
-% weights = psychparams(3:end-1);
-weights = psychparams(2:end);
 
-if numel(weights) > 1
-    %ftoplot =  [weights(1) * xvals; weights(2)*ones(size(xvals)); weights(3)* (1-xvals)];
-    ftoplot =  [weights(1) * contrastfun(xvals); weights(2)*ones(size(xvals)) + weights(3)* socialfun(xvals)];
-    
-else
-    ftoplot =  weights(1) *  contrastfun(xvals);
+ftoplot = cell(2, 1);
+for iplot = 1:2
+    if ~emptyvals(iplot)
+        weights = psychparams{iplot}(2:end);
+        if numel(weights) > 1
+            ftoplot{iplot} = [weights(1) * contrastfun(xvals); ...
+                weights(2)*ones(size(xvals)) + weights(3)* socialfun(xvals)];
+        else
+            ftoplot{iplot} = weights(1) *  contrastfun(xvals);
+        end
+    end
 end
 
-
-ymax = max(abs(ftoplot), [], 'all');
-% ymax = max(abs(ftoplot));
-
-% ylim(PsychWeightPlot, [-0.2 1])
-% yticks(PsychWeightPlot, [-0.2 0 1] )
+ymax = max(abs(ftoplot{1}), [], 'all');
 
 line(PsychWeightPlot, [0 1], [0 0], 'LineStyle', '--', 'Color','k','LineWidth', 0.5)
-for ii = 1:size(ftoplot, 1)
-    line(PsychWeightPlot, xvals, ftoplot(ii, :)/ymax, 'LineWidth', 1.2, 'Color', currcols(ii, :))
+linestyles = {'-', '--'};
+for iplot = 1:2
+    if ~emptyvals(iplot)
+        for ii = 1:size(ftoplot{iplot}, 1)
+            line(PsychWeightPlot, xvals, ftoplot{iplot}(ii, :)/ymax, ...
+                'LineWidth', 1.2, 'Color', currcols(ii, :), 'LineStyle', linestyles{iplot})
+        end
+    end
 end
 ylimvals = ylim(PsychWeightPlot);
 yrange   = range(ylimvals);
@@ -34,7 +39,7 @@ text(PsychWeightPlot, 1, ylimvals(1) + yrange*0.2, 'Grating', 'HorizontalAlignme
 text(PsychWeightPlot, 1, ylimvals(1) + yrange*0.1, 'Conspecific', 'HorizontalAlignment','right','Color',currcols(2, :))
 
 tstr1 = 'Psychometric weights';
-tstr2 = sprintf('Fit accuracy = %2.2f', mdlacc);
+tstr2 = sprintf('fit acc. = %2.2f/%2.2f (opto)', mdlacc(1), mdlacc(2));
 
 title(PsychWeightPlot, {tstr1, tstr2});
 

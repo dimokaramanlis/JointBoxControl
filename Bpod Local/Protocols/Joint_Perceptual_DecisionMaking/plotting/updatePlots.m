@@ -63,8 +63,9 @@ for imouse = 1:2
     if all(cellfun(@isempty, mousecells)), continue, end
 
     plotPsychometric(myPlots.PsychometricPlot(imouse), mousecol, ...
-        mousecon, mousecells, res.psychparams{imouse}, runsimple)
-    plotPsychometricWeights(myPlots.WeightPlot(imouse), res.psychparams{imouse}, res.mdlaccuracy(imouse))
+        mousecon, mousecells, res.psychparams(:, imouse), runsimple)
+
+    plotPsychometricWeights(myPlots.WeightPlot(imouse), res.psychparams(:, imouse), res.mdlaccuracy(:, imouse))
 end
 %--------------------------------------------------------------------------
 plotReactionTimes(myPlots.OrientationReactionTimePlot, myPlots.graphics, res.respcons, res.respreacts, runsimple)

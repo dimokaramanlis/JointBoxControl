@@ -91,8 +91,9 @@ for currentTrial = 1:10000
     % get trial set
     trialset    = getTrialSet(setchoose,  mousesetting, isdependent);
     if renewprob
-        probtrial = ones(size(trialset,1), 1)/size(trialset,1);
-        renewprob = false;
+        probtrial      = ones(size(trialset,1), 1)/size(trialset,1);
+        renewprob      = false;
+        opto_accum     = ones(size(trialset,1), 1) * S.GUI.ProbOpto;
     end
     %----------------------------------------------------------------------------
     % debugging options    
@@ -108,7 +109,7 @@ for currentTrial = 1:10000
         end
         [currstim, currreward] = debugStimReward(S, trialset, currreward, conhistory, choicehistory);
     else
-        % draw stimulus
+         % draw stimulus
         [newId, probtrial] = sampleAndRemove(probtrial);
         currstim   = trialset(newId, :);
         % set reward side
@@ -127,9 +128,14 @@ for currentTrial = 1:10000
     end
     %----------------------------------------------------------------------------
     if ops.useOpto > 0
-        if rand(1) < S.GUI.ProbOpto
-            optostruct.isopto = true;
+        current_prob = max(0, min(1, opto_accum(newId)));
+        isOpto       = false;
+        
+        if rand(1) < current_prob
+            isOpto   = true;
         end
+        opto_accum(newId) = opto_accum(newId) + S.GUI.ProbOpto - isOpto;
+        optostruct.isopto = isOpto;
     end
     %----------------------------------------------------------------------------
     % initialize gratings
@@ -216,14 +222,3 @@ for currentTrial = 1:10000
         return
     end
 end
-
-
-
-
-
-
-
-
-
-
-

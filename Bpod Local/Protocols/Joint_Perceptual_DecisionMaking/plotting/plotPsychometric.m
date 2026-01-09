@@ -2,7 +2,7 @@ function plotPsychometric(PsychometricPlot, mousecol, convec, respcell, psychpar
 %==========================================================================
 % calculate psychometric
 xvals = linspace(-1, 1, 100);
-if numel(psychparams) > 2
+if numel(psychparams{1}) > 2
     xx  = [contrastfun(xvals)' zeros(size(xvals))' zeros(size(xvals))'];
     xxr = [contrastfun(xvals)'  ones(size(xvals))' socialfun(xvals)'];
     xxl = [contrastfun(xvals)' -ones(size(xvals))' -socialfun(xvals)'];
@@ -15,26 +15,27 @@ cla(PsychometricPlot);
 line(PsychometricPlot, [-1 1], [1 1]*0.5, 'Color', 'k', 'LineStyle','--', 'LineWidth',0.5)
 line(PsychometricPlot, [0 0], [0 1], 'Color', 'k', 'LineStyle','--', 'LineWidth',0.5)
 %==========================================================================
-% we plot psychometric
-if ~isempty(psychparams)
-    psychvals  = glmval(psychparams, xx, 'logit');
-    line(PsychometricPlot, xvals, psychvals, 'Color', [0 0 0 0.6], 'LineWidth', 1,...
-        'Linestyle','-')
-    
-    % only if there is a social fit we need to plot more psychometrics
-    if  numel(psychparams) > 2
-        psychvalsr = glmval(psychparams, xxr, 'logit');
-        psychvalsl = glmval(psychparams, xxl, 'logit');
-        line(PsychometricPlot, xvals, psychvalsr, 'Color', [0 0 1 0.4], 'LineWidth', 0.5)
-        line(PsychometricPlot, xvals, psychvalsl, 'Color', [1 0 0 0.4], 'LineWidth', 0.5)
-    end
-    hold(PsychometricPlot,'on');
-end
-%==========================================================================
 % we plot the points
 alpha   = 0.05;
 edgecol = [0 0 0; mousecol(2, :)];
-for iplot = 1:2
+for iplot = 2:-1:1
+    %==========================================================================
+    % we plot psychometric
+    if ~isempty(psychparams{iplot})
+        psychvals  = glmval(psychparams{iplot}, xx, 'logit');
+        line(PsychometricPlot, xvals, psychvals, 'Color', [edgecol(iplot,:) 0.6], 'LineWidth', 1,...
+            'Linestyle','-')
+        
+        % only if there is a social fit we need to plot more psychometrics
+        if  numel(psychparams{iplot}) > 2
+            psychvalsr = glmval(psychparams{iplot}, xxr, 'logit');
+            psychvalsl = glmval(psychparams{iplot}, xxl, 'logit');
+            line(PsychometricPlot, xvals, psychvalsr, 'Color', [0 0 1 0.4], 'LineWidth', 0.5)
+            line(PsychometricPlot, xvals, psychvalsl, 'Color', [1 0 0 0.4], 'LineWidth', 0.5)
+        end
+        hold(PsychometricPlot,'on');
+    end
+    %==========================================================================
     if ~isempty(respcell{iplot})
         % calculate confidence intervals
         allresp = cellfun(@mean, respcell{iplot});
