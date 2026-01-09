@@ -193,14 +193,15 @@ plotInitiationTimes(myPlots.initationTimePlot, graphics, initiationtimes, isspon
 % PLOTTING DECISION TIME PER TRIAL
 decidetimes =  Data.DecisionTimes;
 decidetimes(isnan( Data.MouseChoice)) = NaN;
-
-plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes);
+lims_y=2;
+plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes,lims_y);
 
 %--------------------------------------------------------------------------
-% PLOTTING REACTION TIME PER TRIAL
+% PLOTTING TIME TO SPOUT PER TRIAL
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
-plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes);
+lims_y=3;
+plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes,lims_y);
 
 %--------------------------------------------------------------------------
 % PLOTTING PERFORMANCE PER TRIAL
@@ -238,8 +239,9 @@ end
 
 %--------------------------------------------------------------------------
 % PLOTTING DECISION AND REACTION TIME PER CONTRAST
-plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple)
-plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple)
+lims_y=4;
+plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple,lims_y)
+plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple,lims_y)
 
 %--------------------------------------------------------------------------
 % PLOTTING COOPERATION AND COMPETITION DATA

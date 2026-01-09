@@ -73,7 +73,7 @@ xticks([1 (1:4)*Ntrials/4]);  yticks([0 0.5 1]);
 xticklabels([])
 
 myPlots.choiceTimePlot = p(1,3).select();
-ylim([0 2]); xlim([0.5 Ntrials]);
+ylim([0 4]); xlim([0.5 Ntrials]);
 title('Time to spout')
 ylabel('Time (s)'); 
 xticks([1 (1:4)*Ntrials/4]);  yticks([0 2 4 6]);
@@ -126,7 +126,7 @@ xlabel('Grating contrast')
 title('Time to leave platform')
 
 myPlots.OrientationReactionTimePlot = p(2,3,2).select();
-axis square; xlim([-1.05 1]); ylim([0.2 1.8])
+axis square; xlim([-1.05 1]); ylim([0.2 2])
 yticks([0.2 0.6 1 1.4 1.8]); xticks([-1 -0.5 0 0.5 1])
 xlabel('Grating contrast')
 title('Time to reach spout')

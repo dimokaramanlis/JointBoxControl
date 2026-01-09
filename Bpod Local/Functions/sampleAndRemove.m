@@ -10,11 +10,11 @@ randloc    = histcounts(randsample, [0; cumsum(pold)]);
 randId     = find(randloc);
 
 % redistribute probabilities
-pdist = pold(randId);
-pnew  = pold + pdist/(Nstimuli-1);
+pdist        = pold(randId);
+pnew         = pold + pdist/(Nstimuli-1);
 pnew(randId) = 0;
-pnew = pnew.^4;
-pnew = pnew/sum(pnew);
+pnew         = pnew.^4;
+pnew         = pnew/sum(pnew);
 
 % to deal with alternating samples for Ncon = 1
 if numel(pold) < 3
