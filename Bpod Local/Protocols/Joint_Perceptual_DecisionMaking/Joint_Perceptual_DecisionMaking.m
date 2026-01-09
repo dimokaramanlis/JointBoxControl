@@ -108,7 +108,7 @@ for currentTrial = 1:10000
         end
         [currstim, currreward] = debugStimReward(S, trialset, currreward, conhistory, choicehistory);
     else
-          % draw stimulus
+        % draw stimulus
         [newId, probtrial] = sampleAndRemove(probtrial);
         currstim   = trialset(newId, :);
         % set reward side
