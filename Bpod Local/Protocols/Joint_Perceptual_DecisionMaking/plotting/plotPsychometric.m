@@ -22,7 +22,7 @@ for iplot = 2:-1:1
     %==========================================================================
     % we plot psychometric
     if ~isempty(psychparams{iplot})
-        psychvals  = glmval(psychparams{iplot}, xx, 'logit');
+        psychvals  = glmval(psychparams{iplot}(1:2), xx(:,1), 'logit');
         line(PsychometricPlot, xvals, psychvals, 'Color', [edgecol(iplot,:) 0.6], 'LineWidth', 1,...
             'Linestyle','-')
         
@@ -30,8 +30,8 @@ for iplot = 2:-1:1
         if  numel(psychparams{iplot}) > 2
             psychvalsr = glmval(psychparams{iplot}, xxr, 'logit');
             psychvalsl = glmval(psychparams{iplot}, xxl, 'logit');
-            line(PsychometricPlot, xvals, psychvalsr, 'Color', [0 0 1 0.4], 'LineWidth', 0.5)
-            line(PsychometricPlot, xvals, psychvalsl, 'Color', [1 0 0 0.4], 'LineWidth', 0.5)
+            line(PsychometricPlot, xvals, psychvalsr, 'Color', [0 0 1 0.15], 'LineWidth', 0.5, 'LineStyle','--')
+            line(PsychometricPlot, xvals, psychvalsl, 'Color', [1 0 0 0.15], 'LineWidth', 0.5, 'LineStyle','--')
         end
         hold(PsychometricPlot,'on');
     end

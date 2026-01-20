@@ -9,6 +9,7 @@ Ntrials = max(Data.TrialNumber);
 %=========================================================================
 % get running averages for performance, choice and disengagement
 runavg = getRunningAverages(Data, beta);
+runavg.isopto(:,2) = rand(size(runavg.isopto,1),1)<0.05;
 %=========================================================================
 % do the fits
 res = getRudimentaryAnalyses(Data, runavg.isopto, runsimple);
