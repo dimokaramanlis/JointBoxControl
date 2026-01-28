@@ -93,7 +93,9 @@ for currentTrial = 1:10000
     if renewprob
         probtrial      = ones(size(trialset,1), 1)/size(trialset,1);
         renewprob      = false;
-        opto_accum     = ones(size(trialset,1), 1) * S.GUI.ProbOpto;
+        if ops.useOpto > 0
+            opto_accum     = ones(size(trialset,1), 1) * S.GUI.ProbOpto;
+        end
     end
     %----------------------------------------------------------------------------
     % debugging options    
