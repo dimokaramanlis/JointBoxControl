@@ -116,7 +116,7 @@ while(True):
                 #----------------------------------------------------------------------------------
                 thetadiff = targetAngle[imouse]-headdir
                 angle = math.pi - math.fabs(math.fabs(thetadiff) - math.pi);
-                thetacorrect = math.fabs(thetadiff) < thetaRot[imouse]
+                thetacorrect = math.fabs(thetadiff) < thetaRot[Gimouse]
                 mdist = math.sqrt((mx - locvec[imouse][0])**2 + (my - locvec[imouse][1])**2)
                 distcorr = mdist < Rtrigger[imouse]
 
