@@ -135,7 +135,7 @@ if numel(mousesetting)==2
         choices.m2CorrectValve    = valves.m2Blue;
         choices.m2ValveTime       = times.m2Blue;
         choices.m2ValveTimeSecond = times.m2BlueSecond; %BA
-        choices.m2InCorrectChoice = nosepokes.m2Red;
+        choices.m2IncorrectChoice = nosepokes.m2Red;
         
         choices.OutOfPokeM2 = pokeOut.m2Blue;       %BA
         
@@ -147,7 +147,7 @@ if numel(mousesetting)==2
         choices.m2CorrectValve    = valves.m2Red;
         choices.m2ValveTime       = times.m2Red;
         choices.m2ValveTimeSecond = times.m2RedSecond;  %BA
-        choices.m2InCorrectChoice = nosepokes.m2Blue;
+        choices.m2IncorrectChoice = nosepokes.m2Blue;
         
         choices.OutOfPokeM2 = pokeOut.m2Red;        %BA
 
@@ -196,11 +196,11 @@ if numel(mousesetting)==2
          
          if S.GUI.Terminate         
              MouseTerminateFirst = {choices.m1IncorrectChoice,'M1WrongFirstBothPunished',...
-                                  choices.m2InCorrectChoice,'M2WrongFirstBothPunished',...                                 
+                                  choices.m2IncorrectChoice,'M2WrongFirstBothPunished',...                                 
                                   'GlobalTimer2_End','customExit'};
                               
              MouseTerminate = {choices.m1IncorrectChoice,'M1WrongSecondBothPunished',...
-                                  choices.m2InCorrectChoice,'M2WrongSecondBothPunished',...                                 
+                                  choices.m2IncorrectChoice,'M2WrongSecondBothPunished',...                                 
                                   'GlobalTimer2_End','customExit'};
                               
          end

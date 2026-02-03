@@ -34,11 +34,13 @@ ops.sliderCOM    = sprintf("COM%d", localsettings.sliderCOM);
 % ops.degNegative  = 135;
 ops.pulseWinWidth = localsettings.pulseWinWidth;
 ops.useAIM        = localsettings.useAIM;
+ops.useStartingLine = localsettings.useStartingLine; %BA
 ops.degPerPixel   = 92/1280;
 ops.screenFs      = 60; % make sure this matches your screen refresh rates!
 ops.stimsets      = stimsets;
 ops.stimsetnames  = stimsetnames;
 ops.probsettings  = {'Pseudorandom','Alternate','RepeatTrials'};
+
 % nosepoke map
 ops.valves.m1Red     = 'Valve1';
 ops.nosepokes.m1Red  = 'Port1In';
@@ -49,20 +51,17 @@ ops.nosepokes.m2Red  = 'Port2In';
 ops.valves.m2Blue    = 'Valve3';
 ops.nosepokes.m2Blue = 'Port3In';
 
-%%%%%%%%%%% Start Beatriz Added
 % out of nosepoke map
 ops.pokeOut.m1Red  = 'Port1Out';
 ops.pokeOut.m1Blue = 'Port4Out';
 ops.pokeOut.m2Red  = 'Port2Out';
 ops.pokeOut.m2Blue = 'Port3Out';
-%%%%%%%%%%% End Beatriz Added
-
 %---------------------------------------------- ------------------------------
 % initialize screens
 [screenIds, screenInvGammaTables] = checkMonitorIdentity('C:\BoxSettings', true);
 %----------------------------------------------------------------------------
 % initialize bpod system
-[PTB, S, BpodSystem, graphics, myPlots] = initOrientationProtocol(BpodSystem, screenIds, screenInvGammaTables,ops);
+[PTB, S, BpodSystem, graphics, myPlots] = initOrientationProtocol(BpodSystem, screenIds, screenInvGammaTables, ops, localsettings.useStartingLine);
 %----------------------------------------------------------------------------
 % initialize Analog Input Module
 if localsettings.useAIM ~=0
@@ -96,6 +95,8 @@ isdependent  = (2 - S.GUI.Dependent);
 renewprob    = true;
 currreward   = -1; % for debug mode
 %===========================================================================
+
+BpodSystem.Data.localsettings = localsettings;
 
 % Main trial loop
 for currentTrial = 1:10000
@@ -156,22 +157,35 @@ for currentTrial = 1:10000
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
     %----------------------------------------------------------------------------
-    % prepare and run state machine
+    % prepare and run state machine    
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
     SendStateMatrix(sma); % Send the state matrix to the Bpod device
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
-    if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)
-        BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
-                                             RawEvents,currentTrial,...
-                                             currstim, currreward,currRewardAmount,...
-                                             mousesetting);
+    if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)    
+        
+        if localsettings.useStartingLine
+            BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem,S,...
+                                                 RawEvents,currentTrial,...
+                                                 currstim, currreward,currRewardAmount,...
+                                                 mousesetting);
+        else
+            BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
+                                                 RawEvents,currentTrial,...
+                                                 currstim, currreward,currRewardAmount,...
+                                                 mousesetting);
+        end
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)
-            [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+             if localsettings.useStartingLine
+                [myPlots, graphics] = initializePlotsStartingLine(BpodSystem.Status.CurrentSubjectName);
+             else
+                 [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+             end
         end
-        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots);
+        
+        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots, localsettings.useStartingLine);
     end
     %----------------------------------------------------------------------
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.
