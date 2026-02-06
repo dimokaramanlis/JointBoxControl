@@ -209,7 +209,8 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                 reactToSave(imouse)   = min(mouse_outcome.mouseCor) - stimTime;
                 choiceToSave(imouse)  = currReward(imouse);
             end
-            
+ 
+            %Assessing engagement
             if PokeToSave(imouse) ~= CrossToSave(imouse)
                 if isnan(PokeToSave(imouse))
                     outcomeToSave(imouse) = CrossToSave(imouse);

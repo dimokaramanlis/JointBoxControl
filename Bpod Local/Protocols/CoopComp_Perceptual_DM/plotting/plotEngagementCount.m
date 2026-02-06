@@ -1,21 +1,22 @@
-function plotEngagementCount(EngagementCountPlot, graphics, countEng)
+function plotEngagementCount(EngagementCountPlot, graphics , counteng)
 %PLOTREACTIONTIMES Summary of this function goes here
 %   Detailed explanation goes here
+for imouse =1:2
+    %cla(EngagementCountPlot); 
+    hold(EngagementCountPlot(imouse), 'on');
 
-cla(EngagementCountPlot); 
-hold(EngagementCountPlot, 'on');
-
-% ymax = 0;
-for imouse = 1:2
+    ymax = 0;
     mousecol = graphics.mouseColor(imouse, :);
-    
-    bar(countEng(imouse,:), 'Color', mousecol);
-%     ymax = max([ymax max(meanreact+semreact)]);
+    bar(EngagementCountPlot(imouse), counteng(imouse,:), 'FaceColor', mousecol);
+    %xticklabels(EngagementCountPlot(imouse),{' ','FullEng', 'HalfEng', 'Change', 'Disen'})
+
+    ymax = max([ymax max(counteng(imouse,:))]);
+    ymax = max([ceil(ymax/0.2)*0.2 0.2]);
+    ylim(EngagementCountPlot(imouse), [0 ymax]);
+    xlim(size(counteng,2))
+    yticks(EngagementCountPlot(imouse), [0 ymax/4 ymax/2 3*ymax/4 ymax]);
+
 end
 
-%ymax = lims_y;% max([ceil(ymax/0.2)*0.2 0.2]);
-%ylim(OrientationReactionTimePlot, [0 ymax]);
-%yticks(OrientationReactionTimePlot, [0 ymax/4 ymax/2 3*ymax/4 ymax]);
-
-
 end
+

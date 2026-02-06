@@ -68,13 +68,13 @@ if localsettings.useAIM ~=0
     BpodSystem.assertModule('AnalogIn', 1); % The second argument (1) indicates that AnalogIn must be paired with its USB serial port
     A = BpodAnalogIn(BpodSystem.ModuleUSB.AnalogIn1);
     A.SamplingRate = 1000; % Hz  10000;
-    A.nActiveChannels = 5; % Record from up to 3 channels 3
+    A.nActiveChannels = 5; % Record from up to 8 channels
     channelsToStream = 2:5;          % [2 3 4 5]
     A.Stream2USB(:) = 0;             % turn off all channels first (safe)
     A.Stream2USB(channelsToStream) = 1;
-    A.Thresholds(2:5)    = 1.5;       % detection above ~1.5 V
-    A.ResetVoltages(2:5) = 0.5;       % re-arm once it drops below 0.5 V
-    A.SMeventsEnabled(2:5)  = true;
+    A.Thresholds(channelsToStream)    = 1.5;       % detection above ~1.5 V
+    A.ResetVoltages(channelsToStream) = 0.5;       % re-arm once it drops below 0.5 V
+    A.SMeventsEnabled(channelsToStream)  = true;
     A.startReportingEvents();
 
 %     A.Stream2USB(localsettings.useAIM) = 1; % Configure only channels 1 and 3 for USB streaming
@@ -82,13 +82,16 @@ if localsettings.useAIM ~=0
         datestr(datetime('now'),'yyyymmddHHMM'), BpodSystem.Status.CurrentSubjectName)); %save an analog file with name> Date, time, mice, analog)
     if exist(anlgstremfile,'file'); delete(anlgstremfile); end
     A.USBStreamFile = anlgstremfile; % Set datafile for analog data captured in this session
-    A.scope; % Launch Scope GUI
-    A.scope_StartStop % Start USB streaming + data logging
-    
+    A.scope; % Launch Scope GUI    
 end
 %----------------------------------------------------------------------------
 questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
+
+if localsettings.useAIM ~=0
+    A.scope_StartStop % Start AIM USB streaming + data logging  
+end
+
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
 setchoose    = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}};
 isdependent  = (2 - S.GUI.Dependent);

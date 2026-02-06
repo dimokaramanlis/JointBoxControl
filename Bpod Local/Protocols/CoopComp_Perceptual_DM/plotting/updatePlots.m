@@ -208,14 +208,14 @@ else
     decidetimes(isnan(Data.MouseChoice)) = NaN;
 end
 
-lims_y=2;
+lims_y=4;
 plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes,lims_y);
 
 %--------------------------------------------------------------------------
 % PLOTTING TIME TO SPOUT PER TRIAL --- OK
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
-lims_y=3;
+lims_y=8;
 plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes,lims_y);
 
 %--------------------------------------------------------------------------
@@ -232,7 +232,7 @@ if useStartingLine; plotDiseng = true;
 else; plotDiseng = false; end
 
 plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
-    perfavg, perfmax, perftot, rewtot, disengcross,plotDiseng)
+    perfavg, perfmax, perftot, rewtot, disengcross, plotDiseng)
 % also plot disengagement disengcross
 
 %--------------------------------------------------------------------------
@@ -262,27 +262,30 @@ plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, d
 
 
 %--------------------------------------------------------------------------
-% PLOTTING PSYCHOMETRIC CURVE (CHOICE X CONTRAST) AND GLM WEIGHTS  --- OK
+% PLOTTING PSYCHOMETRIC CURVE (CHOICE X CONTRAST) --- OK
 for imouse = 1:2
     % plots
     mousecol = graphics.mouseColor(imouse, :);
     
-    if isempty(respcells{imouse}), continue, end
+    if isempty(respcells{imouse}), continue, end %CHECK
     plotPsychometric(myPlots.PsychometricPlot(imouse), mousecol, ...
         respcons{imouse}, respcells{imouse}, psychparams{imouse}, runsimple)
 end
     if useStartingLine
-%         countEng = [];
-%         for imouse = size(Data.FullEngagement,2)
-%             countEng(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==1)); %FullEngagement
-%             countEng(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==1)); %HalfEngagement
-%             countEng(imouse,3)   = numel(find(Data.ChangeOfMind(:,imouse)==1));  %ChangeOfMind
-%             countEng(imouse,4)  = numel(find(Data.Disengagement(:,imouse)==1)); %Disengagement
-%         end
-% 
-%         plotEngagementCount(myPlots.engagementCount, graphics, countEng)
-        %maybe in the future add contrast to the histogram
+        
+% PLOTTING ENGAGEMENT  --- OK      
+        countEng = [];
+        for imouse = 1:size(Data.FullEngagement,2)
+            countEng(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==1)); %FullEngagement
+            countEng(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==1)); %HalfEngagement
+            countEng(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==1));  %ChangeOfMind
+            countEng(imouse,4) = numel(find(Data.Disengagement(:,imouse)==1)); %Disengagement
+        end
+
+        plotEngagementCount(myPlots.engagementCount, graphics, countEng)
+
     else
+% PLOTTING GLM WEIGHTS  --- OK        
         for imouse = 1:2        
             if isempty(respcells{imouse}), continue, end
             plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))

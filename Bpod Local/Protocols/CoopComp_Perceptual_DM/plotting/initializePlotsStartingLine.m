@@ -108,8 +108,9 @@ for ii = 1:2
     myPlots.engagementCount(ii) = p(2,2,ii).select();
     axis square;
     xlim([0 2])
+    xlim([0 5])
     ylabel('Proportion trials')
-    xticks([0 0.5 1 1.5 2])
+    xticks([0 1 2 3 4])
     xticklabels({' ','FullEng', 'HalfEng', 'Change', 'Disen'})
     %xticklabels({' ','++', '+', '+-', '0'})
     title('Engagement Count')
