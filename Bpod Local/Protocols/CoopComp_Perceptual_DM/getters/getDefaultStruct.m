@@ -36,11 +36,9 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.RewardAmount.Style = 'edit';
     S.GUIMeta.RewardAmount.String = 'Reward (ul)';
 
-%%%%%%%%%%% Start Beatriz Edited
     S.GUI.RewardPercentageSecond = 1; % in %
     S.GUIMeta.RewardPercentageSecond.Style = 'edit';
     S.GUIMeta.RewardPercentageSecond.String = 'Reward (%)';
-%%%%%%%%%%% End Beatriz Edited
     
     S.GUI.ProtocolName  = 2;
     S.GUIMeta.ProtocolName.Style = 'popupmenu'; % the GUIMeta field is used by the ParameterGUI plugin to customize UI objects.
@@ -125,15 +123,10 @@ function S = getDefaultStruct(ops)
     S.GUI.ITIMin = 2;
     S.GUI.ITIMax = 5;
     
-    %%%%%%%%%%% Start Beatriz Added
-     S.GUI.CooperationTimeout = 10000;
-    
+    S.GUI.CooperationTimeout = 10000;   
     S.GUI.SoftDelay = 0; % in %
- 
     S.GUI.OutOfPokeWindow = 10000;
-
     S.GUI.NoCrossTimeout = 1000;
-    %%%%%%%%%%% End Beatriz Added
     
     S.GUIPanels.Timers = {  'InitiationTimeout',...
                             'DecisionTime',...
@@ -167,6 +160,10 @@ function S = getDefaultStruct(ops)
     S.GUIMeta.Terminate.Style = 'checkbox';
     S.GUIMeta.Terminate.String = 'Terminate on incorrect choice';
         
+    S.GUI.SustainedPoke = 0;
+    S.GUIMeta.SustainedPoke.Style='checkbox';
+    S.GUIMeta.SustainedPoke.String="Time poking to release water (s)";
+        
     S.GUI.RewardMultiplier1  = 1;
     S.GUIMeta.RewardMultiplier1.String = 'Valve 1 (M1 Red)';
     S.GUIMeta.RewardMultiplier1.Style = 'edit';
@@ -187,13 +184,7 @@ function S = getDefaultStruct(ops)
     S.GUI.ProbabilityBlue= 0.5; 
     S.GUIMeta.ProbabilityBlue.Style='edit';
     S.GUIMeta.ProbabilityBlue.String = "Probability blue side";
-    
-    
- %%%%%%%%%%% Start Beatriz Added
-    S.GUI.SustainedPoke = 0;
-    S.GUIMeta.SustainedPoke.Style='checkbox';
-    S.GUIMeta.SustainedPoke.String="SquareWave";
-  %%%%%%%%%%% End Beatriz Added
+   
   
     S.GUIPanels.TrainingAids = {'RewardStimulusTimeout',...
                                 'RewardDelayMin',...

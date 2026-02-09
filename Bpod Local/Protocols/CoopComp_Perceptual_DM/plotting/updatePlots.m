@@ -1,4 +1,4 @@
-function myPlots = updatePlots(Data, subjectName, myPlots, graphics, runsimple)
+function myPlots = updatePlots(Data, subjectName, myPlots, graphics, runsimple, useStartingLine)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %--------------------------------------------------------------------------
@@ -14,7 +14,9 @@ moldchoice =  [1 1] * 0.5;
 moldwin =  [1 1] * 0.5;
 %moldrew  =  [1 1] * 0.5; moldrewcoop = moldrew;
 moldrew  =  0.5;
-molddiseng =  0;
+
+molddiseng =  0; %performance disengagement
+molddcross = 0;  %crossing disengagement
 
 perfavg    = NaN(Ntrials, 2);
 choiceavg  = NaN(Ntrials, 2);
@@ -27,12 +29,17 @@ iscongr    = zeros(Ntrials, 1);
 for ii = 1:Ntrials
     iscongr(ii) =  Data.TrialSettings(ii).GUI.Dependent;
     mcurr       =  Data.TrialOutcome(ii, :);
-    chcurr      =  Data.MouseChoice(ii, :);
-    %rewout      =  Data.RewardOutcome(ii, :);
 
+    % DISENGAGEMENT
+    chcurr      =  Data.MouseChoice(ii, :);
     dcurr         = isnan(chcurr);
     molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
     disengavg(ii, :) = molddiseng;
+ 
+    crosscurr      =  Data.CrossEngagement(ii, :);
+    dcrosscurr         = isnan(crosscurr);
+    molddcross    = beta * molddcross + (1 - beta) * dcrosscurr;
+    disengcross(ii, :) = molddcross;
 
     %--------------------------------------------------------------------------
     %PERFORMANCE MOVING AVERAGE
@@ -112,6 +119,9 @@ for ii = 1:Ntrials
     winavg(ii, :) = moldwin;
     
     
+    % Crossing and poking average and disengagement
+        
+        
 end
 %%
 %--------------------------------------------------------------------------
@@ -180,31 +190,36 @@ end
 myPlots.psychparams = psychparams;
 
 %--------------------------------------------------------------------------
-% PLOTTING INITIATION TIME PER TRIAL
-initiationtimes =  Data.InitiationTime;
-if isfield( Data, 'isSpontaneous')
-    isspontaneous   =  Data.isSpontaneous;
+% PLOTTING INITIATION TIME PER TRIAL --- OK
+initiationtimes = Data.InitiationTime;
+if isfield(Data, 'isSpontaneous')
+    isspontaneous = Data.isSpontaneous;
 else
     isspontaneous = false([size(initiationtimes,1),1]);
 end
 plotInitiationTimes(myPlots.initationTimePlot, graphics, initiationtimes, isspontaneous)
 
 %--------------------------------------------------------------------------
-% PLOTTING DECISION TIME PER TRIAL
-decidetimes =  Data.DecisionTimes;
-decidetimes(isnan( Data.MouseChoice)) = NaN;
-lims_y=2;
+% PLOTTING DECISION TIME PER TRIAL --- OK
+if useStartingLine
+    decidetimes =  Data.DecisionTimesLine;
+else
+    BpodSystem.Data.DecisionTimes;
+    decidetimes(isnan(Data.MouseChoice)) = NaN;
+end
+
+lims_y=4;
 plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes,lims_y);
 
 %--------------------------------------------------------------------------
-% PLOTTING TIME TO SPOUT PER TRIAL
+% PLOTTING TIME TO SPOUT PER TRIAL --- OK
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
-lims_y=3;
+lims_y=8;
 plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes,lims_y);
 
 %--------------------------------------------------------------------------
-% PLOTTING PERFORMANCE PER TRIAL
+% PLOTTING STIM DISCRIMINATION PERFORMANCE PER TRIAL
 trialoutcomes =  Data.TrialOutcome;
 trialoutcomes(trialoutcomes<0) = NaN;
 perftot    = mean(trialoutcomes, 1, 'omitnan');
@@ -213,38 +228,79 @@ Nmax       = min(100, Ntrials);
 perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
     'omitnan', 'Endpoints', 'discard'), [], 1);
 
+if useStartingLine; plotDiseng = true;
+else; plotDiseng = false; end
+
 plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
-    perfavg, perfmax, perftot, rewtot)
+    perfavg, perfmax, perftot, rewtot, disengcross, plotDiseng)
+% also plot disengagement disengcross
 
 %--------------------------------------------------------------------------
-% PLOTTING CHOICE PER TRIAL
+% PLOTTING POKING PERFORMANCE PER TRIAL
+% trialoutcomes =  Data.PokeEngagement;
+% trialoutcomes(trialoutcomes<0) = NaN;
+% perftot    = mean(trialoutcomes, 1, 'omitnan');
+% rewtot     = sum((Data.RewardAmount.*(trialoutcomes>0)), 1, 'omitnan');
+% Nmax       = min(100, Ntrials);
+% perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
+%     'omitnan', 'Endpoints', 'discard'), [], 1);
+% 
+% plotPercentageCorrect(myPlots.pokingEngagementPlot,graphics, ...
+%     perfavg, perfmax, perftot, rewtot)
+% also plot disengagement
+
+%--------------------------------------------------------------------------
+% PLOTTING CHOICE PER TRIAL % removed disengagement --- OK
 choicetot = sum( Data.MouseChoice>0, 1);
 choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
-
+% if useStartingLine; plotDiseng = false;
+% else; plotDiseng = true; end
+plotDiseng = true;
 rplus  = sum( Data.RewardAmount.*( Data.MouseChoice>0).*(trialoutcomes>0), 1, 'omitnan');
 rminus = sum( Data.RewardAmount.*( Data.MouseChoice<0).*(trialoutcomes>0), 1, 'omitnan');
-plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus]);
+plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus],plotDiseng);
+
 
 %--------------------------------------------------------------------------
-% PLOTTING PSYCHOMETRIC CURVE (CHOICE X CONTRAST) AND GLM WEIGHTS
+% PLOTTING PSYCHOMETRIC CURVE (CHOICE X CONTRAST) --- OK
 for imouse = 1:2
     % plots
     mousecol = graphics.mouseColor(imouse, :);
     
-    if isempty(respcells{imouse}), continue, end
+    if isempty(respcells{imouse}), continue, end %CHECK
     plotPsychometric(myPlots.PsychometricPlot(imouse), mousecol, ...
         respcons{imouse}, respcells{imouse}, psychparams{imouse}, runsimple)
-    plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
 end
+    if useStartingLine
+        
+% PLOTTING ENGAGEMENT  --- OK      
+        countEng = [];
+        for imouse = 1:size(Data.FullEngagement,2)
+            countEng(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==1)); %FullEngagement
+            countEng(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==1)); %HalfEngagement
+            countEng(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==1));  %ChangeOfMind
+            countEng(imouse,4) = numel(find(Data.Disengagement(:,imouse)==1)); %Disengagement
+        end
+
+        plotEngagementCount(myPlots.engagementCount, graphics, countEng)
+
+    else
+% PLOTTING GLM WEIGHTS  --- OK        
+        for imouse = 1:2        
+            if isempty(respcells{imouse}), continue, end
+            plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
+        end
+    end
+ 
 
 %--------------------------------------------------------------------------
-% PLOTTING DECISION AND REACTION TIME PER CONTRAST
-lims_y=4;
+% PLOTTING DECISION AND REACTION TIME PER CONTRAST  --- OK
+lims_y=3;
 plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple,lims_y)
 plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple,lims_y)
 
 %--------------------------------------------------------------------------
-% PLOTTING COOPERATION AND COMPETITION DATA
+% PLOTTING COOPERATION AND COMPETITION DATA  --- OK
 rewardoutcomes =  Data.RewardOutcome;            %Both rewarded
 trialoutcomes = all(Data.TrialOutcome == 1, 2);  % Both correct
 Nmax       = min(100, Ntrials);

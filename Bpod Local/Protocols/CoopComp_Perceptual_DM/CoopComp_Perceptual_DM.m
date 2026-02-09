@@ -34,11 +34,13 @@ ops.sliderCOM    = sprintf("COM%d", localsettings.sliderCOM);
 % ops.degNegative  = 135;
 ops.pulseWinWidth = localsettings.pulseWinWidth;
 ops.useAIM        = localsettings.useAIM;
+ops.useStartingLine = localsettings.useStartingLine; %BA
 ops.degPerPixel   = 92/1280;
 ops.screenFs      = 60; % make sure this matches your screen refresh rates!
 ops.stimsets      = stimsets;
 ops.stimsetnames  = stimsetnames;
 ops.probsettings  = {'Pseudorandom','Alternate','RepeatTrials'};
+
 % nosepoke map
 ops.valves.m1Red     = 'Valve1';
 ops.nosepokes.m1Red  = 'Port1In';
@@ -49,33 +51,30 @@ ops.nosepokes.m2Red  = 'Port2In';
 ops.valves.m2Blue    = 'Valve3';
 ops.nosepokes.m2Blue = 'Port3In';
 
-%%%%%%%%%%% Start Beatriz Added
 % out of nosepoke map
 ops.pokeOut.m1Red  = 'Port1Out';
 ops.pokeOut.m1Blue = 'Port4Out';
 ops.pokeOut.m2Red  = 'Port2Out';
 ops.pokeOut.m2Blue = 'Port3Out';
-%%%%%%%%%%% End Beatriz Added
-
 %---------------------------------------------- ------------------------------
 % initialize screens
 [screenIds, screenInvGammaTables] = checkMonitorIdentity('C:\BoxSettings', true);
 %----------------------------------------------------------------------------
 % initialize bpod system
-[PTB, S, BpodSystem, graphics, myPlots] = initOrientationProtocol(BpodSystem, screenIds, screenInvGammaTables,ops);
+[PTB, S, BpodSystem, graphics, myPlots] = initOrientationProtocol(BpodSystem, screenIds, screenInvGammaTables, ops, localsettings.useStartingLine);
 %----------------------------------------------------------------------------
 % initialize Analog Input Module
 if localsettings.useAIM ~=0
     BpodSystem.assertModule('AnalogIn', 1); % The second argument (1) indicates that AnalogIn must be paired with its USB serial port
     A = BpodAnalogIn(BpodSystem.ModuleUSB.AnalogIn1);
     A.SamplingRate = 1000; % Hz  10000;
-    A.nActiveChannels = 5; % Record from up to 3 channels 3
+    A.nActiveChannels = 5; % Record from up to 8 channels
     channelsToStream = 2:5;          % [2 3 4 5]
     A.Stream2USB(:) = 0;             % turn off all channels first (safe)
     A.Stream2USB(channelsToStream) = 1;
-    A.Thresholds(2:5)    = 1.5;       % detection above ~1.5 V
-    A.ResetVoltages(2:5) = 0.5;       % re-arm once it drops below 0.5 V
-    A.SMeventsEnabled(2:5)  = true;
+    A.Thresholds(channelsToStream)    = 1.5;       % detection above ~1.5 V
+    A.ResetVoltages(channelsToStream) = 0.5;       % re-arm once it drops below 0.5 V
+    A.SMeventsEnabled(channelsToStream)  = true;
     A.startReportingEvents();
 
 %     A.Stream2USB(localsettings.useAIM) = 1; % Configure only channels 1 and 3 for USB streaming
@@ -83,19 +82,24 @@ if localsettings.useAIM ~=0
         datestr(datetime('now'),'yyyymmddHHMM'), BpodSystem.Status.CurrentSubjectName)); %save an analog file with name> Date, time, mice, analog)
     if exist(anlgstremfile,'file'); delete(anlgstremfile); end
     A.USBStreamFile = anlgstremfile; % Set datafile for analog data captured in this session
-    A.scope; % Launch Scope GUI
-    A.scope_StartStop % Start USB streaming + data logging
-    
+    A.scope; % Launch Scope GUI    
 end
 %----------------------------------------------------------------------------
 questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
+
+if localsettings.useAIM ~=0
+    A.scope_StartStop % Start AIM USB streaming + data logging  
+end
+
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
 setchoose    = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}};
 isdependent  = (2 - S.GUI.Dependent);
 renewprob    = true;
 currreward   = -1; % for debug mode
 %===========================================================================
+
+BpodSystem.Data.localsettings = localsettings;
 
 % Main trial loop
 for currentTrial = 1:10000
@@ -156,22 +160,35 @@ for currentTrial = 1:10000
     [PTB, GratingProperties] = createAndDrawTextures(...
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
     %----------------------------------------------------------------------------
-    % prepare and run state machine
+    % prepare and run state machine    
     [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
     SendStateMatrix(sma); % Send the state matrix to the Bpod device
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
-    if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)
-        BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
-                                             RawEvents,currentTrial,...
-                                             currstim, currreward,currRewardAmount,...
-                                             mousesetting);
+    if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)    
+        
+        if localsettings.useStartingLine
+            BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem,S,...
+                                                 RawEvents,currentTrial,...
+                                                 currstim, currreward,currRewardAmount,...
+                                                 mousesetting);
+        else
+            BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
+                                                 RawEvents,currentTrial,...
+                                                 currstim, currreward,currRewardAmount,...
+                                                 mousesetting);
+        end
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)
-            [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+             if localsettings.useStartingLine
+                [myPlots, graphics] = initializePlotsStartingLine(BpodSystem.Status.CurrentSubjectName);
+             else
+                 [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+             end
         end
-        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots);
+        
+        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots, localsettings.useStartingLine);
     end
     %----------------------------------------------------------------------
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.

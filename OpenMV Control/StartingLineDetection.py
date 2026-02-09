@@ -1,12 +1,12 @@
 # StartingLinesDetection - By: BeatrizApgaua - Wed Nov 19 2025
 
 import sensor, time, math
-import openmv_funs
+import openmv_funsStartingLine
 from pyb import Pin
 #=================================================================================================
 # set configuration and pins
-config_filename = "configBeatriz.txt"
-final_config = openmv_funs.read_config_file(config_filename)
+config_filename = "configStartingLine.txt"
+final_config = openmv_funsStartingLine.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
 M2Pin_P1 = Pin(Pin.board.P1, Pin.OUT_PP) # PVVCDD1
 mousepins = [M1Pin_P0, M2Pin_P1]
@@ -16,8 +16,7 @@ mousepins[1].value(False)
 ## Start Beatriz Added 123
 #Blue side
 M1BluePin_P3 = Pin(Pin.board.P2, Pin.OUT_PP) #
-M2BluePin_P4 = Pin(Pin.board.P4
-, Pin.OUT_PP) #
+M2BluePin_P4 = Pin(Pin.board.P4, Pin.OUT_PP) #
 
 #Red side
 M1RedPin_P5 = Pin(Pin.board.P5, Pin.OUT_PP) #
@@ -69,13 +68,31 @@ hisy        = final_config['history_alpha_y']
 #=================================================================================================
 ## Start Beatriz Added
 if final_config['StartingLine'] == 1:
-    StartLineSize = final_config['StartLineSize']  # (w, h)
-    start_w = StartLineSize[0]
-    start_h = StartLineSize[1]
+    size_StartLine = final_config['size_StartLine']  # (w, h)
+    start_w = size_StartLine[0]
+    start_h = size_StartLine[1]
 
     # Centers for each mouse
-    BlueStartLine = [final_config['platform_blue_M1'], final_config['platform_blue_M2']]
-    RedStartLine  = [final_config['platform_red_M1'],  final_config['platform_red_M2']]
+    M1_BlueStartLine = [0, 0]
+    M1_RedStartLine  = [0, 0]
+    M2_BlueStartLine = [0, 0]
+    M2_RedStartLine  = [0, 0]
+
+    i = 0
+    M1_BlueStartLine[i] = final_config['platform_cent_M1'][i] - final_config['dist_StartLine'][i] - final_config['size_StartLine'][i]
+    M1_RedStartLine[i] = final_config['platform_cent_M1'][i] + final_config['dist_StartLine'][i]
+    M2_BlueStartLine[i] = final_config['platform_cent_M2'][i] - final_config['dist_StartLine'][i] - final_config['size_StartLine'][i]
+    M2_RedStartLine[i] = final_config['platform_cent_M2'][i] + final_config['dist_StartLine'][i]
+
+    i = 1
+    M1_BlueStartLine[i] = final_config['platform_cent_M1'][i] + final_config['dist_StartLine'][i] - final_config['size_StartLine'][i]
+    M1_RedStartLine[i] = final_config['platform_cent_M1'][i] + final_config['dist_StartLine'][i] - final_config['size_StartLine'][i]
+    M2_BlueStartLine[i] = final_config['platform_cent_M2'][i] - final_config['dist_StartLine'][i]
+    M2_RedStartLine[i] = final_config['platform_cent_M2'][i] - final_config['dist_StartLine'][i]
+
+
+    BlueStartLine = [M1_BlueStartLine, M2_BlueStartLine]
+    RedStartLine  = [M1_RedStartLine, M2_RedStartLine]
 
     def center_to_roi(c):
         cx, cy = c
@@ -90,7 +107,7 @@ if final_config['StartingLine'] == 1:
                            center_to_roi(RedStartLine[i])])
 else:
     # Dummy values so code doesn't crash if StartingLine == 0
-    StartLineSize = (0, 0)
+    size_StartLine = (0, 0)
     BlueStartLine = [(0, 0), (0, 0)]
     RedStartLine  = [(0, 0), (0, 0)]
     start_rois = [[(0, 0, 0, 0), (0, 0, 0, 0)],
@@ -203,12 +220,12 @@ while(True):
 
                 Blue_rec = [BlueStartLine[imouse][0],
                     BlueStartLine[imouse][1],
-                    StartLineSize[0],
-                    StartLineSize[1]]
+                    size_StartLine[0],
+                    size_StartLine[1]]
                 Red_rec = [RedStartLine[imouse][0],
                     RedStartLine[imouse][1],
-                    StartLineSize[0],
-                    StartLineSize[1]]
+                    size_StartLine[0],
+                    size_StartLine[1]]
 
                 if final_config['StartingLine'] == 1:
 
@@ -265,12 +282,12 @@ while(True):
         if final_config['StartingLine'] == 1:
             Blue_rec = [BlueStartLine[imouse][0],
                 BlueStartLine[imouse][1],
-                StartLineSize[0],
-                StartLineSize[1]]
+                size_StartLine[0],
+                size_StartLine[1]]
             Red_rec = [RedStartLine[imouse][0],
                 RedStartLine[imouse][1],
-                StartLineSize[0],
-                StartLineSize[1]]
+                size_StartLine[0],
+                size_StartLine[1]]
 
             img.draw_rectangle(Blue_rec, colmouse[imouse], 1, False)
             img.draw_rectangle(Red_rec,  colmouse[imouse], 1, False)
