@@ -10,10 +10,15 @@ if currxlim(2) < Ntrials
     xlim(choiceTimePlot, [0.5 newmax]);
     xticks(choiceTimePlot,[1 newmax/4 newmax/2 3*newmax/4 newmax])
 end
-
-ymax = max([quantilese(choicetimes(:), 0.95) 1e-3]);
-ymax = ceil(ymax);
-ylim(choiceTimePlot, [0 lims_y])
+validtrials = choicetimes(:);
+if isempty(validtrials(~isnan(validtrials)))
+    ymax = lims_y;
+else
+    ymax = max([quantilese(validtrials(~isnan(validtrials)), 0.95) lims_y]);
+end
+%ymax = max([quantilese(choicetimes(:), 0.95) 1e-3]);
+ymax = ceil(ymax*2)/2;
+ylim(choiceTimePlot, [0 ymax])
 %ylim(choiceTimePlot, [0 ymax])
 yticks(choiceTimePlot, [0 lims_y/2 lims_y])
 

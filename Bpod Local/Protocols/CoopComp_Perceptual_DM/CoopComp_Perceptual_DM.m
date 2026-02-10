@@ -11,6 +11,19 @@ addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
 localsettings = loadLocalSettings();
+
+%check consistency of StartingLine, if it is true, we must use the AIM.
+if localsettings.useStartingLine
+    if localsettings.useAIM == false
+        answer = questdlg('StartingLine ON but AIM OFF. AIM will be activated.', ...
+        'Start dialog', ...
+        'OK','Cancel','OK');
+        if strcmp(answer, 'OK')
+            localsettings.useAIM = true;
+        end
+    end    
+end
+
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];

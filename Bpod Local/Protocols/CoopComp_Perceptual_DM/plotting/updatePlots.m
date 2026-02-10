@@ -21,6 +21,7 @@ molddcross = 0;  %crossing disengagement
 perfavg    = NaN(Ntrials, 2);
 choiceavg  = NaN(Ntrials, 2);
 disengavg  = NaN(Ntrials, 2);
+disengcross = NaN(Ntrials, 2);
 winavg    = NaN(Ntrials, 2);
 %rewardavg  = NaN(Ntrials, 2);
 rewardavg  = NaN(Ntrials, 1);
@@ -36,10 +37,12 @@ for ii = 1:Ntrials
     molddiseng    = beta * molddiseng + (1 - beta) * dcurr;
     disengavg(ii, :) = molddiseng;
  
-    crosscurr      =  Data.CrossEngagement(ii, :);
-    dcrosscurr         = isnan(crosscurr);
-    molddcross    = beta * molddcross + (1 - beta) * dcrosscurr;
-    disengcross(ii, :) = molddcross;
+    if useStartingLine
+        crosscurr      =  Data.CrossEngagement(ii, :);
+        dcrosscurr         = isnan(crosscurr);
+        molddcross    = beta * molddcross + (1 - beta) * dcrosscurr;
+        disengcross(ii, :) = molddcross;
+    end
 
     %--------------------------------------------------------------------------
     %PERFORMANCE MOVING AVERAGE
@@ -197,6 +200,7 @@ if isfield(Data, 'isSpontaneous')
 else
     isspontaneous = false([size(initiationtimes,1),1]);
 end
+
 plotInitiationTimes(myPlots.initationTimePlot, graphics, initiationtimes, isspontaneous)
 
 %--------------------------------------------------------------------------
@@ -204,18 +208,18 @@ plotInitiationTimes(myPlots.initationTimePlot, graphics, initiationtimes, isspon
 if useStartingLine
     decidetimes =  Data.DecisionTimesLine;
 else
-    BpodSystem.Data.DecisionTimes;
-    decidetimes(isnan(Data.MouseChoice)) = NaN;
+    decidetimes = Data.DecisionTimes;
+    %decidetimes(isnan(Data.MouseChoice)) = NaN; CHECK
 end
 
-lims_y=4;
+lims_y = 2;
 plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes,lims_y);
 
 %--------------------------------------------------------------------------
 % PLOTTING TIME TO SPOUT PER TRIAL --- OK
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
-lims_y=8;
+lims_y = 2.5;
 plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes,lims_y);
 
 %--------------------------------------------------------------------------
@@ -274,12 +278,14 @@ end
     if useStartingLine
         
 % PLOTTING ENGAGEMENT  --- OK      
-        countEng = [];
+        countEng = [nan, nan, nan, nan; nan, nan, nan, nan];
         for imouse = 1:size(Data.FullEngagement,2)
             countEng(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==1)); %FullEngagement
             countEng(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==1)); %HalfEngagement
             countEng(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==1));  %ChangeOfMind
             countEng(imouse,4) = numel(find(Data.Disengagement(:,imouse)==1)); %Disengagement
+            sum_countEng = sum(countEng(imouse,1:4));
+            countEng(imouse,:)=countEng(imouse,:)/sum_countEng;
         end
 
         plotEngagementCount(myPlots.engagementCount, graphics, countEng)
@@ -295,8 +301,9 @@ end
 
 %--------------------------------------------------------------------------
 % PLOTTING DECISION AND REACTION TIME PER CONTRAST  --- OK
-lims_y=3;
+lims_y=2;
 plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple,lims_y)
+lims_y=2.5;
 plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple,lims_y)
 
 %--------------------------------------------------------------------------
