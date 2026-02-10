@@ -1,13 +1,13 @@
 function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvents, currentTrial, ...
                                               currStim,currReward, currRewardAmount,...
-                                              mousesetting)
+                                              mousesetting, useStartingLine)
     portids = [4 1; 3 2];
     %-----------------------------------------------------------
     % handle general saving
     
     BpodSystem.Data = AddTrialEvents(BpodSystem.Data,RawEvents); % Computes trial events from raw data
     BpodSystem.Data.TrialNumber(currentTrial)   = currentTrial;
-    S.localOpenMVConfig = loadOpenMVConfig();
+    S.localOpenMVConfig = loadOpenMVConfig(useStartingLine);
     BpodSystem.Data.TrialSettings(currentTrial) = S; % Adds the settings used for the current trial to the Data struct (to be saved after the trial ends)
     BpodSystem.Data.Box(currentTrial)           = getBoxFromComputerName();
     

@@ -41,7 +41,7 @@ for imouse = 1:2
         'Marker', '.', 'Color', [redcol 0.5], 'LineWidth', 1.2,'MarkerSize',3);
 end
 
-text(taskEngagementPlot, 1, 0.1, 'Disengagement', 'Color', 'r', 'Fontsize',10)
+text(taskEngagementPlot, 1, 0.1, 'Poke disengagement', 'Color', 'r', 'Fontsize',10)
 
 end
 

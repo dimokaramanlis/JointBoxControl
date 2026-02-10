@@ -35,6 +35,7 @@ tstr2    = sprintf('Reward consumed (ul), m1: %d, m2: %d', round(rewtot(1)), rou
 
 title(percentageCorrectPlot, {tstr1 tstr2})
 
+text(taskEngagementPlot, 1, 0.1, 'Decision disengagement', 'Color', 'r', 'Fontsize',10)
 
 %     myWindow= graphics.myWindow;
 %     windowDivisor = graphics.myWindow(1)+graphics.myWindow(2);

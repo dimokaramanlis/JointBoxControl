@@ -252,6 +252,8 @@ while(True):
 
     #============================================================================
     # drawing
+    if final_config['debug']:
+        img.draw_string(int(myRegion[0][3]/2), 1, "!DEBUG ON!",color = (0,0,0))
     for imouse in range(0,2):
         img.draw_rectangle(myRegion[imouse], colmouse[imouse], 1, False)
         img.draw_circle(locvec[imouse][0], locvec[imouse][1], Rtrigger[imouse], colmouse[imouse]),

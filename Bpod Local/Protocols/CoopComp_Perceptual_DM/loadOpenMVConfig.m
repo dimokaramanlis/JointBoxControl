@@ -1,8 +1,12 @@
-function localOpenMVConfig = loadOpenMVConfig()
+function localOpenMVConfig = loadOpenMVConfig(useStartingLine)
 
 % 2. Define File Path
 configDir = 'E:\';
-configFile = 'configStartingLine.txt'; % New filename
+if useStartingLine
+    configFile = 'configStartingLine.txt'; % New filename
+else
+    configFile = 'config.txt';
+end
 configfilesettings = fullfile(configDir, configFile);
 
 localOpenMVConfig = struct();
