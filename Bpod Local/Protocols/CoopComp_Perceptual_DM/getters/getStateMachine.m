@@ -17,14 +17,12 @@ for ii = 1:4
     else
         valvetimes(ii) = GetValveTimes(rewvalve, ii);
     end
-    %%%%%%%%%%% Start Beatriz Added
 
     if rewvalveSecond > 80
         valvetimesSecond(ii) = 1;
     else
         valvetimesSecond(ii) = GetValveTimes(rewvalveSecond, ii);
     end
-    %%%%%%%%%%% End Beatriz Added
 
     valverewards(ii) = rewvalve;
 %     valverewardsSecond(ii) = rewvalveSecond;
@@ -47,12 +45,10 @@ times.ITI                   = (S.GUI.ITIMax-S.GUI.ITIMin).*rand + S.GUI.ITIMin;
 times.DecisionTimeout       = S.GUI.DecisionTime;
 times.RewardStimulusTimeout = S.GUI.RewardStimulusTimeout;
 
-%%%%%%%%%%% Start Beatriz Added
 times.CooperationTimeout = S.GUI.CooperationTimeout;
 times.RewardDelay        = S.GUI.RewardDelayMin + (S.GUI.RewardDelayMax-S.GUI.RewardDelayMin).* rand(1);     % BA
 times.SoftDelay          = S.GUI.SoftDelay;       % BA
 times.NoCrossTimeout     = S.GUI.NoCrossTimeout;
-%%%%%%%%%%% End Beatriz Added
 %--------------------------------------------------------------------------
 %% Trial Specific ports, reward actions, punish actions, and stimulus settings
 AllLightsOnAction  = {'PWM1', LEDIntensity,'PWM2', LEDIntensity,'PWM3', LEDIntensity,'PWM4', LEDIntensity};
@@ -91,7 +87,6 @@ times.m1Blue     = valvetimes(4);
 times.m2Red      = valvetimes(2);
 times.m2Blue     = valvetimes(3);
 
-%%%%%%%%%%% Start Beatriz Added
 pokeOut         = ops.pokeOut;
 times.OutOfPokeWindow = S.GUI.OutOfPokeWindow;
 
@@ -99,7 +94,7 @@ times.m1RedSecond      = valvetimesSecond(1);
 times.m1BlueSecond     = valvetimesSecond(4);
 times.m2RedSecond      = valvetimesSecond(2);
 times.m2BlueSecond     = valvetimesSecond(3);
-%%%%%%%%%%% End Beatriz Added
+
 %% Now checking conditions and getting the correct State Machine
 if numel(mousesetting)==2  
     currTrialTypeM1 = currreward(1);
@@ -182,9 +177,6 @@ if numel(mousesetting)==2
     end
     
     %----------------------------------------------------------------------
-
-    %%%%%%%%%%% Start Beatriz Edited
-   
    conditions.OutOfPokeM1 = []; %{choices.OutOfPokeM1, 'CooperationTimewindowM1'};    
    conditions.OutOfPokeM2 = []; % {choices.OutOfPokeM2, 'CooperationTimewindowM2'};
 
@@ -251,8 +243,7 @@ if numel(mousesetting)==2
         sma = getNoGlassOneMouseStateMachine(choices,actions,times,conditions);
 
     end   
- %%%%%%%%%%% End Beatriz Edited
- 
+
     currRewardAmount = NaN(1, 2);
     for ii = 1:2
         currRewardAmount(ii) = reshrew(ii, 1+(1-currreward(ii))/2);

@@ -11,6 +11,19 @@ addpath(addpath(genpath(fileparts(protocolpath))));
 
 % local settings for each box
 localsettings = loadLocalSettings();
+
+%check consistency of StartingLine, if it is true, we must use the AIM.
+if localsettings.useStartingLine
+    if localsettings.useAIM == false
+        answer = questdlg('StartingLine ON but AIM OFF. AIM will be activated.', ...
+        'Start dialog', ...
+        'OK','Cancel','OK');
+        if strcmp(answer, 'OK')
+            localsettings.useAIM = true;
+        end
+    end    
+end
+
 %----------------------------------------------------------------------------
 % set bpod console position in a comfortable place
 BpodSystem.GUIHandles.MainFig.Position(1:2) = [10 40];
@@ -171,12 +184,12 @@ for currentTrial = 1:10000
             BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem,S,...
                                                  RawEvents,currentTrial,...
                                                  currstim, currreward,currRewardAmount,...
-                                                 mousesetting);
+                                                 mousesetting, localsettings.useStartingLine);
         else
             BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                                  RawEvents,currentTrial,...
                                                  currstim, currreward,currRewardAmount,...
-                                                 mousesetting);
+                                                 mousesetting, localsettings.useStartingLine);
         end
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open

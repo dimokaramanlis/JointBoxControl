@@ -1,12 +1,12 @@
 # StartingLinesDetection - By: BeatrizApgaua - Wed Nov 19 2025
 
 import sensor, time, math
-import openmv_funsStartingLine
+import openmv_funs
 from pyb import Pin
 #=================================================================================================
 # set configuration and pins
 config_filename = "configStartingLine.txt"
-final_config = openmv_funsStartingLine.read_config_file(config_filename)
+final_config = openmv_funs.read_config_file(config_filename)
 M1Pin_P0 = Pin(Pin.board.P0, Pin.OUT_PP) # P0
 M2Pin_P1 = Pin(Pin.board.P1, Pin.OUT_PP) # PVVCDD1
 mousepins = [M1Pin_P0, M2Pin_P1]
@@ -231,19 +231,18 @@ while(True):
 
                     in_blue[imouse] = False
                     in_red[imouse] = False
-                    for x in range(x1_corner, x2_corner + 1):
-                        for y in range(y1_corner, y3_corner + 1):
-                            # BLUE side
-                            bx, by, bw, bh = Blue_rec #start_rois[imouse][0]
-                            if bx <= x <= bx + bw and by <= y <= by + bh:
-                                in_blue[imouse] = True
-                                StartLinepins[0][imouse].value(True)
 
-                            # RED side
-                            rx, ry, rw, rh = Red_rec #start_rois[imouse][1]
-                            if (rx <= x <= rx + rw) and (ry <= y <= ry + rh):
-                                in_red[imouse] = True
-                                StartLinepins[1][imouse].value(True)
+                    # BLUE side
+                    bx, by, bw, bh = Blue_rec #start_rois[imouse][0]
+                    if bx <= mx <= bx + bw and by <= my <= by + bh:
+                        in_blue[imouse] = True
+                        StartLinepins[0][imouse].value(True)
+
+                    # RED side
+                    rx, ry, rw, rh = Red_rec #start_rois[imouse][1]
+                    if (rx <= mx <= rx + rw) and (ry <= my <= ry + rh):
+                        in_red[imouse] = True
+                        StartLinepins[1][imouse].value(True)
 
                 ## End Beatriz Added
         else:
@@ -252,6 +251,8 @@ while(True):
 
     #============================================================================
     # drawing
+    if final_config['debug']:
+        img.draw_string(int(myRegion[0][3]/2), 1, "!DEBUG ON!",color = (0,0,0))
     for imouse in range(0,2):
         img.draw_rectangle(myRegion[imouse], colmouse[imouse], 1, False)
         img.draw_circle(locvec[imouse][0], locvec[imouse][1], Rtrigger[imouse], colmouse[imouse]),

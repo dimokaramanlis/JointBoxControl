@@ -12,8 +12,14 @@ if currxlim(2) < Ntrials
     xlim(initationTimePlot, [0.5 newmax]);
     xticks(initationTimePlot, [1 newmax/4 newmax/2 3*newmax/4 newmax])
 end
+validtrials = initiationtimes(:);
 
-ymax = max([quantilese(initiationtimes(:), 0.95) 1e-3]); %%%CHECK
+if isempty(validtrials(~isnan(validtrials)))
+    ymax = 10;
+else
+    ymax = max([quantilese(validtrials(~isnan(validtrials)), 0.95) 1e-3]);
+end
+%ymax = max([quantilese(initiationtimes(:), 0.95) 1e-3]);
 %ymax = max(initiationtimes, [], 'all');
 
 ymax = ceil(ymax);

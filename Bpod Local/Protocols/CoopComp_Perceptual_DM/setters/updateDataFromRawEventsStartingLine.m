@@ -1,13 +1,13 @@
 function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvents, currentTrial, ...
                                               currStim,currReward, currRewardAmount,...
-                                              mousesetting)
+                                              mousesetting, useStartingLine)
     portids = [4 1; 3 2];
     %-----------------------------------------------------------
     % handle general saving
     
     BpodSystem.Data = AddTrialEvents(BpodSystem.Data,RawEvents); % Computes trial events from raw data
     BpodSystem.Data.TrialNumber(currentTrial)   = currentTrial;
-    S.localOpenMVConfig = loadOpenMVConfig();
+    S.localOpenMVConfig = loadOpenMVConfig(useStartingLine);
     BpodSystem.Data.TrialSettings(currentTrial) = S; % Adds the settings used for the current trial to the Data struct (to be saved after the trial ends)
     BpodSystem.Data.Box(currentTrial)           = getBoxFromComputerName();
     
@@ -95,7 +95,17 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.Contrast(currentTrial,:)       = contrastToSave;
         BpodSystem.Data.isSpontaneous(currentTrial,:)  = isSpontaneous;
         BpodSystem.Data.RewardOutcome(currentTrial,:)  = RewardOutcome;
-        BpodSystem.Data.DecisionTimesLine(currentTrial,:)  = []; %CHECK
+        
+        BpodSystem.Data.DecisionTimesLine(currentTrial,:)  = nan; %CHECK
+%         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
+%         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
+%         BpodSystem.Data.CrossEngagement(  currentTrial, :) = CrossToSave;
+%         
+%         BpodSystem.Data.FullEngagement (  currentTrial, :) = FullEngagement;
+%         BpodSystem.Data.HalfEngagement (  currentTrial, :) = HalfEngagement;
+%         BpodSystem.Data.ChangeOfMind   (  currentTrial, :) = ChangeOfMind;
+%         BpodSystem.Data.Disengagement  (  currentTrial, :) = Disengagement;
+        %Add missing variables
         
     elseif numel(mousesetting)==2
         % 1. Initiation time
@@ -140,9 +150,11 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                                  sprintf('M%dCorrectFirstBothPunished', imouse),... Coop
                                  sprintf('M%dCorrectSecondBothPunished', imouse),... Coop
                                  sprintf('BothCorrect'),... Coop
+                                 sprintf('M%dCorrectTerminal', imouse),...
+                                 sprintf('M%dCorrectFirstCollectM%dPoke', imouse, other_mouse),...
+                                 sprintf('M%dCorrectFirstCollectM%dCross', imouse, other_mouse),...
                                  sprintf('M%dRewardedTerminal', imouse)}; %Coop
             
-                             
             Outcomes.WrongChoiceNames = {sprintf('M%dWrongFirstBothPunished', imouse),... Coop
                         sprintf('M%dWrongBothPunished', imouse),... Coop
                         sprintf('M%dWrongSecondBothPunished', imouse),... Coop
@@ -210,21 +222,46 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                 choiceToSave(imouse)  = currReward(imouse);
             end
  
+%             %Assessing engagement
+%             if isnan(CrossToSave(imouse))
+%                 %mouse didn't cross before timeout
+%                 Disengagement(imouse)   = 1;
+%             else %mouse crossed
+%                 if isnan(PokeToSave(imouse))
+%                     %mouse crossed but didn't poke
+%                     outcomeToSave(imouse) = CrossToSave(imouse);
+%                     HalfEngagement(imouse) = 1;
+%                 else %mouse poked
+%                     if PokeToSave(imouse) ~= CrossToSave(imouse)
+%                         % mouse crossed but poked the contrary side
+%                         outcomeToSave(imouse) = PokeToSave(imouse);
+%                         ChangeOfMind(imouse) = 1;
+%                     else
+%                         %mouse crossed, then poked on the same side
+%                         FullEngagement(imouse) = 1;
+%                     end
+%                 end
+%             end            
             %Assessing engagement
-            if PokeToSave(imouse) ~= CrossToSave(imouse)
-                if isnan(PokeToSave(imouse))
-                    outcomeToSave(imouse) = CrossToSave(imouse);
-                    HalfEngagement(imouse) = 1; 
-                else
-                    outcomeToSave(imouse) = PokeToSave(imouse);
-                    ChangeOfMind(imouse) = 1;
-                end
-            elseif isnan(CrossToSave(imouse))
+            if isnan(CrossToSave(imouse))
+                %mouse didn't cross before timeout
                 Disengagement(imouse)   = 1;
-            else
-                FullEngagement(imouse) = 1;
-            end
-            
+            else %mouse crossed
+                if isnan(PokeToSave(imouse))
+                    %mouse crossed but didn't poke
+                    outcomeToSave(imouse) = CrossToSave(imouse);
+                    HalfEngagement(imouse) = CrossToSave(imouse);
+                else %mouse poked
+                    if PokeToSave(imouse) ~= CrossToSave(imouse)
+                        % mouse crossed but poked the contrary side
+                        outcomeToSave(imouse) = PokeToSave(imouse);
+                        ChangeOfMind(imouse) = PokeToSave(imouse);
+                    else
+                        %mouse crossed, then poked on the same side
+                        FullEngagement(imouse) = CrossToSave(imouse);                        
+                    end
+                end
+            end   
 
             
         end             
