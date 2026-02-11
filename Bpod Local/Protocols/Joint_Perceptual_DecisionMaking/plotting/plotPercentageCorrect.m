@@ -34,9 +34,6 @@ tstr1    = sprintf('Task performance, max/avg m1: %2.2f/%2.2f, m2: %2.2f/%2.2f',
 tstr2    = sprintf('Reward consumed (ul), m1: %d, m2: %d', round(rewtot(1)), round(rewtot(2)));
 
 title(percentageCorrectPlot, {tstr1 tstr2})
-
-text(taskEngagementPlot, 1, 0.1, 'Decision disengagement', 'Color', 'r', 'Fontsize',10)
-
 %     myWindow= graphics.myWindow;
 %     windowDivisor = graphics.myWindow(1)+graphics.myWindow(2);
 %     avgTrialOutcome = movsum((BpodSystem.Data.TrialOutcome==1|BpodSystem.Data.TrialOutcome==2),myWindow);
