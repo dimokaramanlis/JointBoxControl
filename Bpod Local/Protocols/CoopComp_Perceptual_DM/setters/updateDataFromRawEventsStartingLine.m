@@ -95,7 +95,17 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.Contrast(currentTrial,:)       = contrastToSave;
         BpodSystem.Data.isSpontaneous(currentTrial,:)  = isSpontaneous;
         BpodSystem.Data.RewardOutcome(currentTrial,:)  = RewardOutcome;
+        
         BpodSystem.Data.DecisionTimesLine(currentTrial,:)  = nan; %CHECK
+%         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
+%         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
+%         BpodSystem.Data.CrossEngagement(  currentTrial, :) = CrossToSave;
+%         
+%         BpodSystem.Data.FullEngagement (  currentTrial, :) = FullEngagement;
+%         BpodSystem.Data.HalfEngagement (  currentTrial, :) = HalfEngagement;
+%         BpodSystem.Data.ChangeOfMind   (  currentTrial, :) = ChangeOfMind;
+%         BpodSystem.Data.Disengagement  (  currentTrial, :) = Disengagement;
+        %Add missing variables
         
     elseif numel(mousesetting)==2
         % 1. Initiation time
@@ -212,6 +222,26 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                 choiceToSave(imouse)  = currReward(imouse);
             end
  
+%             %Assessing engagement
+%             if isnan(CrossToSave(imouse))
+%                 %mouse didn't cross before timeout
+%                 Disengagement(imouse)   = 1;
+%             else %mouse crossed
+%                 if isnan(PokeToSave(imouse))
+%                     %mouse crossed but didn't poke
+%                     outcomeToSave(imouse) = CrossToSave(imouse);
+%                     HalfEngagement(imouse) = 1;
+%                 else %mouse poked
+%                     if PokeToSave(imouse) ~= CrossToSave(imouse)
+%                         % mouse crossed but poked the contrary side
+%                         outcomeToSave(imouse) = PokeToSave(imouse);
+%                         ChangeOfMind(imouse) = 1;
+%                     else
+%                         %mouse crossed, then poked on the same side
+%                         FullEngagement(imouse) = 1;
+%                     end
+%                 end
+%             end            
             %Assessing engagement
             if isnan(CrossToSave(imouse))
                 %mouse didn't cross before timeout
@@ -220,18 +250,18 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                 if isnan(PokeToSave(imouse))
                     %mouse crossed but didn't poke
                     outcomeToSave(imouse) = CrossToSave(imouse);
-                    HalfEngagement(imouse) = 1;
+                    HalfEngagement(imouse) = CrossToSave(imouse);
                 else %mouse poked
                     if PokeToSave(imouse) ~= CrossToSave(imouse)
                         % mouse crossed but poked the contrary side
                         outcomeToSave(imouse) = PokeToSave(imouse);
-                        ChangeOfMind(imouse) = 1;
+                        ChangeOfMind(imouse) = PokeToSave(imouse);
                     else
                         %mouse crossed, then poked on the same side
-                        FullEngagement(imouse) = 1;
+                        FullEngagement(imouse) = CrossToSave(imouse);                        
                     end
                 end
-            end            
+            end   
 
             
         end             

@@ -213,14 +213,16 @@ else
 end
 
 lims_y = 2;
-plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes,lims_y);
+spout=false; %is it time to spout?
+plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes,lims_y,spout);
 
 %--------------------------------------------------------------------------
 % PLOTTING TIME TO SPOUT PER TRIAL --- OK
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
 lims_y = 2.5;
-plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes,lims_y);
+spout=true;
+plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes,lims_y,spout);
 
 %--------------------------------------------------------------------------
 % PLOTTING STIM DISCRIMINATION PERFORMANCE PER TRIAL
@@ -277,15 +279,27 @@ for imouse = 1:2
 end
     if useStartingLine
         
-% PLOTTING ENGAGEMENT  --- OK      
-        countEng = [nan, nan, nan, nan; nan, nan, nan, nan];
+% PLOTTING ENGAGEMENT  --- OK
+%         countEng = [nan, nan, nan, nan; nan, nan, nan, nan];
+%         for imouse = 1:size(Data.FullEngagement,2)
+%             countEng(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==1)); %FullEngagement
+%             countEng(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==1)); %HalfEngagement
+%             countEng(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==1));  %ChangeOfMind
+%             countEng(imouse,4) = numel(find(Data.Disengagement(:,imouse)==1)); %Disengagement
+%             sum_countEng = sum(countEng(imouse,1:4));
+%             countEng(imouse,:)=countEng(imouse,:)/sum_countEng;
+%         end
+%         
+        countEng = struct();
+        choiceType = {'Wrong','Correct'};
         for imouse = 1:size(Data.FullEngagement,2)
-            countEng(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==1)); %FullEngagement
-            countEng(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==1)); %HalfEngagement
-            countEng(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==1));  %ChangeOfMind
-            countEng(imouse,4) = numel(find(Data.Disengagement(:,imouse)==1)); %Disengagement
-            sum_countEng = sum(countEng(imouse,1:4));
-            countEng(imouse,:)=countEng(imouse,:)/sum_countEng;
+            for iOutcome = 0:1
+                countEng.(choiceType{iOutcome+1})(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==iOutcome)); %FullEngagement
+                countEng.(choiceType{iOutcome+1})(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==iOutcome)); %HalfEngagement
+                countEng.(choiceType{iOutcome+1})(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==iOutcome));  %ChangeOfMind
+                countEng.(choiceType{iOutcome+1})(imouse,4) = numel(find(Data.Disengagement(:,imouse)==iOutcome)); %Disengagement
+                countEng.(choiceType{iOutcome+1})(imouse,:) = countEng.(choiceType{iOutcome+1})(imouse,:)/Ntrials;
+            end
         end
 
         plotEngagementCount(myPlots.engagementCount, graphics, countEng)
@@ -312,7 +326,8 @@ rewardoutcomes =  Data.RewardOutcome;            %Both rewarded
 trialoutcomes = all(Data.TrialOutcome == 1, 2);  % Both correct
 Nmax       = min(100, Ntrials);
 
-similar_response = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials; %how many times mice did the same
+similartot = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials; %how many times mice did the same
+similarmax = max(movmean(Data.MouseChoice(:,1) == Data.MouseChoice(:,2), Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
 
 %Amount of time each mouse was rewarded
 rewtot    = mean(rewardoutcomes, 1, 'omitnan');
@@ -346,7 +361,7 @@ bothmax    = max(movmean(bothrew, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [
     end
 
 plotCompCoop(myPlots.CooperationORCompetitionPerformance,graphics, ...
-    rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similar_response, bothtot, bothmax, rewtot,rewmax)
+    rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax, rewtot,rewmax)
 
 %--------------------------------------------------------------------------
 if contains( subjectName, '_')

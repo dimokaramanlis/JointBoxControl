@@ -1,4 +1,4 @@
-function plotChoiceTimes(choiceTimePlot, graphics, choicetimes,lims_y)
+function plotChoiceTimes(choiceTimePlot, graphics, choicetimes,lims_y,spout)
 
 Ntrials = size(choicetimes, 1);
 %-------------------------------------------------------------------------
@@ -29,5 +29,22 @@ for imouse = 1:2
     line(choiceTimePlot, 1:Ntrials, choicetimes(:, imouse), ...
         'Marker', '.', 'MarkerSize',5,'Color', [mousecol 0.5], 'LineWidth', 1);
 end
+
+
+medianchoicetime = median(choicetimes, 1, 'omitnan');
+Nmax               = min(Ntrials, 100);
+medchoicetime      = movmedian(choicetimes, Nmax, 1, 'omitnan', 'Endpoints', 'discard');
+tstr = sprintf('Median/max median time m1: %2.2f/%2.2f, m2: %2.2f/%2.2f.', ...
+    medchoicetime(1),medianchoicetime(1),medchoicetime(2),medianchoicetime(2));
+
+if spout
+    title_plot = sprintf('Time to spout');
+    title(choiceTimePlot, {title_plot tstr})    
+else
+    title_plot = sprintf('Decision Time');
+    title(choiceTimePlot, {title_plot tstr}) 
+end
+
+
 %-------------------------------------------------------------------------
 end
