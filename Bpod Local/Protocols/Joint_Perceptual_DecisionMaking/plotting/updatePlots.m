@@ -25,7 +25,7 @@ end
 plotInitiationTimes(myPlots.initationTimePlot, myPlots.graphics, initiationtimes, isspontaneous)
 %--------------------------------------------------------------------------
 % plot time to leave platform
-decidetimes = decideFromSpout(Data.ReactionTimes, Data.MouseChoice); 
+decidetimes = Data.DecisionTimes;
 decidetimes(isnan( Data.MouseChoice)) = NaN;
 plotChoiceTimes(myPlots.decisionTimePlot, myPlots.graphics, decidetimes);
 %--------------------------------------------------------------------------
