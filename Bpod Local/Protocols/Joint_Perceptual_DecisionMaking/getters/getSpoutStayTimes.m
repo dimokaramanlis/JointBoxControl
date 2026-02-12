@@ -156,22 +156,31 @@ for k = 1:length(stim_idxs)
         end
     end
 end
-
+%%
 % clf;
-% xx = linspace(0,10,50);
+% xx = linspace(0,12,50);
 % for imouse = 1:2
 %     tcorr = Data.TrialOutcome(:,imouse)==1;
-%     subplot(2,2,imouse)
+%     subplot(3,2,imouse)
 %     histogram(durations(tcorr,imouse),xx); hold on;
 %     histogram(durations(Data.TrialOutcome(:,imouse)==0,imouse),xx); hold on;
 %     datause = durations(:,imouse);
-%     datause(~tcorr) = nan;
-%     subplot(2,2,2+imouse)
-%     tout = smoothdata(datause,'movmean',10, 'omitmissing');
-%     plot(tout)
+%     datacorr = datause;
+%     datacorr(~tcorr) = nan;
+%     datawrong = datause;
+%     datawrong(tcorr) = nan;
+%     subplot(3,2,2+imouse)
+%     tout = smoothdata(datacorr,'movmean',10, 'omitmissing');
+%     twrong = smoothdata(datawrong,'movmean',10, 'omitmissing');
+%     plot(1:numel(tout), tout, 1:numel(tout), twrong)
+%     subplot(3,2,4+imouse)
+%     chblue = Data.MouseChoice(:,imouse) == 1;
+%     chred = Data.MouseChoice(:,imouse) == -1;
+%     histogram(durations(tcorr&chblue,imouse),xx,'FaceColor','b'); hold on;
+%     histogram(durations(tcorr&chred,imouse),xx,'FaceColor','r');
 % end
 % 
-
+% 
 
 
 %%
