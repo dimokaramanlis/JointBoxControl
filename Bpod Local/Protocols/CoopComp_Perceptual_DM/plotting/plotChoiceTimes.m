@@ -20,7 +20,7 @@ end
 ymax = ceil(ymax*2)/2;
 ylim(choiceTimePlot, [0 ymax])
 %ylim(choiceTimePlot, [0 ymax])
-yticks(choiceTimePlot, [0 lims_y/2 lims_y])
+%yticks(choiceTimePlot, [0 lims_y/2 lims_y])
 
 %-------------------------------------------------------------------------
 % draw stim

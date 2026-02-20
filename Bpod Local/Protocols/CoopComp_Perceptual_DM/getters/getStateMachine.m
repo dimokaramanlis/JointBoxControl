@@ -49,6 +49,7 @@ times.CooperationTimeout = S.GUI.CooperationTimeout;
 times.RewardDelay        = S.GUI.RewardDelayMin + (S.GUI.RewardDelayMax-S.GUI.RewardDelayMin).* rand(1);     % BA
 times.SoftDelay          = S.GUI.SoftDelay;       % BA
 times.NoCrossTimeout     = S.GUI.NoCrossTimeout;
+NoCrossTerminate = S.GUI.TerminateUponNoCross;
 %--------------------------------------------------------------------------
 %% Trial Specific ports, reward actions, punish actions, and stimulus settings
 AllLightsOnAction  = {'PWM1', LEDIntensity,'PWM2', LEDIntensity,'PWM3', LEDIntensity,'PWM4', LEDIntensity};
@@ -176,6 +177,7 @@ if numel(mousesetting)==2
         conditions.RewardSecondM2={choices.m2CorrectValve,0};
     end
     
+    
     %----------------------------------------------------------------------
    conditions.OutOfPokeM1 = []; %{choices.OutOfPokeM1, 'CooperationTimewindowM1'};    
    conditions.OutOfPokeM2 = []; % {choices.OutOfPokeM2, 'CooperationTimewindowM2'};
@@ -215,14 +217,24 @@ if numel(mousesetting)==2
             end                                               
                                                 
          elseif selected_task == 4 %cooperative competition
-             conditions.M1CooperationOrCompetition = {choices.m2CorrectChoice, 'RewardM1First',...
-                                                    'Tup','customExit'};
-             conditions.M2CooperationOrCompetition = {choices.m1CorrectChoice, 'RewardM2First',...
-                                                    'Tup','customExit'};
              
-             times.CooperationTimeout = times.DecisionTimeout;    %make sure cooperation doesnt loop (which would let the first mouse make several choices) 
-             sma = getTwoMiceStateMachineCompetitiveCooperation(choices,actions,times,conditions);
-         end      
+             %Collect second mouse choice after NoCrossTimeOut?
+             conditions.M1NoCrossTerminate = {'Tup','CollectM1CrossLate'};
+             conditions.M2NoCrossTerminate = {'Tup','CollectM2CrossLate'};
+             
+             if NoCrossTerminate
+                 conditions.M1NoCrossTerminate = {'Tup','customExit'};
+                 conditions.M2NoCrossTerminate = {'Tup','customExit'};
+             end             
+             
+             conditions.M1CooperationOrCompetition = {choices.m2CorrectChoice, 'RewardM1First',...
+                 'Tup','customExit'};
+             conditions.M2CooperationOrCompetition = {choices.m1CorrectChoice, 'RewardM2First',...
+                 'Tup','customExit'};
+             
+             times.CooperationTimeout = times.DecisionTimeout;    %make sure cooperation doesnt loop (which would let the first mouse make several choices)
+             sma = getTwoMiceStateMachineStartingLine(choices,actions,times,conditions);
+         end
 
         
     elseif selected_task == 1 %Normal 
@@ -231,14 +243,14 @@ if numel(mousesetting)==2
         conditions.M1Terminate = {'Tup','customExit'};
         conditions.M2Terminate = {'Tup','customExit'};         
         
-        sma = getTwoMiceStateMachineCompetition(choices,actions,times,conditions);
+        sma = getTwoMiceStateMachine(choices,actions,times,conditions);
      
     elseif selected_task == 2 %Competition
                
         conditions.M1Terminate = {'Tup','RewardedM1WaitingM2'};
         conditions.M2Terminate = {'Tup','RewardedM2WaitingM1'};
         
-        sma = getTwoMiceStateMachineCompetition(choices,actions,times,conditions);
+        sma = getTwoMiceStateMachine(choices,actions,times,conditions);
     elseif selected_task == 5
         sma = getNoGlassOneMouseStateMachine(choices,actions,times,conditions);
 

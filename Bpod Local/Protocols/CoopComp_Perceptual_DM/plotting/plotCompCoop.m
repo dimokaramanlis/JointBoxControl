@@ -43,7 +43,7 @@ plot(percentageCorrectPlot,M1wins,y_position,'o', 'MarkerFaceColor', graphics.mo
     'MarkerEdgeColor', 'none', 'MarkerSize', 5); hold on;
 plot(percentageCorrectPlot,M2wins, y_position2, 'o', 'MarkerFaceColor', graphics.mouseColor(2, :), ...
     'MarkerEdgeColor', 'none', 'MarkerSize', 5); hold on;
-plot(percentageCorrectPlot,Simultaneous, y_position3, 'o', 'MarkerFaceColor', 'b', ...
+plot(percentageCorrectPlot,Simultaneous, y_position3, 'o', 'MarkerFaceColor', '#80B3FF', ...
     'MarkerEdgeColor', 'none', 'MarkerSize', 5);
 % 
 
@@ -54,7 +54,7 @@ tstr2    = sprintf('Coop index: %2.2f/%2.2f; Similarity index: %2.2f/%2.2f.',...
     coopmax(1),cooptot(1), similartot, similarmax);
 
 tstr3    = sprintf('Both rewarded: %2.2f/%2.2f.',...
-    bothmax(1), bothtot(1),rewtot(1),rewmax(1));
+    bothmax(1), bothtot(1));
 %Prop. reward (avg) m1:%2.2f, m2:%2.2f.'
 
 %Add both correct but not synchronized after I got the correct coop
