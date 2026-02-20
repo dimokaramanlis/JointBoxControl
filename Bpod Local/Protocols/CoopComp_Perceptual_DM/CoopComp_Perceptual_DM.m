@@ -20,6 +20,8 @@ if localsettings.useStartingLine
         'OK','Cancel','OK');
         if strcmp(answer, 'OK')
             localsettings.useAIM = true;
+        else
+            localsettings.useStartingLine = false;
         end
     end    
 end
@@ -100,6 +102,7 @@ end
 %----------------------------------------------------------------------------
 questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
+%InputSessionNotes(BpodSystem)
 
 if localsettings.useAIM ~=0
     A.scope_StartStop % Start AIM USB streaming + data logging  

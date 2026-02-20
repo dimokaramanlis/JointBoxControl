@@ -1,21 +1,21 @@
 function plotEngagementCount(EngagementCountPlot, graphics , counteng)
 %PLOTREACTIONTIMES Summary of this function goes here
 %   Detailed explanation goes here
+%cla(EngagementCountPlot);hold(EngagementCountPlot, 'on');
 fields = fieldnames(counteng);
 
 for imouse =1:2
+    cla(EngagementCountPlot(imouse));
+    hold(EngagementCountPlot(imouse), 'on');
     mousecol = graphics.mouseColor(imouse, :);
     lighter = mousecol + 0.4*(1 - mousecol);
     colorsToUse = [lighter;mousecol];
     
     barWidth = 0.35;
     xBase = 1:size(counteng.(fields{1}), 2);
-    offsets = [-barWidth/2, +barWidth/2];
+    offsets = [+barWidth/2,-barWidth/2];
     
     for iOutcome = 2:-1:1
-        %cla(EngagementCountPlot); 
-        hold(EngagementCountPlot(imouse), 'on');
-
         ymax = 1;
         y = counteng.(fields{iOutcome})(imouse, :);
         x = xBase + offsets(iOutcome);
@@ -23,10 +23,6 @@ for imouse =1:2
         bar(EngagementCountPlot(imouse), x, y, barWidth, ...
             'FaceColor', colorsToUse(iOutcome,:), ...
             'EdgeColor', 'none');
-        
-        %bar(EngagementCountPlot(imouse), counteng.(fieldnames1{iOutcome})(imouse,:), 'FaceColor', colorsToUse(iOutcome,:));
-        %hold on;
-        %xticklabels(EngagementCountPlot(imouse),{' ','FullEng', 'HalfEng', 'Change', 'Disen'})
 
         %ymax = max([ymax max(counteng(imouse,:))]);
         %ymax = max([ceil(ymax/0.2)*0.2 0.2]);

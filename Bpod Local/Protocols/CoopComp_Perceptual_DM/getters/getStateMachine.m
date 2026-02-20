@@ -263,7 +263,7 @@ else
             choices.OutOfPoke = pokeOut.m1Blue;       %BA
             
             choices.m1correctCross='AnalogIn1_2';
-            choices.m1IncorrectCross='AnalogIn1_3';
+            choices.m1IncorrectCross='AnalogIn1_4';
 
             
         elseif currTrialType == -1 % red side
@@ -274,7 +274,7 @@ else
             
             choices.OutOfPoke = pokeOut.m1Red;       %BA
 
-            choices.m1correctCross='AnalogIn1_3';
+            choices.m1correctCross='AnalogIn1_4';
             choices.m1IncorrectCross='AnalogIn1_2';
 
         end
@@ -289,7 +289,7 @@ else
             
             choices.OutOfPoke = pokeOut.m2Blue;       %BA
 
-            choices.m1correctCross='AnalogIn1_4';
+            choices.m1correctCross='AnalogIn1_3';
             choices.m1IncorrectCross='AnalogIn1_5';
             
         elseif currTrialType == -1 % red side
@@ -300,7 +300,7 @@ else
             
             choices.OutOfPoke = pokeOut.m2Red;       %BA
             choices.m1correctCross='AnalogIn1_5';
-            choices.m1IncorrectCross='AnalogIn1_4';
+            choices.m1IncorrectCross='AnalogIn1_3';
         end
     else
         error('Incorrect mouse setting provided. Mouse setting can only be 1,2, or [1,2]');

@@ -27,7 +27,7 @@ for imouse = 1:2
     end
 end
 
-text(taskEngagementPlot, 1, 0.1, 'Disengagement', 'Color', 'r', 'Fontsize',10)
+text(taskEngagementPlot, 1, 0.1, 'Poke Disengagement', 'Color', 'r', 'Fontsize',10)
 
 tstr1 = sprintf('Task engagement, bias1+: %2.2f, bias2+: %2.2f', choicetot(1), choicetot(2));
 tstr2 = sprintf('rew1 blue/red: %d/%d, rew2 blue/red: %d/%d',...

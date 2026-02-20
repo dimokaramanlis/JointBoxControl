@@ -10,6 +10,8 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
     S.localOpenMVConfig = loadOpenMVConfig(useStartingLine);
     BpodSystem.Data.TrialSettings(currentTrial) = S; % Adds the settings used for the current trial to the Data struct (to be saved after the trial ends)
     BpodSystem.Data.Box(currentTrial)           = getBoxFromComputerName();
+    BpodSystem.Data.SoftDelay(currentTrial, :) = S.GUI.SoftDelay;
+    BpodSystem.Data.Normalization(currentTrial, :) = S.GUI.Normalization;
     
      
     currTrialStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
@@ -164,9 +166,10 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                         sprintf('M%dWrongAfterEnd', imouse),... Coop
                         sprintf('PunishedM%dPunishM%dSecond', other_mouse, imouse),... %Comp
                         sprintf('M%dWrongWait', imouse),...
+                        sprintf('M%dIncorrectFirstCollectM%dCross', imouse, other_mouse),...
                         sprintf('M%dWrongTerminal', imouse),...
-                        sprintf('M%dWrong', imouse)};
-                    
+                        sprintf('M%dWrongFirstCollectM%dPoke', other_mouse, imouse),...
+                        sprintf('M%dWrong', imouse)}; 
                     
             Outcomes.CorrectCrossNames = {sprintf('M%dCrossedWaiting', imouse),... 
                         sprintf('M%dCrossedSecondCorrect', imouse),... 
@@ -264,6 +267,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
             end   
 
             
+            
         end             
                     
         % 5. Decision Times
@@ -296,8 +300,10 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
             end
         end
         
-        
-        
+        SimultaneousPoke = 0;
+        if abs(reactToSave(1)-reactToSave(2))<=S.GUI.SoftDelay
+            SimultaneousPoke =1;
+        end       
         
         BpodSystem.Data.TrialTypes(       currentTrial, :) = currReward;
         BpodSystem.Data.InitiationTime(   currentTrial, :) = initiationTimeToSave;
@@ -309,12 +315,14 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
         BpodSystem.Data.CrossEngagement(  currentTrial, :) = CrossToSave;
-        
-        BpodSystem.Data.FullEngagement (  currentTrial, :) = FullEngagement;
-        BpodSystem.Data.HalfEngagement (  currentTrial, :) = HalfEngagement;
-        BpodSystem.Data.ChangeOfMind   (  currentTrial, :) = ChangeOfMind;
-        BpodSystem.Data.Disengagement  (  currentTrial, :) = Disengagement;
+        BpodSystem.Data.SimultaneousPoke(  currentTrial, :) = SimultaneousPoke;
 
+        %engagementTypes = {'FullEngagement','HalfEngagement','ChangeOfMind','Disengagement'};
+        BpodSystem.Data.Engagement.FullEngagement (  currentTrial, :) = FullEngagement;
+        BpodSystem.Data.Engagement.HalfEngagement (  currentTrial, :) = HalfEngagement;
+        BpodSystem.Data.Engagement.ChangeOfMind   (  currentTrial, :) = ChangeOfMind;
+        BpodSystem.Data.Engagement.Disengagement  (  currentTrial, :) = Disengagement;
+        
         %%%%% Extract reward outcome       
         rewcurr  = [0 0];
         

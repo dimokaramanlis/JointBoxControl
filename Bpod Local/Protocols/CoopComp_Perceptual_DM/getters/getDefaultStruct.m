@@ -1,4 +1,12 @@
 function S = getDefaultStruct(ops)
+%% Plotting
+    S.GUI.Normalization = 1;
+    S.GUIMeta.Normalization.Style = 'popupmenu';
+    S.GUIMeta.Normalization.String = {'NTrials',...      1
+                                 'CorrectVSIncorrect'}; %2
+                                     
+    S.GUIPanels.Plotting = {'Normalization'};
+
 %% Task Setting
     S.GUI.MouseSetting = 1;
     S.GUIMeta.MouseSetting.Style = 'popupmenu';

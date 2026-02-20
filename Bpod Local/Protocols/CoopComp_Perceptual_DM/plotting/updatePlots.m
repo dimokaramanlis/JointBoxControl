@@ -280,32 +280,29 @@ end
     if useStartingLine
         
 % PLOTTING ENGAGEMENT  --- OK
-%         countEng = [nan, nan, nan, nan; nan, nan, nan, nan];
-%         for imouse = 1:size(Data.FullEngagement,2)
-%             countEng(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==1)); %FullEngagement
-%             countEng(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==1)); %HalfEngagement
-%             countEng(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==1));  %ChangeOfMind
-%             countEng(imouse,4) = numel(find(Data.Disengagement(:,imouse)==1)); %Disengagement
-%             sum_countEng = sum(countEng(imouse,1:4));
-%             countEng(imouse,:)=countEng(imouse,:)/sum_countEng;
-%         end
-%         
+
         countEng = struct();
         choiceType = {'Wrong','Correct'};
-        for imouse = 1:size(Data.FullEngagement,2)
+        OutcomeTypes = fieldnames(Data.Engagement);
+        for imouse = 1:size(Data.Engagement.(OutcomeTypes{1}),2)
             for iOutcome = 0:1
-                countEng.(choiceType{iOutcome+1})(imouse,1) = numel(find(Data.FullEngagement(:,imouse)==iOutcome)); %FullEngagement
-                countEng.(choiceType{iOutcome+1})(imouse,2) = numel(find(Data.HalfEngagement(:,imouse)==iOutcome)); %HalfEngagement
-                countEng.(choiceType{iOutcome+1})(imouse,3) = numel(find(Data.ChangeOfMind(:,imouse)==iOutcome));  %ChangeOfMind
-                countEng.(choiceType{iOutcome+1})(imouse,4) = numel(find(Data.Disengagement(:,imouse)==iOutcome)); %Disengagement
-                countEng.(choiceType{iOutcome+1})(imouse,:) = countEng.(choiceType{iOutcome+1})(imouse,:)/Ntrials;
-            end
+                for iType = 1:4
+                    countEng.(choiceType{iOutcome+1})(imouse,iType) = numel(find(Data.Engagement.(OutcomeTypes{iType})(:,imouse)==iOutcome));
+                end
+                Ntrials_Outcome = sum(countEng.(choiceType{iOutcome+1})(imouse,:));
+                if Data.Normalization(Ntrials,1)==1
+                    countEng.(choiceType{iOutcome+1})(imouse,:) = countEng.(choiceType{iOutcome+1})(imouse,:)/Ntrials;
+                else
+                    countEng.(choiceType{iOutcome+1})(imouse,:) = countEng.(choiceType{iOutcome+1})(imouse,:)/Ntrials_Outcome;
+                end
+            end    
         end
-
+        
         plotEngagementCount(myPlots.engagementCount, graphics, countEng)
+        PrintTrialType(Data.Engagement,graphics,Ntrials)
 
+    % PLOTTING GLM WEIGHTS  --- OK              
     else
-% PLOTTING GLM WEIGHTS  --- OK        
         for imouse = 1:2        
             if isempty(respcells{imouse}), continue, end
             plotPsychometricWeights(myPlots.WeightPlot(imouse), psychparams{imouse}, mdlaccuracy(imouse))
@@ -350,15 +347,19 @@ bothtot    = mean(bothrew, 1, 'omitnan');
 bothmax    = max(movmean(bothrew, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1); %how many times both mice were rewarded
 %this gives 1 value
     
-    mouseallreacts = Data.ReactionTimes;       
-    
-    mousewin = zeros(Ntrials,1);
-    for iTrial = 1:Ntrials
-        if trialoutcomes(iTrial) == 1 %if both correct
-            [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]); %who was faster
-            mousewin(iTrial) = idxWin;
+mouseallreacts = Data.ReactionTimes;
+
+mousewin = NaN(Ntrials,1);
+for iTrial = 1:Ntrials
+    if trialoutcomes(iTrial) == 1 %if both correct
+        [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]); %who was faster
+        SoftDelay = Data.SoftDelay(iTrial,1);
+        if abs(mouseallreacts(iTrial,1)- mouseallreacts(iTrial,2))<= SoftDelay
+            idxWin = 0;
         end
+        mousewin(iTrial) = idxWin;
     end
+end
 
 plotCompCoop(myPlots.CooperationORCompetitionPerformance,graphics, ...
     rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax, rewtot,rewmax)

@@ -36,10 +36,15 @@ y_position = ones(length(M1wins),1).*1.1;
 M2wins = find(mousewin==2);
 y_position2 = ones(length(M2wins),1).*1.2;
 
+Simultaneous = find(mousewin==0);
+y_position3 = ones(length(Simultaneous),1).*1.15;
+
 plot(percentageCorrectPlot,M1wins,y_position,'o', 'MarkerFaceColor', graphics.mouseColor(1, :), ...
-    'MarkerEdgeColor', 'none', 'MarkerSize', 6); hold on;
+    'MarkerEdgeColor', 'none', 'MarkerSize', 5); hold on;
 plot(percentageCorrectPlot,M2wins, y_position2, 'o', 'MarkerFaceColor', graphics.mouseColor(2, :), ...
-    'MarkerEdgeColor', 'none', 'MarkerSize', 6); hold on;
+    'MarkerEdgeColor', 'none', 'MarkerSize', 5); hold on;
+plot(percentageCorrectPlot,Simultaneous, y_position3, 'o', 'MarkerFaceColor', 'b', ...
+    'MarkerEdgeColor', 'none', 'MarkerSize', 5);
 % 
 
 tstr1    = sprintf('Proport. win m1: %2.2f/%2.2f, m2: %2.2f/%2.2f',...
