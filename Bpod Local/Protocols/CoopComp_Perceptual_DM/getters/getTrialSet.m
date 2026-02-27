@@ -22,7 +22,7 @@ if numel(mousesetting) == 2
         finalset(irem, :) = [];
     end
     if isdependent < 0
-        if isdependent == -2
+        if isdependent == -2 %complementary contrast
             %ctb_idx = [~, idx] = min(abs(conset - (100-cta))) %CTB is always complementary to CTA
             
             idxremove = find(abs(finalset(:,1)) < 0.5 & abs(finalset(:,2)) < 0.5);

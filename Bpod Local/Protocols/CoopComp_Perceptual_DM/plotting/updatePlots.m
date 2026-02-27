@@ -105,14 +105,20 @@ for ii = 1:Ntrials
     %--------------------------------------------------------------------------
     %WINNING MOVING AVERAGE
     mouseallreacts = Data.ReactionTimes(ii, :);
+    bothrew    = Data.BothRewarded(ii, 1);
     winout = [nan,nan];
     if rewout == 1
-        if mouseallreacts(1) < mouseallreacts(2)
-            winout(1)=1;
-            winout(2)=0;
-        else
-            winout(1)=0;
-            winout(2)=1;
+        for imouse = 1:2
+            if mouseallreacts(imouse) < mouseallreacts(3-imouse)
+                winout(imouse)=1;
+            else
+                winout(imouse)=0;
+            end
+            if Data.CompetitionSetting == 1
+                if bothrew == 1
+                    winout(imouse)=1;
+                end
+            end
         end
     else % one was wrong
         continue        
@@ -121,7 +127,13 @@ for ii = 1:Ntrials
     moldwin    = beta * moldwin + (1 - beta) * winout;
     winavg(ii, :) = moldwin;
     
-    
+%     f mouseallreacts(1) < mouseallreacts(2) || bothrew == 1
+%                 winout(1)=1;
+%                 winout(2)=0;
+%             else
+%                 winout(1)=0;
+%                 winout(2)=1;
+%             end
     % Crossing and poking average and disengagement
         
         
@@ -313,23 +325,23 @@ end
 %--------------------------------------------------------------------------
 % PLOTTING DECISION AND REACTION TIME PER CONTRAST  --- OK
 lims_y=2;
-plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple,lims_y)
-lims_y=2.5;
 plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple,lims_y)
+
+lims_y=2.5;
+plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple,lims_y)
 
 %--------------------------------------------------------------------------
 % PLOTTING COOPERATION AND COMPETITION DATA  --- OK
-rewardoutcomes =  Data.RewardOutcome;            %Both rewarded
 trialoutcomes = all(Data.TrialOutcome == 1, 2);  % Both correct
 Nmax       = min(100, Ntrials);
 
-similartot = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials; %how many times mice did the same
-similarmax = max(movmean(Data.MouseChoice(:,1) == Data.MouseChoice(:,2), Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
-
-%Amount of time each mouse was rewarded
-rewtot    = mean(rewardoutcomes, 1, 'omitnan');
-rewmax    = max(movmean(rewardoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1); %how many times both mice were rewarded
-%this gives m1 m2
+if useStartingLine
+    similartot = sum(Data.TrialOutcome(:,1) == Data.TrialOutcome(:,2))/Ntrials; %how many times mice did the same
+    similarmax = max(movmean(Data.TrialOutcome(:,1) == Data.TrialOutcome(:,2), Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
+else
+    similartot = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials; %how many times mice did the same
+    similarmax = max(movmean(Data.MouseChoice(:,1) == Data.MouseChoice(:,2), Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
+end
 
 %Amount of wins
 wintot    = mean(winavg, 1, 'omitnan');
@@ -342,19 +354,24 @@ coopmax    = max(movmean(trialoutcomes, Nmax, 1, 'omitnan', 'Endpoints', 'discar
 %this gives 1 value
 
 %Amount of time both mice were rewarded
-bothrew = all(Data.RewardOutcome == 1, 2);
-bothtot    = mean(bothrew, 1, 'omitnan');
+bothrew    = Data.BothRewarded;
+bothrew(isnan(bothrew))=0;
+bothtot    = mean(bothrew, 1, 'omitnan'); %bothtot    = mean(bothrew, 1, 'omitnan');
 bothmax    = max(movmean(bothrew, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1); %how many times both mice were rewarded
-%this gives 1 value
-    
+
+%Amount of time each mouse was rewarded
+for imouse = 1:2
+    rewtot(imouse)    = numel(find(Data.RewardAmount(:,imouse)>0))/Ntrials;
+end
+
+
 mouseallreacts = Data.ReactionTimes;
 
 mousewin = NaN(Ntrials,1);
 for iTrial = 1:Ntrials
     if trialoutcomes(iTrial) == 1 %if both correct
         [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]); %who was faster
-        SoftDelay = Data.SoftDelay(iTrial,1);
-        if abs(mouseallreacts(iTrial,1)- mouseallreacts(iTrial,2))<= SoftDelay
+        if bothrew(iTrial)==1
             idxWin = 0;
         end
         mousewin(iTrial) = idxWin;
@@ -362,7 +379,7 @@ for iTrial = 1:Ntrials
 end
 
 plotCompCoop(myPlots.CooperationORCompetitionPerformance,graphics, ...
-    rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax, rewtot,rewmax)
+    rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax, rewtot)
 
 %--------------------------------------------------------------------------
 if contains( subjectName, '_')

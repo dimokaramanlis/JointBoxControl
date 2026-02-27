@@ -1,5 +1,5 @@
 function plotCompCoop(percentageCorrectPlot, graphics, ...
-    rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax,rewtot,rewmax)
+    rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax, rewtot)
  
 
 Ntrials  = size(winavg, 1);
@@ -53,8 +53,8 @@ tstr1    = sprintf('Proport. win m1: %2.2f/%2.2f, m2: %2.2f/%2.2f',...
 tstr2    = sprintf('Coop index: %2.2f/%2.2f; Similarity index: %2.2f/%2.2f.',...
     coopmax(1),cooptot(1), similartot, similarmax);
 
-tstr3    = sprintf('Both rewarded: %2.2f/%2.2f.',...
-    bothmax(1), bothtot(1));
+tstr3    = sprintf('Both rewarded: %2.2f/%2.2f.; Prop. rew. trials m1: %2.2f, m2: %2.2f',...
+    bothmax(1), bothtot(1), rewtot(1), rewtot(2));
 %Prop. reward (avg) m1:%2.2f, m2:%2.2f.'
 
 %Add both correct but not synchronized after I got the correct coop

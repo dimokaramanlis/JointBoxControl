@@ -244,7 +244,11 @@ for currentTrial = 1:10000
             A.scope_StartStop; % Stop Oscope GUI
             A.endAcq; % Close Oscope GUI
             A.stopReportingEvents; % Stop sendi
-            copyfile(anlgstremfile, behpath); % copy analog input path
+            if localsettings.useStartingLine                
+                if exist(anlgstremfile,'file'); delete(anlgstremfile); end
+            else
+                copyfile(anlgstremfile, behpath); % copy analog input path
+            end
         end
         %----------------------------------------------------------------------
         return

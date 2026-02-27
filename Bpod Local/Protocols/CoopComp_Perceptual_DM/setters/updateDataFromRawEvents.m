@@ -10,7 +10,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
     S.localOpenMVConfig = loadOpenMVConfig(useStartingLine);
     BpodSystem.Data.TrialSettings(currentTrial) = S; % Adds the settings used for the current trial to the Data struct (to be saved after the trial ends)
     BpodSystem.Data.Box(currentTrial)           = getBoxFromComputerName();
-    
+    BpodSystem.Data.CompetitionSetting(currentTrial, :) = 0;
      
     currTrialStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
     %-----------------------------------------------------------
@@ -95,6 +95,8 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         BpodSystem.Data.Contrast(currentTrial,:)       = contrastToSave;
         BpodSystem.Data.isSpontaneous(currentTrial,:)  = isSpontaneous;
         BpodSystem.Data.RewardOutcome(currentTrial,:)  = RewardOutcome;
+                BothRewarded = NaN;
+        BpodSystem.Data.BothRewarded(  currentTrial, :) = BothRewarded; 
         
     elseif numel(mousesetting)==2
         % 1. Initiation time
@@ -253,7 +255,17 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
 
 
         end
-   
+           
+         BothRewarded = NaN;
+         if all(rewcurr>0)
+             BothRewarded = 1;
+         end
+
+        if psecond ~= 1
+            BpodSystem.Data.CompetitionSetting(currentTrial, :) = 1;
+        end
+        
+        BpodSystem.Data.BothRewarded(  currentTrial, :) = BothRewarded;   
         BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
 
         BpodSystem.Data.RewardOutcome(  currentTrial, :) = RewardOutcome;

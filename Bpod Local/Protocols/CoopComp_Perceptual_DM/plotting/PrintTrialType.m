@@ -29,10 +29,13 @@ set(TrialTypeFig, 'Position',[500 1100 300 150], 'Color','w');
 axis off
 xlim([0 1])
 ylim([0 1])
-y=0.65;
+y=0.85;
+text(0.5,y, sprintf('Trial %i',Ntrials), 'HorizontalAlignment','center','FontSize',12)
+
 for imouse = 1:2
+    y=y-0.3;
     mousecol = graphics.mouseColor(imouse, :);
     text(0.5,y, OutcomeType(imouse), 'HorizontalAlignment','center','FontSize',14,'Color',mousecol)
-    y=y-0.3;
+    
 end
 end

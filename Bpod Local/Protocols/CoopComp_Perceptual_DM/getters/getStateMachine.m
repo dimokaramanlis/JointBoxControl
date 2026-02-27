@@ -357,9 +357,13 @@ else
         actions.PunishOutputAction = [actions.PunishOutputAction {'AnalogIn1', ['#' mousesetting]}];
     end
     actions.RewardAction  = RewardAction;
-
-    sma = getSingleMiceStateMachine(choices,actions,times,conditions);
-    %sma = getSingleMiceStateMachineStartingLine(choices,actions,times,conditions);
+    
+    if ops.useStartingLine == 1
+        sma = getSingleMiceStateMachineStartingLine(choices,actions,times,conditions);
+    else
+        sma = getSingleMiceStateMachine(choices,actions,times,conditions);
+    end
+    
     currRewardAmount = [nan nan];
 %     currRewardAmountSecond = [nan nan];
     currRewardAmount(mousesetting) = reshrew(mousesetting, 1+(1-currreward)/2);

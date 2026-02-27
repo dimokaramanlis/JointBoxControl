@@ -10,8 +10,8 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
     S.localOpenMVConfig = loadOpenMVConfig(useStartingLine);
     BpodSystem.Data.TrialSettings(currentTrial) = S; % Adds the settings used for the current trial to the Data struct (to be saved after the trial ends)
     BpodSystem.Data.Box(currentTrial)           = getBoxFromComputerName();
-    BpodSystem.Data.SoftDelay(currentTrial, :) = S.GUI.SoftDelay;
     BpodSystem.Data.Normalization(currentTrial, :) = S.GUI.Normalization;
+    BpodSystem.Data.CompetitionSetting(currentTrial, :) = 0;
     
      
     currTrialStates = BpodSystem.Data.RawEvents.Trial{currentTrial}.States;
@@ -25,7 +25,14 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         trialTypesToSave     = [nan nan];
         contrastToSave       = [nan nan];
         choiceToSave         = [nan nan];
-        RewardOutcome        = [nan nan];
+        PokeToSave           = [nan nan];
+        CrossToSave          = [nan nan];
+        DecisionLine         = [nan nan];
+        
+        FullEngagement = [nan nan];
+        HalfEngagement = [nan nan];
+        ChangeOfMind   = [nan nan];
+        Disengagement  = [nan nan];
         
         trialTypesToSave(mousesetting) = currReward;
         contrastToSave(mousesetting)= currStim;
@@ -41,17 +48,47 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
 
         initiationTimeToSave(mousesetting) = timeinit;
         
-        % 2. Trial Outcome
+        % 2. Trial Outcome   
         if ~isnan(currTrialStates.Reward(1))
             outcomeToSave(mousesetting) = 1;
-            RewardOutcome(mousesetting) = 1;
+            PokeToSave(mousesetting) = 1;
         elseif ~isnan(currTrialStates.Punish(1))
             outcomeToSave(mousesetting) = 0;
-            RewardOutcome(mousesetting) = 0;
-        elseif isnan(currTrialStates.MouseInZone(1))%No Start
-            outcomeToSave(mousesetting) = -11;
-        else %No Choice
-            outcomeToSave(mousesetting) = -10;
+            PokeToSave(mousesetting) = 0;
+%         elseif isnan(currTrialStates.MouseInZone(1))%No Start
+%             outcomeToSave(mousesetting) = -11;
+%         else %No Choice
+%             outcomeToSave(mousesetting) = -10;
+        end
+        
+
+        if ~isnan(currTrialStates.CorrectCrossMakingDecision(1))
+             CrossToSave(mousesetting) = 1;
+             DecisionLine(mousesetting) = currTrialStates.CorrectCrossMakingDecision(2)-timeinit;
+        elseif ~isnan(currTrialStates.WrongCross(1))
+             CrossToSave(mousesetting) = 0;
+             DecisionLine(mousesetting) = currTrialStates.WrongCross(2)-timeinit;
+        end
+
+        %Assessing engagement
+        if isnan(CrossToSave(mousesetting))
+            %mouse didn't cross before timeout
+            Disengagement(mousesetting)   = 1;
+        else %mouse crossed
+            if isnan(PokeToSave(mousesetting))
+                %mouse crossed but didn't poke
+                outcomeToSave(mousesetting) = CrossToSave(mousesetting);
+                HalfEngagement(mousesetting) = CrossToSave(mousesetting);
+            else %mouse poked
+                if PokeToSave(mousesetting) ~= CrossToSave(mousesetting)
+                    % mouse crossed but poked the contrary side
+                    outcomeToSave(mousesetting) = PokeToSave(mousesetting);
+                    ChangeOfMind(mousesetting) = PokeToSave(mousesetting);
+                else
+                    %mouse crossed, then poked on the same side
+                    FullEngagement(mousesetting) = CrossToSave(mousesetting);
+                end
+            end
         end
         
         % 3. Reaction Times
@@ -62,30 +99,31 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
             choiceToSave(mousesetting) = (2*outcomeToSave(mousesetting)-1)*currReward;
         end
         % 5. Decision Times
-        pin = BpodSystem.Data.RawEvents.Trial{currentTrial}.Events;
-        if isfield(pin, 'GlobalTimer1_Start')
-            stimstart  = pin.GlobalTimer1_Start;
-            currdfield = sprintf('BNC%dLow',mousesetting);
-            portblue   = sprintf('Port%dIn', portids(mousesetting, 1));
-            portred    = sprintf('Port%dIn', portids(mousesetting, 2));
-            portevents = [];
-            if isfield(pin, portred)
-                portevents = [portevents pin.(portred)];
-            end
-            if isfield(pin, portblue)
-                portevents = [portevents pin.(portblue)];
-            end
-            portevents = sort(portevents, 'ascend');
-            idpoke     = find(portevents - stimstart> 0, 1);
-            if isfield(pin, currdfield) && ~isempty(idpoke)
-                iuse = pin.(currdfield)-stimstart>0;
-                tout = pin.(currdfield)(iuse);
-                ilast = find(portevents(idpoke) - tout > 0, 1,'last');
-                if numel(ilast)== 1
-                    decisionTimeToSave(mousesetting) = tout(ilast) - stimstart;
-                end
-           end
-        end
+%         pin = BpodSystem.Data.RawEvents.Trial{currentTrial}.Events;
+%         if isfield(pin, 'GlobalTimer1_Start')
+%             stimstart  = pin.GlobalTimer1_Start;
+%             currdfield = sprintf('BNC%dLow',mousesetting);
+%             portblue   = sprintf('Port%dIn', portids(mousesetting, 1));
+%             portred    = sprintf('Port%dIn', portids(mousesetting, 2));
+%             portevents = [];
+%             if isfield(pin, portred)
+%                 portevents = [portevents pin.(portred)];
+%             end
+%             if isfield(pin, portblue)
+%                 portevents = [portevents pin.(portblue)];
+%             end
+%             portevents = sort(portevents, 'ascend');
+%             idpoke     = find(portevents - stimstart> 0, 1);
+%             if isfield(pin, currdfield) && ~isempty(idpoke)
+%                 iuse = pin.(currdfield)-stimstart>0;
+%                 tout = pin.(currdfield)(iuse);
+%                 ilast = find(portevents(idpoke) - tout > 0, 1,'last');
+%                 if numel(ilast)== 1
+%                     decisionTimeToSave(mousesetting) = tout(ilast) - stimstart;
+%                 end
+%            end
+%         end
+        decisionTimeToSave(mousesetting) = DecisionLine(mousesetting);
 
         BpodSystem.Data.TrialTypes(currentTrial,:)     = trialTypesToSave; % Adds the trial type of the current trial to data
         BpodSystem.Data.InitiationTime(currentTrial,:) = initiationTimeToSave;
@@ -96,17 +134,18 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.RewardAmount(currentTrial,:)   = currRewardAmount.*(outcomeToSave>=0);
         BpodSystem.Data.Contrast(currentTrial,:)       = contrastToSave;
         BpodSystem.Data.isSpontaneous(currentTrial,:)  = isSpontaneous;
-        BpodSystem.Data.RewardOutcome(currentTrial,:)  = RewardOutcome;
+        BpodSystem.Data.BothRewarded(  currentTrial, :) = NaN;  
         
-        BpodSystem.Data.DecisionTimesLine(currentTrial,:)  = nan; %CHECK
-%         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
-%         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
-%         BpodSystem.Data.CrossEngagement(  currentTrial, :) = CrossToSave;
-%         
-%         BpodSystem.Data.FullEngagement (  currentTrial, :) = FullEngagement;
-%         BpodSystem.Data.HalfEngagement (  currentTrial, :) = HalfEngagement;
-%         BpodSystem.Data.ChangeOfMind   (  currentTrial, :) = ChangeOfMind;
-%         BpodSystem.Data.Disengagement  (  currentTrial, :) = Disengagement;
+        BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
+        BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
+        BpodSystem.Data.CrossEngagement(  currentTrial, :) = CrossToSave;
+         
+        BpodSystem.Data.Engagement.FullEngagement (  currentTrial, :) = FullEngagement;
+        BpodSystem.Data.Engagement.HalfEngagement (  currentTrial, :) = HalfEngagement;
+        BpodSystem.Data.Engagement.ChangeOfMind   (  currentTrial, :) = ChangeOfMind;
+        BpodSystem.Data.Engagement.Disengagement  (  currentTrial, :) = Disengagement;
+        
+
         %Add missing variables
         
     elseif numel(mousesetting)==2
@@ -121,7 +160,6 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         outcomeToSave = [nan nan];
         reactToSave   = [nan nan];
         choiceToSave  = [nan nan];
-        RewardOutcome = [nan nan];
         PokeToSave    = [nan nan];
         CrossToSave   = [nan nan];
         DecisionLine  = [nan nan];
@@ -142,7 +180,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
             
             Outcomes.CorrChoiceNames = {sprintf('CorrectM%dSoftDelay', imouse),... Coop
                                  sprintf('M%dCorrectWaiting', imouse),... Coop
-                                 sprintf('BothFirstRewardM%d', other_mouse),...  Coop
+                                 sprintf('BothFirstRewardM%d', other_mouse),...  Coop Its other mouse because this initiates when other mouse pokes and Im interested in the exact time the other mouse made a choice
                                  sprintf('RewardM%dSecond', imouse),... Coop but its not getting the real first time!!! Also Comp
                                  sprintf('RewardM%dFirst', imouse),... Comp
                                  sprintf('FullRewardM%d', imouse),... Comp
@@ -168,7 +206,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                         sprintf('M%dWrongWait', imouse),...
                         sprintf('M%dIncorrectFirstCollectM%dCross', imouse, other_mouse),...
                         sprintf('M%dWrongTerminal', imouse),...
-                        sprintf('M%dWrongFirstCollectM%dPoke', other_mouse, imouse),...
+                        sprintf('M%dWrongFirstCollectM%dPoke', imouse, other_mouse),...
                         sprintf('M%dWrong', imouse)}; 
                     
             Outcomes.CorrectCrossNames = {sprintf('M%dCrossedWaiting', imouse),... 
@@ -225,26 +263,6 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                 choiceToSave(imouse)  = currReward(imouse);
             end
  
-%             %Assessing engagement
-%             if isnan(CrossToSave(imouse))
-%                 %mouse didn't cross before timeout
-%                 Disengagement(imouse)   = 1;
-%             else %mouse crossed
-%                 if isnan(PokeToSave(imouse))
-%                     %mouse crossed but didn't poke
-%                     outcomeToSave(imouse) = CrossToSave(imouse);
-%                     HalfEngagement(imouse) = 1;
-%                 else %mouse poked
-%                     if PokeToSave(imouse) ~= CrossToSave(imouse)
-%                         % mouse crossed but poked the contrary side
-%                         outcomeToSave(imouse) = PokeToSave(imouse);
-%                         ChangeOfMind(imouse) = 1;
-%                     else
-%                         %mouse crossed, then poked on the same side
-%                         FullEngagement(imouse) = 1;
-%                     end
-%                 end
-%             end            
             %Assessing engagement
             if isnan(CrossToSave(imouse))
                 %mouse didn't cross before timeout
@@ -265,8 +283,6 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                     end
                 end
             end   
-
-            
             
         end             
                     
@@ -299,11 +315,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
  
             end
         end
-        
-        SimultaneousPoke = 0;
-        if abs(reactToSave(1)-reactToSave(2))<=S.GUI.SoftDelay
-            SimultaneousPoke =1;
-        end       
+              
         
         BpodSystem.Data.TrialTypes(       currentTrial, :) = currReward;
         BpodSystem.Data.InitiationTime(   currentTrial, :) = initiationTimeToSave;
@@ -315,9 +327,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
         BpodSystem.Data.CrossEngagement(  currentTrial, :) = CrossToSave;
-        BpodSystem.Data.SimultaneousPoke(  currentTrial, :) = SimultaneousPoke;
-
-        %engagementTypes = {'FullEngagement','HalfEngagement','ChangeOfMind','Disengagement'};
+        
         BpodSystem.Data.Engagement.FullEngagement (  currentTrial, :) = FullEngagement;
         BpodSystem.Data.Engagement.HalfEngagement (  currentTrial, :) = HalfEngagement;
         BpodSystem.Data.Engagement.ChangeOfMind   (  currentTrial, :) = ChangeOfMind;
@@ -358,22 +368,22 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                 psecond  = min(S.GUI.RewardPercentageSecond, 1);
                 psecond  = max(psecond, 0);
                 rewcurr(imouse) = currRewardAmount(imouse) * psecond;
-%                 if rewcurr(imouse) > 0
-%                    RewardOutcome (imouse) = 1;
-%                 else
-                     RewardOutcome (imouse) = 0;
-%                 end
             elseif ~isnan(mouserew)
                 rewcurr(imouse) = currRewardAmount(imouse);
-                RewardOutcome (imouse) = 1;
-             end
-
+            end
         end
-   
-        BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
-        BpodSystem.Data.RewardOutcome(  currentTrial, :)= RewardOutcome;       
         
+         BothRewarded = NaN;
+         if all(rewcurr>0)
+             BothRewarded = 1;
+         end
+
+        BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
+        BpodSystem.Data.BothRewarded(  currentTrial, :) = BothRewarded;       
         BpodSystem.Data.Contrast(      currentTrial, :) = currStim;
+        if S.GUI.RewardPercentageSecond ~= 1
+            BpodSystem.Data.CompetitionSetting(currentTrial, :) = 1;
+        end
     else
         error('Incorrect mouse setting.');
     end
