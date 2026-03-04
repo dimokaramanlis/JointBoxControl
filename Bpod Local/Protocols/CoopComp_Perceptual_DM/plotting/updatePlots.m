@@ -371,7 +371,8 @@ mousewin = NaN(Ntrials,1);
 for iTrial = 1:Ntrials
     if trialoutcomes(iTrial) == 1 %if both correct
         [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]); %who was faster
-        if bothrew(iTrial)==1
+        if Data.SimultaneousPoke==1
+        %if bothrew(iTrial)==1
             idxWin = 0;
         end
         mousewin(iTrial) = idxWin;

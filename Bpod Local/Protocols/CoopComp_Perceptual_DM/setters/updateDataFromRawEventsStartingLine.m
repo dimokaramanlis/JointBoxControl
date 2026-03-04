@@ -351,6 +351,8 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                                sprintf('M%dRewardedTerminal', imouse)};
             
             secondrewardnames = {sprintf('RewardM%dSecond', imouse)}; %Comp and Coop
+            
+            softdelaynames = {sprintf('FullRewardM%d', imouse)};
                                  
             mouserew = nan;          
             validfields = currfields(contains(currfields, fullrewardnames));
@@ -362,6 +364,12 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
             validfields = currfields(contains(currfields, secondrewardnames));
             for ifield = 1:numel(validfields)
                 secondmouserew = min(secondmouserew, min(currTrialStates.(validfields{ifield})));
+            end
+            
+            withinsoftdelay = nan;          
+            validfields = currfields(contains(currfields, softdelaynames));
+            for ifield = 1:numel(validfields)
+                withinsoftdelay = min(withinsoftdelay, min(currTrialStates.(validfields{ifield})));
             end
                
             if ~isnan(secondmouserew)
@@ -377,10 +385,16 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
          if all(rewcurr>0)
              BothRewarded = 1;
          end
+         
+         SimultaneousPoke = NaN;
+         if ~isnan(withinsoftdelay)
+             SimultaneousPoke = 1;
+         end
 
         BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
         BpodSystem.Data.BothRewarded(  currentTrial, :) = BothRewarded;       
         BpodSystem.Data.Contrast(      currentTrial, :) = currStim;
+        BpodSystem.Data.SimultaneousPoke(  currentTrial, :) = SimultaneousPoke;
         if S.GUI.RewardPercentageSecond ~= 1
             BpodSystem.Data.CompetitionSetting(currentTrial, :) = 1;
         end
