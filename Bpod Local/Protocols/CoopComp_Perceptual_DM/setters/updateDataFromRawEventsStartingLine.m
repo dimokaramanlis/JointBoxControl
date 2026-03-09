@@ -139,6 +139,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
         BpodSystem.Data.CrossEngagement(  currentTrial, :) = CrossToSave;
+        BpodSystem.Data.SimultaneousPoke(  currentTrial, :) = NaN;
          
         BpodSystem.Data.Engagement.FullEngagement (  currentTrial, :) = FullEngagement;
         BpodSystem.Data.Engagement.HalfEngagement (  currentTrial, :) = HalfEngagement;
@@ -335,6 +336,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         
         %%%%% Extract reward outcome       
         rewcurr  = [0 0];
+        withinsoftdelay = nan; 
         
         for imouse = 1:2
             if isnan(reactToSave(imouse))
