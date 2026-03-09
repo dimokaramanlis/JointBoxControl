@@ -302,12 +302,17 @@ end
                     countEng.(choiceType{iOutcome+1})(imouse,iType) = numel(find(Data.Engagement.(OutcomeTypes{iType})(:,imouse)==iOutcome));
                 end
                 Ntrials_Outcome = sum(countEng.(choiceType{iOutcome+1})(imouse,:));
-                if Data.Normalization(Ntrials,1)==1
-                    countEng.(choiceType{iOutcome+1})(imouse,:) = countEng.(choiceType{iOutcome+1})(imouse,:)/Ntrials;
-                else
-                    countEng.(choiceType{iOutcome+1})(imouse,:) = countEng.(choiceType{iOutcome+1})(imouse,:)/Ntrials_Outcome;
+                
+                for iType = 1:3
+                    if Data.Normalization(Ntrials,1)==1
+                        countEng.(choiceType{iOutcome+1})(imouse,iType) = countEng.(choiceType{iOutcome+1})(imouse,iType)/Ntrials;
+                    else
+                        countEng.(choiceType{iOutcome+1})(imouse,iType) = countEng.(choiceType{iOutcome+1})(imouse,iType)/Ntrials_Outcome;
+                    end
+                    %countEng.(choiceType{iOutcome+1})(imouse,4) = countEng.(choiceType{iOutcome+1})(imouse,4)/Ntrials;
                 end
-            end    
+            end
+            countEng.(choiceType{2})(imouse,4) = countEng.(choiceType{2})(imouse,4)/Ntrials;
         end
         
         plotEngagementCount(myPlots.engagementCount, graphics, countEng)
@@ -371,7 +376,7 @@ mousewin = NaN(Ntrials,1);
 for iTrial = 1:Ntrials
     if trialoutcomes(iTrial) == 1 %if both correct
         [~, idxWin] = min([mouseallreacts(iTrial,1), mouseallreacts(iTrial,2)]); %who was faster
-        if Data.SimultaneousPoke==1
+        if Data.SimultaneousPoke(iTrial)==1
         %if bothrew(iTrial)==1
             idxWin = 0;
         end
