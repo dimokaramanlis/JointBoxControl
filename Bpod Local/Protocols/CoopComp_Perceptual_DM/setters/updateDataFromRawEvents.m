@@ -95,8 +95,10 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         BpodSystem.Data.Contrast(currentTrial,:)       = contrastToSave;
         BpodSystem.Data.isSpontaneous(currentTrial,:)  = isSpontaneous;
         BpodSystem.Data.RewardOutcome(currentTrial,:)  = RewardOutcome;
-                BothRewarded = NaN;
+        BothRewarded = NaN;
         BpodSystem.Data.BothRewarded(  currentTrial, :) = BothRewarded; 
+        SimultaneousPoke = NaN;
+        BpodSystem.Data.SimultaneousPoke(  currentTrial, :) = NaN;
         
     elseif numel(mousesetting)==2
         % 1. Initiation time
@@ -217,6 +219,7 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         rewcurr  = [0 0];
         
         for imouse = 1:2
+            psecond  = min(S.GUI.RewardPercentageSecond, 1);
             if isnan(reactToSave(imouse))
                 continue
             end
@@ -242,9 +245,9 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
             for ifield = 1:numel(validfields)
                 secondmouserew = min(secondmouserew, min(currTrialStates.(validfields{ifield})));
             end
-               
+
+            
             if ~isnan(secondmouserew)
-                psecond  = min(S.GUI.RewardPercentageSecond, 1);
                 psecond  = max(psecond, 0);
                 rewcurr(imouse) = currRewardAmount(imouse) * psecond;
                 RewardOutcome (imouse) = 0;
@@ -267,11 +270,12 @@ function BpodSystem = updateDataFromRawEvents(BpodSystem, S,RawEvents, currentTr
         
         BpodSystem.Data.BothRewarded(  currentTrial, :) = BothRewarded;   
         BpodSystem.Data.RewardAmount(  currentTrial, :) = rewcurr;
-
         BpodSystem.Data.RewardOutcome(  currentTrial, :) = RewardOutcome;
-        
-        
+
         BpodSystem.Data.Contrast(      currentTrial, :) = currStim;
+
+        SimultaneousPoke = NaN;
+        BpodSystem.Data.SimultaneousPoke(  currentTrial, :) = SimultaneousPoke;
     else
         error('Incorrect mouse setting.');
     end

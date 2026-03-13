@@ -329,10 +329,10 @@ end
 
 %--------------------------------------------------------------------------
 % PLOTTING DECISION AND REACTION TIME PER CONTRAST  --- OK
-lims_y=2;
+lims_y=[0 1.5];
 plotReactionTimes(myPlots.OrientationDecisionTimePlot, graphics, respcons, respdecis, runsimple,lims_y)
 
-lims_y=2.5;
+lims_y=[0.5 2];
 plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respreacts ,runsimple,lims_y)
 
 %--------------------------------------------------------------------------
@@ -383,6 +383,9 @@ for iTrial = 1:Ntrials
         mousewin(iTrial) = idxWin;
     end
 end
+
+%smooth winning curves
+winavg=fillmissing(winavg,'pchip','MaxGap',5);
 
 plotCompCoop(myPlots.CooperationORCompetitionPerformance,graphics, ...
     rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax, rewtot)

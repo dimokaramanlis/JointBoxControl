@@ -7,7 +7,8 @@ function plotReactionTimes(OrientationReactionTimePlot, graphics, convec, reactc
 
 cla(OrientationReactionTimePlot); 
 hold(OrientationReactionTimePlot, 'on');
-ymax = lims_y;
+ymax = lims_y(2);
+ymin = lims_y(1);
 for imouse = 1:2
     mousecol = graphics.mouseColor(imouse, :);
 
@@ -26,9 +27,11 @@ for imouse = 1:2
         'LineWidth',1, 'CapSize', 3, 'LineStyle', 'none');
     ymax = max([ymax max(meanreact+semreact)]);
 end
-
+if min(meanreact-semreact) < ymin
+    ymin = 0;
+end
 ymax = max([ceil(ymax/0.2)*0.2 0.2]);
-ylim(OrientationReactionTimePlot, [0 ymax]);
+ylim(OrientationReactionTimePlot, [ymin ymax]);
 yticks(OrientationReactionTimePlot, [0 ymax/4 ymax/2 3*ymax/4 ymax]);
 
 % think of updating ylim

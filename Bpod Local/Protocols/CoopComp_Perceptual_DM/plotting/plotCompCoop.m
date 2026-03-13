@@ -26,7 +26,7 @@ line(percentageCorrectPlot, 1:Ntrials, rewardavg, ...
 for imouse = 1:2
     mousecol = graphics.mouseColor(imouse, :);
     line(percentageCorrectPlot, 1:Ntrials, winavg(:, imouse), ...
-        'Marker', '.', 'MarkerSize', 5, 'Color', [mousecol 0.5], 'LineWidth', 1); hold on;
+       'MarkerSize', 3, 'Color', [mousecol 0.5], 'LineWidth', 2); hold on; % 'Marker', '.', 
 end
 
 % Plot winner of each round on the top
