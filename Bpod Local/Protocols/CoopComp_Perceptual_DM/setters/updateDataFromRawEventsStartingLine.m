@@ -397,6 +397,8 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.BothRewarded(  currentTrial, :) = BothRewarded;       
         BpodSystem.Data.Contrast(      currentTrial, :) = currStim;
         BpodSystem.Data.SimultaneousPoke(  currentTrial, :) = SimultaneousPoke;
+        
+        
         if S.GUI.RewardPercentageSecond ~= 1
             BpodSystem.Data.CompetitionSetting(currentTrial, :) = 1;
         end
