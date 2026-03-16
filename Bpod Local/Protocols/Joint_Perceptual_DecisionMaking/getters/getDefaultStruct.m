@@ -201,7 +201,7 @@ function S = getDefaultStruct(ops)
         S.GUIMeta.ProbOpto.Style = 'edit';
         S.GUIMeta.ProbOpto.String = {'ProbabilityOpto'};
 
-        S.GUI.OptoDuration  = 0.5;
+        S.GUI.OptoDuration  = 1;
         S.GUIMeta.OptoDuration.Style = 'edit';
         S.GUIMeta.OptoDuration.String = {'OptoDuration'};
 
