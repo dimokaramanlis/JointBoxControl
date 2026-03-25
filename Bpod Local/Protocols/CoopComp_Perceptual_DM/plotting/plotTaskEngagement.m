@@ -1,4 +1,4 @@
-function plotTaskEngagement(taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, rewass, plotDiseng)
+function plotTaskEngagement(taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, rewass)
 
 Ntrials = size(choiceavg, 1);
 
@@ -21,10 +21,9 @@ for imouse = 1:2
         'Marker', '.', 'Color', [mousecol 0.5], 'LineWidth', 3-imouse,'MarkerSize',4-imouse);
     
     redcol = 0.4*[1 0 0] + 0.6 *mousecol;
-    if plotDiseng
-        line(taskEngagementPlot, 1:Ntrials, disengavg(:, imouse), ...
+    line(taskEngagementPlot, 1:Ntrials, disengavg(:, imouse), ...
         'Marker', '.', 'Color', [redcol 0.5], 'LineWidth', 1,'MarkerSize',3);
-    end
+
 end
 
 text(taskEngagementPlot, 1, 0.1, 'Poke Disengagement', 'Color', 'r', 'Fontsize',10)

@@ -48,13 +48,7 @@ for ii = 1:Ntrials
     %PERFORMANCE MOVING AVERAGE
     % abort invalid trials
     if any(mcurr<0), continue,  end
-    % regress to 0.5 when task setting changes... ???????????
-%     if ~isequal(isnan(mcurr), isnan(moldperf))
-%         moldperf = ~isnan(mcurr) * 0.5;
-%     end
 
-
-%instead of all of this, maybe just jump nan trials?? TEST NEXT
     for this_mouse = 1:length(moldperf)
         if isnan(moldperf(this_mouse)) && ~isnan(mcurr(this_mouse))           
             last_notnan = find(~isnan(perfavg(:,this_mouse)),1,'last');
@@ -72,13 +66,14 @@ for ii = 1:Ntrials
     %--------------------------------------------------------------------------
     %CHOICE MOVING AVERAGE
     % abort invalid trials
+    if useStartingLine
+        chcurr      =  Data.CrossChoice(ii, :);
+    else
+        chcurr      =  Data.MouseChoice(ii, :);
+    end
     if all(isnan(chcurr)), continue,  end
     chcurr = (chcurr+1)/2;
-    % regress to 0.5 when task setting changes...
-%     if ~isequal(isnan(chcurr), isnan(moldchoice))
-%         moldchoice = ~isnan(chcurr) * 0.5;
-%     end
-    
+
     for this_mouse = 1:length(moldchoice)
         if isnan(moldchoice(this_mouse)) && ~isnan(chcurr(this_mouse))           
             last_nonnan = find(~isnan(choiceavg(:,this_mouse)),1,'last');
@@ -116,7 +111,7 @@ for ii = 1:Ntrials
             end
             if Data.CompetitionSetting == 1
                 if bothrew == 1
-                    winout(imouse)=1;
+                    winout(imouse)=0.5;
                 end
             end
         end
@@ -125,17 +120,7 @@ for ii = 1:Ntrials
     end
     
     moldwin    = beta * moldwin + (1 - beta) * winout;
-    winavg(ii, :) = moldwin;
-    
-%     f mouseallreacts(1) < mouseallreacts(2) || bothrew == 1
-%                 winout(1)=1;
-%                 winout(2)=0;
-%             else
-%                 winout(1)=0;
-%                 winout(2)=1;
-%             end
-    % Crossing and poking average and disengagement
-        
+    winavg(ii, :) = moldwin;       
         
 end
 %%
@@ -153,8 +138,7 @@ for imouse = 1:2
     mousechoice   =  Data.MouseChoice(:,imouse);
     mousereact    =  Data.ReactionTimes(:,imouse);
     mousedecide   = decideFromSpout(mousereact, mousechoice); % Data.DecisionTimes(:,imouse);
-    mousecontrast =  Data.Contrast(:, imouse);
-        
+    mousecontrast =  Data.Contrast(:, imouse);       
     
     iuse = ~isnan(mousechoice);
     if all(isnan(mousechoice)), continue, end
@@ -221,7 +205,6 @@ if useStartingLine
     decidetimes =  Data.DecisionTimesLine;
 else
     decidetimes = Data.DecisionTimes;
-    %decidetimes(isnan(Data.MouseChoice)) = NaN; CHECK
 end
 
 lims_y = 2;
@@ -254,30 +237,18 @@ plotPercentageCorrect(myPlots.percentageCorrectPlot,graphics, ...
 % also plot disengagement disengcross
 
 %--------------------------------------------------------------------------
-% PLOTTING POKING PERFORMANCE PER TRIAL
-% trialoutcomes =  Data.PokeEngagement;
-% trialoutcomes(trialoutcomes<0) = NaN;
-% perftot    = mean(trialoutcomes, 1, 'omitnan');
-% rewtot     = sum((Data.RewardAmount.*(trialoutcomes>0)), 1, 'omitnan');
-% Nmax       = min(100, Ntrials);
-% perfmax    = max(movmean(trialoutcomes, Nmax, 1, ...
-%     'omitnan', 'Endpoints', 'discard'), [], 1);
-% 
-% plotPercentageCorrect(myPlots.pokingEngagementPlot,graphics, ...
-%     perfavg, perfmax, perftot, rewtot)
-% also plot disengagement
+% PLOTTING CHOICE PER TRIAL
+if useStartingLine
+    choicetot = sum( Data.CrossChoice>0, 1);
+    choicetot = choicetot./sum(abs( Data.CrossChoice)>0, 1);    
+else
+    choicetot = sum( Data.MouseChoice>0, 1);
+    choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
+end
 
-%--------------------------------------------------------------------------
-% PLOTTING CHOICE PER TRIAL % removed disengagement --- OK
-choicetot = sum( Data.MouseChoice>0, 1);
-choicetot = choicetot./sum(abs( Data.MouseChoice)>0, 1);
-% if useStartingLine; plotDiseng = false;
-% else; plotDiseng = true; end
-plotDiseng = true;
 rplus  = sum( Data.RewardAmount.*( Data.MouseChoice>0).*(trialoutcomes>0), 1, 'omitnan');
 rminus = sum( Data.RewardAmount.*( Data.MouseChoice<0).*(trialoutcomes>0), 1, 'omitnan');
-plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus],plotDiseng);
-
+plotTaskEngagement(myPlots.taskEngagementPlot, graphics, choiceavg, choicetot, disengavg, [rplus;rminus]);
 
 %--------------------------------------------------------------------------
 % PLOTTING PSYCHOMETRIC CURVE (CHOICE X CONTRAST) --- OK
@@ -337,13 +308,14 @@ plotReactionTimes(myPlots.OrientationReactionTimePlot, graphics, respcons, respr
 
 %--------------------------------------------------------------------------
 % PLOTTING COOPERATION AND COMPETITION DATA  --- OK
-trialoutcomes = all(Data.TrialOutcome == 1, 2);  % Both correct
 Nmax       = min(100, Ntrials);
 
 if useStartingLine
-    similartot = sum(Data.TrialOutcome(:,1) == Data.TrialOutcome(:,2))/Ntrials; %how many times mice did the same
-    similarmax = max(movmean(Data.TrialOutcome(:,1) == Data.TrialOutcome(:,2), Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
+    trialoutcomes = all(Data.CrossEngagement==1, 2);  % Both correct
+    similartot = sum(Data.CrossChoice(:,1) == Data.CrossChoice(:,2))/Ntrials; %how many times mice did the same
+    similarmax = max(movmean(Data.CrossEngagement(:,1) == Data.CrossEngagement(:,2), Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
 else
+    trialoutcomes = all(Data.TrialOutcome == 1, 2);  % Both correc
     similartot = sum(Data.MouseChoice(:,1) == Data.MouseChoice(:,2))/Ntrials; %how many times mice did the same
     similarmax = max(movmean(Data.MouseChoice(:,1) == Data.MouseChoice(:,2), Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
 end
@@ -368,7 +340,6 @@ bothmax    = max(movmean(bothrew, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [
 for imouse = 1:2
     rewtot(imouse)    = numel(find(Data.RewardAmount(:,imouse)>0))/Ntrials;
 end
-
 
 mouseallreacts = Data.ReactionTimes;
 

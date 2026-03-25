@@ -28,6 +28,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         PokeToSave           = [nan nan];
         CrossToSave          = [nan nan];
         DecisionLine         = [nan nan];
+        FirstCross  = [nan nan];
         
         FullEngagement = [nan nan];
         HalfEngagement = [nan nan];
@@ -64,11 +65,14 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
 
         if ~isnan(currTrialStates.CorrectCrossMakingDecision(1))
              CrossToSave(mousesetting) = 1;
+             FirstCross(mousesetting) = currReward(mousesetting);
              DecisionLine(mousesetting) = currTrialStates.CorrectCrossMakingDecision(2)-timeinit;
         elseif ~isnan(currTrialStates.WrongCross(1))
              CrossToSave(mousesetting) = 0;
+             FirstCross(mousesetting) = -currReward(mousesetting);
              DecisionLine(mousesetting) = currTrialStates.WrongCross(2)-timeinit;
         end
+        
 
         %Assessing engagement
         if isnan(CrossToSave(mousesetting))
@@ -134,7 +138,8 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.RewardAmount(currentTrial,:)   = currRewardAmount.*(outcomeToSave>=0);
         BpodSystem.Data.Contrast(currentTrial,:)       = contrastToSave;
         BpodSystem.Data.isSpontaneous(currentTrial,:)  = isSpontaneous;
-        BpodSystem.Data.BothRewarded(  currentTrial, :) = NaN;  
+        BpodSystem.Data.BothRewarded(  currentTrial, :) = NaN;
+        BpodSystem.Data.CrossChoice(      currentTrial, :) = FirstCross;
         
         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;
@@ -164,6 +169,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         PokeToSave    = [nan nan];
         CrossToSave   = [nan nan];
         DecisionLine  = [nan nan];
+        FirstCross  = [nan nan];
         
         FullEngagement = [nan nan];
         HalfEngagement = [nan nan];
@@ -242,11 +248,13 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
                         
             if ~isnan(mouse_outcome.mouseWrongCross)               
                 CrossToSave(imouse) = 0;
+                FirstCross(imouse) =-currReward(imouse);
                 DecisionLine(imouse)   = min(mouse_outcome.mouseWrongCross) - stimTime;
             end   
             
             if ~isnan(mouse_outcome.mouseCorCross)
                 CrossToSave(imouse) = 1;
+                FirstCross(imouse) = currReward(imouse);
                 DecisionLine(imouse)   = min(mouse_outcome.mouseCorCross) - stimTime;
             end          
             
@@ -324,6 +332,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
         BpodSystem.Data.ReactionTimes(    currentTrial, :) = reactToSave;
         BpodSystem.Data.DecisionTimes(    currentTrial, :) = decisionTimeToSave;
         BpodSystem.Data.MouseChoice(      currentTrial, :) = choiceToSave;
+        BpodSystem.Data.CrossChoice(      currentTrial, :) = FirstCross;
         
         BpodSystem.Data.DecisionTimesLine(currentTrial, :) = DecisionLine;
         BpodSystem.Data.PokeEngagement(   currentTrial, :) = PokeToSave;

@@ -26,9 +26,13 @@ for imouse = 1:2
         'markerfacecolor', mousecol, 'markeredgecolor','k', 'Color', mousecol,...
         'LineWidth',1, 'CapSize', 3, 'LineStyle', 'none');
     ymax = max([ymax max(meanreact+semreact)]);
+    
+    
 end
-if min(meanreact-semreact) < ymin
-    ymin = 0;
+if exist('meanreact')
+    if min(meanreact-semreact) < ymin
+        ymin = 0;
+    end
 end
 ymax = max([ceil(ymax/0.2)*0.2 0.2]);
 ylim(OrientationReactionTimePlot, [ymin ymax]);
