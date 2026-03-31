@@ -82,7 +82,7 @@ ops.pokeOut.m2Blue = 'Port3Out';
 if localsettings.useAIM ~=0
     BpodSystem.assertModule('AnalogIn', 1); % The second argument (1) indicates that AnalogIn must be paired with its USB serial port
     A = BpodAnalogIn(BpodSystem.ModuleUSB.AnalogIn1);
-    A.SamplingRate = 1000; % Hz  10000;
+    A.SamplingRate = 10000; % Hz  10000;
     A.nActiveChannels = 5; % Record from up to 8 channels
     channelsToStream = 2:5;          % [2 3 4 5]
     A.Stream2USB(:) = 0;             % turn off all channels first (safe)
@@ -124,6 +124,11 @@ for currentTrial = 1:10000
     ops.degPositive = S.GUI.Angle;
     ops.degNegative = -S.GUI.Angle;
     %----------------------------------------------------------------------------
+    useStartingLine = localsettings.useStartingLine;
+    if S.GUI.TaskType == 1 && S.GUI.MouseSetting == 3
+        useStartingLine = 0;
+    end
+
     % same for mouse setting
     if ~isequal(mousesetting, getmousesetting(S.GUI.MouseSetting))
         mousesetting = getmousesetting(S.GUI.MouseSetting); 
@@ -181,30 +186,31 @@ for currentTrial = 1:10000
     SendStateMatrix(sma); % Send the state matrix to the Bpod device
     RawEvents = RunStateMatrix; % Run the trial and return events
     %----------------------------------------------------------------------
-    if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)    
-        
-        if localsettings.useStartingLine
-            BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem,S,...
-                                                 RawEvents,currentTrial,...
-                                                 currstim, currreward,currRewardAmount,...
-                                                 mousesetting, localsettings.useStartingLine);
+    if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)
+
+        if useStartingLine
+                BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem,S,...
+                    RawEvents,currentTrial,...
+                    currstim, currreward,currRewardAmount,...
+                    mousesetting, useStartingLine);
         else
             BpodSystem = updateDataFromRawEvents(BpodSystem,S,...
                                                  RawEvents,currentTrial,...
                                                  currstim, currreward,currRewardAmount,...
-                                                 mousesetting, localsettings.useStartingLine);
+                                                 mousesetting, useStartingLine);
         end
         SaveBpodSessionData; % Saves the field to the current data file
         % check if figure is still open
         if ~ishandle(myPlots.PerformanceFigure)
-             if localsettings.useStartingLine
+            if useStartingLine
                 [myPlots, graphics] = initializePlotsStartingLine(BpodSystem.Status.CurrentSubjectName);
-             else
-                 [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
-             end
+
+            else
+                [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+            end
         end
-        
-        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots, localsettings.useStartingLine);
+
+        updatePlots(BpodSystem.Data, BpodSystem.Status.CurrentSubjectName, myPlots, graphics, localsettings.runSimplePlots, useStartingLine);
     end
     %----------------------------------------------------------------------
     HandlePauseCondition; % Checks to see if the protocol is paused. If so, waits until user resumes.

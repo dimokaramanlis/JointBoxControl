@@ -215,7 +215,7 @@ plotChoiceTimes(myPlots.decisionTimePlot, graphics, decidetimes,lims_y,spout);
 % PLOTTING TIME TO SPOUT PER TRIAL --- OK
 choicetimes =  Data.ReactionTimes;
 choicetimes(isnan( Data.MouseChoice)) = NaN;
-lims_y = 2.5;
+lims_y = 2;
 spout=true;
 plotChoiceTimes(myPlots.choiceTimePlot, graphics, choicetimes,lims_y,spout);
 

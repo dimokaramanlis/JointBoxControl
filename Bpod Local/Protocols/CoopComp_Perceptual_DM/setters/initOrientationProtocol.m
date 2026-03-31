@@ -66,7 +66,11 @@ BpodSystem.SoftCodeHandlerFunction = 'StimulusFunctionOrientation';
 %==========================================================================
 % Setup figure
 if useStartingLine
-    [myPlots, graphics] = initializePlotsStartingLine(BpodSystem.Status.CurrentSubjectName);
+    if S.GUI.TaskType == 1 && S.GUI.MouseSetting == 3
+        [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
+    else
+        [myPlots, graphics] = initializePlotsStartingLine(BpodSystem.Status.CurrentSubjectName);
+    end
 else
     [myPlots, graphics] = initializePlots(BpodSystem.Status.CurrentSubjectName);
 end
