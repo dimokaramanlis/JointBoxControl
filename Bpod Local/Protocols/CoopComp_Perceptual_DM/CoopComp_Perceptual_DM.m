@@ -182,9 +182,11 @@ for currentTrial = 1:10000
                                              S, PTB, GratingProperties, currstim, mousesetting, ops);
     %----------------------------------------------------------------------------
     % prepare and run state machine    
-    [sma,currRewardAmount] = getStateMachine(S, currreward, mousesetting, ops);
+    [sma,currRewardAmount,rewdelay] = getStateMachine(S, currreward, mousesetting, ops);
     SendStateMatrix(sma); % Send the state matrix to the Bpod device
     RawEvents = RunStateMatrix; % Run the trial and return events
+    
+    BpodSystem.Data.RewardDelay(currentTrial, :) = rewdelay;
     %----------------------------------------------------------------------
     if ~isempty(fieldnames(RawEvents)) % If trial data was returned (i.e. if not final trial, interrupted by user)
 

@@ -1,4 +1,4 @@
-function [sma,currRewardAmount]= getStateMachine(S,currreward,mousesetting,ops)
+function [sma,currRewardAmount,rewdelay]= getStateMachine(S,currreward,mousesetting,ops)
 %% Trial specific timing values
 LEDIntensity = S.GUI.LEDIntensity;
 
@@ -47,6 +47,7 @@ times.RewardStimulusTimeout = S.GUI.RewardStimulusTimeout;
 
 times.CooperationTimeout = S.GUI.CooperationTimeout;
 times.RewardDelay        = S.GUI.RewardDelayMin + (S.GUI.RewardDelayMax-S.GUI.RewardDelayMin).* rand(1);     % BA
+rewdelay=times.RewardDelay;
 times.SoftDelay          = S.GUI.SoftDelay;       % BA
 times.NoCrossTimeout     = S.GUI.NoCrossTimeout;
 NoCrossTerminate = S.GUI.TerminateUponNoCross;
