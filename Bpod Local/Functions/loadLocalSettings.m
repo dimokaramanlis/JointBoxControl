@@ -22,6 +22,7 @@ function localsettings = loadLocalSettings()
     defaults.sliderCOM      = 7;
     defaults.useOpto        = 0; % Default is 0, can be 0, 1, or 2
     defaults.runSimplePlots = false; % Default is 0, can be 0, 1, or 2
+    defaults.useStartingLine = false;
     % Initialize localsettings with defaults
     localsettings = defaults;
     %----------------------------------------------------------------------
