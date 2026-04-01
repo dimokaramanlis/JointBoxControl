@@ -15,7 +15,7 @@ mousepins[1].value(False)
 
 ## Start Beatriz Added 123
 #Blue side
-M1BluePin_P3 = Pin(Pin.board.P2, Pin.OUT_PP) #
+M1BluePin_P3 = Pin(Pin.board.P3, Pin.OUT_PP) #
 M2BluePin_P4 = Pin(Pin.board.P4, Pin.OUT_PP) #
 
 #Red side
