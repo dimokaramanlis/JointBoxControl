@@ -33,7 +33,7 @@ end
 
 medianchoicetime = median(choicetimes, 1, 'omitnan');
 Nmax               = min(Ntrials, 100);
-medchoicetime      = movmedian(choicetimes, Nmax, 1, 'omitnan', 'Endpoints', 'discard');
+medchoicetime      = max(movmedian(choicetimes, Nmax, 1, 'omitnan', 'Endpoints', 'discard'), [], 1);
 tstr = sprintf('Median/max median time m1: %2.2f/%2.2f, m2: %2.2f/%2.2f.', ...
     medchoicetime(1),medianchoicetime(1),medchoicetime(2),medianchoicetime(2));
 
