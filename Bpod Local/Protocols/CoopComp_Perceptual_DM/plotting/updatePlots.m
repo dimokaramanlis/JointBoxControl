@@ -100,19 +100,25 @@ for ii = 1:Ntrials
     %--------------------------------------------------------------------------
     %WINNING MOVING AVERAGE
     mouseallreacts = Data.ReactionTimes(ii, :);
+    mouseallreacts(isnan(mouseallreacts))=Inf;
     bothrew    = Data.BothRewarded(ii, 1);
     winout = [nan,nan];
-    if rewout == 1
+    bothcrosscorrect = 0;
+    if useStartingLine
+        bothcrosscorrect = all(Data.CrossEngagement(ii, :)==1);  % Both correct
+    else
+        bothcrosscorrect = all(trialout ==1);
+    end
+
+    if bothcrosscorrect == 1 %only when both poke
         for imouse = 1:2
             if mouseallreacts(imouse) < mouseallreacts(3-imouse)
                 winout(imouse)=1;
             else
                 winout(imouse)=0;
             end
-            if Data.CompetitionSetting == 1
-                if bothrew == 1
-                    winout(imouse)=0.5;
-                end
+            if Data.SimultaneousPoke(ii)==1
+                winout(imouse)=0.5;
             end
         end
     else % one was wrong
@@ -357,6 +363,7 @@ end
 
 %smooth winning curves
 winavg=fillmissing(winavg,'pchip','MaxGap',5);
+%winavg=fillmissing(winavg,'spline','MaxGap',5);
 
 plotCompCoop(myPlots.CooperationORCompetitionPerformance,graphics, ...
     rewardavg, winavg, winmax, wintot, cooptot, coopmax, mousewin, similartot, similarmax, bothtot, bothmax, rewtot)
