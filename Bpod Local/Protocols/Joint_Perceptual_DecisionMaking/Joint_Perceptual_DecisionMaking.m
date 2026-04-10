@@ -110,6 +110,7 @@ for currentTrial = 1:10000
             choicehistory = [];
         end
         [currstim, currreward] = debugStimReward(S, trialset, currreward, conhistory, choicehistory);
+        newId                  = find(trialset == currstim); % to prevent crashes with opto...
     else
          % draw stimulus
         [newId, probtrial] = sampleAndRemove(probtrial);
