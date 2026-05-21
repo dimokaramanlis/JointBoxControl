@@ -4,6 +4,11 @@ function stimdesc = getDefaultStimParams(stimtype, screensize, degPerPixel, fps)
         % chirp parameters
 stimdesc = struct();
 switch stimtype
+    case 'ContrastGrating'
+        stimdesc.contrastlevels    = [-1 -0.5 -0.24 -0.12 -0.06 0 0.06 0.12 0.24 0.5 1];
+        stimdesc.Nstimframes       = 0.5 * fps;
+        stimdesc.Ngrayframes       = 1 * fps;
+        stimdesc.Ntrials           = 20;
     case 'OnOffSteps'
         stimdesc.Nstimframes       = 12 * fps;
         stimdesc.Ntrials           = 20;
