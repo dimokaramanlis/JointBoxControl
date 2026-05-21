@@ -36,17 +36,37 @@ for ii = 1:2
 end
 
     torotate = kPsychDontDoRotation;
+    
+    
+offset = StimPara.StimulusOffset;
+PTB.xc = zeros(2,1);
+PTB.yc = zeros(2,1);
+
+
         
 StimPara.currstimid = StimPara.currstimid + 1;
+stimid              = StimPara.randorder(StimPara.currstimid);
+currcon             = StimPara.contrasts(stimid);
+
+signphase = [1, -1] * sign(currcon);
+for ii = 1:2
+    PTB.xc(ii) = PTB.windowrects(ii,3)/2  - ww/2 - signphase(ii)*round(offset*ww/2) ;
+    PTB.yc(ii) = - ww/2 + GratingProperties.sigma * 2;
+end
+
+
 for framecount = 1:StimPara.Nstimframes
+    
     for iscreen = 1:numel(PTB.windows)
         gratingprops = [GratingProperties.phase(iscreen), GratingProperties.freq, GratingProperties.sigma,...
-            GratingProperties.contrastplot(iscreen), 1, 0, 0, 0];
-    
-    
-        Screen('DrawTexture', PTB.windows(iscreen), ...
-            PTB.textureIndex(framecount, StimPara.randorder(StimPara.currstimid), iscreen));
-         Screen('FillRect', PTB.windows(iscreen), double(framecount<4), ...
+            abs(currcon), 1, 0, 0, 0];
+        dstRect = OffsetRect(PTB.GaborRects(iscreen, :), PTB.xc(iscreen), PTB.yc(iscreen));
+
+        Screen('DrawTexture', PTB.windows(iscreen), PTB.GaborTexs(iscreen), [], dstRect,...
+            GratingProperties.orientation, [], [], [], [],...
+            torotate, gratingprops');
+        
+        Screen('FillRect', PTB.windows(iscreen), double(framecount<4), ...
             [PTB.windowrects(iscreen,3:4)-wp PTB.windowrects(iscreen, 3:4)]);
     end
 
@@ -55,7 +75,7 @@ for framecount = 1:StimPara.Nstimframes
     end
 end
 
-for framecount = 1:StimPara.Ngrayframes
+for framecount = 1:StimPara.randgray(StimPara.currstimid)
     for iscreen = 1:numel(PTB.windows)
         Screen('FillRect', PTB.windows(iscreen), 0.5, PTB.windowrects(iscreen,:));
         Screen('FillRect', PTB.windows(iscreen), double(framecount<4), ...

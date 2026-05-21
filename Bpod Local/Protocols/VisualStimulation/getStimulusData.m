@@ -25,6 +25,10 @@ switch stimtype
                 randperm(numel(stimpara.contrasts));
         end
         stimpara.randorder  = randorder;
+        
+        randgray            = 2*(rand(stimpara.Nstimtrials, 1)-0.5);
+        stimpara.randgray   = round(stimpara.Ngrayframes + randgray*stimpara.Ngrayframes/2);
+        stimpara.randgray   = max(stimpara.randgray, 0);
         stimpara.currstimid = 0;
         
     case 'OnOffSteps'
