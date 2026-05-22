@@ -38,7 +38,9 @@ end
 answer = questdlg('Check settings and start video', ...
     'Start dialog', 'OK','OK');
 % %----------------------------------------------------------------------------
-stimulishow       = {'NaturalisticWaves', 'Chirp'};%{'Chirp', 'NaturalisticWaves'};
+% stimulishow       = {'NaturalisticWaves', 'Chirp', 'ContrastGrating'};%{'Chirp', 'NaturalisticWaves'};
+stimulishow       = {'Chirp', 'NaturalisticWaves', 'ContrastGrating'};
+
 handlerfuns       = cellfun(@(x) sprintf('%sStimulusFunction',x),stimulishow, 'un',0);
 Nstimuli          = numel(handlerfuns);
 betweenstimframes = 60;

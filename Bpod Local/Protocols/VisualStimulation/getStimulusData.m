@@ -7,6 +7,30 @@ stimdesc = getDefaultStimParams(stimtype, screensize, degPerPixel, fps);
 stimpara = struct();
 fprintf('Loading %s... ', stimtype); tic;
 switch stimtype
+    case 'ContrastGrating'
+        %---------------------------------------------------------------------------
+        stimpara.Nstimframes = stimdesc.Nstimframes;
+        stimpara.contrasts   = stimdesc.contrastlevels;
+        stimpara.Nstimtrials = stimdesc.Ntrials * numel(stimpara.contrasts);
+        stimpara.Ngrayframes = stimdesc.Ngrayframes;
+        stimpara.Tstim       = stimdesc.Nstimframes / fps;
+        stimpara.orientation = 0;
+        stimpara.SpatialFrequency = 0.1;
+        stimpara.StimulusRadius = 30;
+        stimpara.StimulusOffset = 0.3;
+        
+        randorder = NaN(stimpara.Nstimtrials, 1);
+        for ii = 1:stimdesc.Ntrials
+            randorder((ii - 1) *numel(stimpara.contrasts) + (1:numel(stimpara.contrasts))) = ...
+                randperm(numel(stimpara.contrasts));
+        end
+        stimpara.randorder  = randorder;
+        
+        randgray            = 2*(rand(stimpara.Nstimtrials, 1)-0.5);
+        stimpara.randgray   = round(stimpara.Ngrayframes + randgray*stimpara.Ngrayframes/2);
+        stimpara.randgray   = max(stimpara.randgray, 0);
+        stimpara.currstimid = 0;
+        
     case 'OnOffSteps'
         %---------------------------------------------------------------------------
         stimpara.Nstimframes = stimdesc.Nstimframes;
