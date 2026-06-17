@@ -1,4 +1,4 @@
-function NaturalisticWavesStimulusFunction()
+function ContrastGratingStimulusFunction()
 
 global PTB StimPara
 wp = 50;

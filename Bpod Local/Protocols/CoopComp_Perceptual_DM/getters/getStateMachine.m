@@ -222,10 +222,14 @@ if numel(mousesetting)==2
              %Collect second mouse choice after NoCrossTimeOut?
              conditions.M1NoCrossTerminate = {'Tup','CollectM1CrossLate'};
              conditions.M2NoCrossTerminate = {'Tup','CollectM2CrossLate'};
+             conditions.TupLateM1Correct = {'GlobalTimer2_End','customExit'};
+             conditions.TupLateM2Correct = {'GlobalTimer2_End','customExit'};
              
              if NoCrossTerminate
                  conditions.M1NoCrossTerminate = {'Tup','customExit'};
                  conditions.M2NoCrossTerminate = {'Tup','customExit'};
+                 conditions.TupLateM1Correct = {'GlobalTimer2_End','RewardOnlyM1'};
+                 conditions.TupLateM2Correct = {'GlobalTimer2_End','RewardOnlyM2'};
              end             
              
              conditions.M1CooperationOrCompetition = {choices.m2CorrectChoice, 'RewardM1First',...

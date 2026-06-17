@@ -376,8 +376,7 @@ function BpodSystem = updateDataFromRawEventsStartingLine(BpodSystem, S,RawEvent
             for ifield = 1:numel(validfields)
                 secondmouserew = min(secondmouserew, min(currTrialStates.(validfields{ifield})));
             end
-            
-            withinsoftdelay = nan;          
+                    
             validfields = currfields(contains(currfields, softdelaynames));
             for ifield = 1:numel(validfields)
                 withinsoftdelay = min(withinsoftdelay, min(currTrialStates.(validfields{ifield})));
