@@ -23,6 +23,7 @@ function localsettings = loadLocalSettings()
     defaults.useOpto        = 0; % Default is 0, can be 0, 1, or 2
     defaults.runSimplePlots = false; % Default is 0, can be 0, 1, or 2
     defaults.useStartingLine = false;
+    defaults.StartLineAnalogIn = [2 4 3 5];
     % Initialize localsettings with defaults
     localsettings = defaults;
     %----------------------------------------------------------------------
@@ -86,11 +87,17 @@ function localsettings = loadLocalSettings()
                             end
                         elseif isnumeric(defaultValue)
                             % Handle numeric
-                            parsedValue = str2double(valueStr);
-                            if isnan(parsedValue) || ~isscalar(parsedValue)
-                                warning('loadLocalSettings:InvalidNumeric', ...
-                                        'Invalid numeric value "%s" for setting "%s" on line %d. Using default.', valueStr, fieldName, lineNumber);
-                                continue; % Skip - keep default
+                            if numel(defaultValue) > 1
+                                parsedValue = str2num(valueStr);
+                            else                                
+                                parsedValue = str2double(valueStr);
+                            end
+                            if ~strcmp(fieldName, 'StartLineAnalogIn')
+                                if isnan(parsedValue) || ~isscalar(parsedValue)
+                                    warning('loadLocalSettings:InvalidNumeric', ...
+                                            'Invalid numeric value "%s" for setting "%s" on line %d. Using default.', valueStr, fieldName, lineNumber);
+                                    continue; % Skip - keep default
+                                end
                             end
 
                             % Specific validation for useMouseSlider

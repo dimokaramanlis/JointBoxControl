@@ -71,6 +71,8 @@ ops.pokeOut.m1Red  = 'Port1Out';
 ops.pokeOut.m1Blue = 'Port4Out';
 ops.pokeOut.m2Red  = 'Port2Out';
 ops.pokeOut.m2Blue = 'Port3Out';
+
+ops.AnalogIn = localsettings.StartLineAnalogIn;
 %---------------------------------------------- ------------------------------
 % initialize screens
 [screenIds, screenInvGammaTables] = checkMonitorIdentity('C:\BoxSettings', true);
@@ -83,8 +85,8 @@ if localsettings.useAIM ~=0
     BpodSystem.assertModule('AnalogIn', 1); % The second argument (1) indicates that AnalogIn must be paired with its USB serial port
     A = BpodAnalogIn(BpodSystem.ModuleUSB.AnalogIn1);
     A.SamplingRate = 10000; % Hz  10000;
-    A.nActiveChannels = 5; % Record from up to 8 channels
-    channelsToStream = 2:5;          % [2 3 4 5]
+    A.nActiveChannels = 8; % Record from up to 8 channels
+    channelsToStream = 1:8;          % [2 3 4 5]
     A.Stream2USB(:) = 0;             % turn off all channels first (safe)
     A.Stream2USB(channelsToStream) = 1;
     A.Thresholds(channelsToStream)    = 1.5;       % detection above ~1.5 V
@@ -98,15 +100,16 @@ if localsettings.useAIM ~=0
     if exist(anlgstremfile,'file'); delete(anlgstremfile); end
     A.USBStreamFile = anlgstremfile; % Set datafile for analog data captured in this session
     A.scope; % Launch Scope GUI    
+
+    A.scope_StartStop % Start AIM USB streaming + data logging  
 end
+
 %----------------------------------------------------------------------------
 questdlg('Start all recordings and video', 'Start dialog', 'OK','OK');
 %----------------------------------------------------------------------------
 %InputSessionNotes(BpodSystem)
 
-if localsettings.useAIM ~=0
-    A.scope_StartStop % Start AIM USB streaming + data logging  
-end
+
 
 mousesetting = getmousesetting(S.GUI.MouseSetting); % this setting is 1, 2 or [1,2] indicating the sides to be used
 setchoose    = {stimsets{S.GUI.ContrastSet1}, stimsets{S.GUI.ContrastSet2}};
@@ -253,7 +256,10 @@ for currentTrial = 1:10000
             A.endAcq; % Close Oscope GUI
             A.stopReportingEvents; % Stop sendi
             if localsettings.useStartingLine                
-                if exist(anlgstremfile,'file'); delete(anlgstremfile); end
+                if exist(anlgstremfile,'file') 
+                    copyfile(anlgstremfile, behpath);
+                    %delete(anlgstremfile); 
+                end
             else
                 copyfile(anlgstremfile, behpath); % copy analog input path
             end

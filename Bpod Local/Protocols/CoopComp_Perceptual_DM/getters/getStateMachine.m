@@ -110,8 +110,9 @@ if numel(mousesetting)==2
         choices.m1IncorrectChoice = nosepokes.m1Red;
         
         choices.OutOfPokeM1 = pokeOut.m1Blue;       %BA
-        choices.m1correctCross='AnalogIn1_2';
-        choices.m1IncorrectCross='AnalogIn1_4';
+        
+        choices.m1correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(1));
+        choices.m1IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(2));
          
     elseif currTrialTypeM1 == -1 %% Red
         choices.m1CorrectChoice   = nosepokes.m1Red;
@@ -121,8 +122,8 @@ if numel(mousesetting)==2
         choices.m1IncorrectChoice = nosepokes.m1Blue;
         
         choices.OutOfPokeM1 = pokeOut.m1Red;        %BA
-        choices.m1correctCross='AnalogIn1_4';
-        choices.m1IncorrectCross='AnalogIn1_2';
+        choices.m1correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(2));
+        choices.m1IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(1));
     else
         error('Incorrect trial type for M1. Please check currReward variable');
     end
@@ -136,8 +137,8 @@ if numel(mousesetting)==2
         
         choices.OutOfPokeM2 = pokeOut.m2Blue;       %BA
         
-        choices.m2correctCross='AnalogIn1_3';
-        choices.m2IncorrectCross='AnalogIn1_5';
+        choices.m2correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(3));
+        choices.m2IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(4));
 
     elseif currTrialTypeM2 == -1  %% Red
         choices.m2CorrectChoice   = nosepokes.m2Red;
@@ -148,8 +149,8 @@ if numel(mousesetting)==2
         
         choices.OutOfPokeM2 = pokeOut.m2Red;        %BA
 
-        choices.m2correctCross='AnalogIn1_5';
-        choices.m2IncorrectCross='AnalogIn1_3';
+        choices.m2correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(4));
+        choices.m2IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(3));
         
     else
         error('Incorrect trial type for M2. Please check currReward variable');
@@ -279,8 +280,8 @@ else
             
             choices.OutOfPoke = pokeOut.m1Blue;       %BA
             
-            choices.m1correctCross='AnalogIn1_2';
-            choices.m1IncorrectCross='AnalogIn1_4';
+            choices.m1correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(1));
+            choices.m1IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(2));
 
             
         elseif currTrialType == -1 % red side
@@ -291,8 +292,8 @@ else
             
             choices.OutOfPoke = pokeOut.m1Red;       %BA
 
-            choices.m1correctCross='AnalogIn1_4';
-            choices.m1IncorrectCross='AnalogIn1_2';
+            choices.m1correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(2));
+            choices.m1IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(1));
 
         end
     elseif mousesetting==2
@@ -306,8 +307,8 @@ else
             
             choices.OutOfPoke = pokeOut.m2Blue;       %BA
 
-            choices.m1correctCross='AnalogIn1_3';
-            choices.m1IncorrectCross='AnalogIn1_5';
+            choices.m1correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(3));
+            choices.m1IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(4));
             
         elseif currTrialType == -1 % red side
             choices.CorrectChoice   = nosepokes.m2Red;
@@ -316,8 +317,8 @@ else
             choices.IncorrectChoice = nosepokes.m2Blue;
             
             choices.OutOfPoke = pokeOut.m2Red;       %BA
-            choices.m1correctCross='AnalogIn1_5';
-            choices.m1IncorrectCross='AnalogIn1_3';
+            choices.m1correctCross=sprintf('AnalogIn1_%d',ops.AnalogIn(4));
+            choices.m1IncorrectCross=sprintf('AnalogIn1_%d',ops.AnalogIn(3));
         end
     else
         error('Incorrect mouse setting provided. Mouse setting can only be 1,2, or [1,2]');
