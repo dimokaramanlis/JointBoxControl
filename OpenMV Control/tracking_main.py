@@ -1,6 +1,7 @@
-import sensor, time, math
+import csi, time, math,image
 import openmv_funs
 from pyb import Pin
+csi0 = csi.CSI()
 #=================================================================================================
 # set configuration and pins
 config_filename = "config.txt"
@@ -17,19 +18,19 @@ print("Mousepins:")
 print(mousepins)
 #=================================================================================================
 # setup sensor
-sensor.reset()
-sensor.set_pixformat(sensor.GRAYSCALE)
-sensor.set_framesize(sensor.QVGA)
+csi0.reset()
+csi0.pixformat(csi.GRAYSCALE)
+csi0.framesize(csi.QVGA)
 if final_config['transpose_first']:
-    sensor.set_transpose(final_config['to_transpose'])
-    sensor.set_hmirror(final_config['to_hmirror'])
-    sensor.set_vflip(final_config['to_vflip'])
+    csi0.transpose(final_config['to_transpose'])
+    csi0.hmirror(final_config['to_hmirror'])
+    csi0.vflip(final_config['to_vflip'])
 else:
-    sensor.set_hmirror(final_config['to_hmirror'])
-    sensor.set_vflip(final_config['to_vflip'])
-    sensor.set_transpose(final_config['to_transpose'])
-sensor.set_windowing(final_config['sensor_window'])
-sensor.set_brightness(final_config['sensor_brightness'])
+    csi0.hmirror(final_config['to_hmirror'])
+    csi0.vflip(final_config['to_vflip'])
+    csi0.transpose(final_config['to_transpose'])
+csi0.window(final_config['sensor_window'])
+csi0.brightness(final_config['sensor_brightness'])
 clock = time.clock()
 #=================================================================================================
 # set params from text config
@@ -65,9 +66,9 @@ prevcorr  = [False, False]
 while(True):
     clock.tick()
     if final_config['median_blur']:
-        img = sensor.snapshot().median(3)
+        img = csi0.snapshot().median(3)
     else:
-        img = sensor.snapshot()
+        img = csi0.snapshot()
     zeroedge    = [(0,0),(0,0),(0,0),(0,0)]
     mcorners    = [zeroedge, zeroedge];
     mouseinzone = [False, False]
@@ -78,22 +79,23 @@ while(True):
         mousepins[imouse].value(False)
         mouseblob = img.find_blobs([bodyThresh[imouse]], merge = True,
         pixels_threshold=75, area_threshold=75, roi =myRegion[imouse])
+        #mouseblob
         if len(mouseblob)>0:
             mouseblob = mouseblob[0]
-            mx        = mouseblob.cxf()
-            my        = mouseblob.cyf()
-            theta     = mouseblob.rotation()
-            mouseaxis = mouseblob.major_axis_line()
+            mx        = mouseblob.cxf
+            my        = mouseblob.cyf
+            theta     = mouseblob.rotation
+            mouseaxis = image.get_major_axis_line(mouseblob)
             #-------------------------------------------------------------
-            if mouseblob.elongation()<0.95 and mouseblob.pixels()<800 and mouseblob.area()<800:
+            if mouseblob.elongation<0.95 and mouseblob.pixels<800 and mouseblob.area<800:
                 ismouseblob[imouse] = True
                 n[imouse]+=1
                 #----------------------------------------------------------------------------------
                 vx = mx - mousecent[imouse][0]
                 vy = my - mousecent[imouse][1]
                 # history dependence adapts on mouse detection and shape
-                elfacv  = 0.8 + 0.2 * math.exp(-0.001*mouseblob.pixels())
-                elfac   = 0.5 + 0.5 * math.exp(-0.001*mouseblob.pixels())
+                elfacv  = 0.8 + 0.2 * math.exp(-0.001*mouseblob.pixels)
+                elfac   = 0.5 + 0.5 * math.exp(-0.001*mouseblob.pixels)
                 #whist = hpcnt * (1  - math.exp(-n[imouse]/50)) * math.exp(-0.1*mouseblob.elongation())
                 vxest = (1-elfacv*hisx) * vx + elfacv*hisx * mousehdir[imouse][0]
                 vyest = (1-elfacv*hisy) * vy + elfacv*hisy * mousehdir[imouse][1]
@@ -111,7 +113,7 @@ while(True):
                 mousehdir[imouse] = [vxest, vyest]
                 mouseeli[imouse]  = [hx, hy]
                 mousecent[imouse] = [mx, my]
-                mcorners[imouse]  = mouseblob.min_corners()
+                mcorners[imouse]  = mouseblob.min_corners
                 print("Mouse ", imouse+1, " X: ", mx, "Y: ", my, " Direction: ", math.degrees(headdir))
                 #----------------------------------------------------------------------------------
                 thetadiff = targetAngle[imouse]-headdir
@@ -139,11 +141,11 @@ while(True):
     #============================================================================
     # drawing
     if final_config['debug']:
-        img.draw_string(int(myRegion[0][3]/2), 1, "!DEBUG ON!",color = (0,0,0))
+        img.draw_string((int(myRegion[0][3]/2), 1), "!DEBUG ON!",color = (0,0,0))
     for imouse in range(0,2):
         img.draw_rectangle(myRegion[imouse], colmouse[imouse], 1, False)
-        img.draw_circle(locvec[imouse][0], locvec[imouse][1], Rtrigger[imouse], colmouse[imouse]),
-        img.draw_cross(locvec[imouse][0], locvec[imouse][1], colmouse[imouse], size=1, thickness=1)
+        img.draw_circle((locvec[imouse][0], locvec[imouse][1], Rtrigger[imouse]), colmouse[imouse]),
+        img.draw_cross((locvec[imouse][0], locvec[imouse][1]), colmouse[imouse], size=1, thickness=1)
         if ismouseblob[imouse]:
             img.draw_edges(mcorners[imouse], color = (180,180,180))
 
@@ -152,9 +154,9 @@ while(True):
             plotdir = math.atan2(mouseeli[imouse][1], mouseeli[imouse][0])
             x1 = int(x0 +  20*math.cos(plotdir))
             y1 = int(y0 +  20*math.sin(plotdir))
-            img.draw_arrow(x0, y0, x1, y1, color = (180,180,180), thickness=1)
+            img.draw_arrow((x0, y0, x1, y1), color = (180,180,180), thickness=1)
 
         if mouseinzone[imouse]:
-           img.draw_arrow(x0, y0, x1, y1, color = (250,250,250), thickness=1)
+           img.draw_arrow((x0, y0, x1, y1), color = (250,250,250), thickness=1)
            img.draw_edges(mcorners[imouse], color = (250,250,250))
     #============================================================================
