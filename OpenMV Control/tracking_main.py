@@ -31,6 +31,8 @@ else:
     csi0.transpose(final_config['to_transpose'])
 csi0.window(final_config['sensor_window'])
 csi0.brightness(final_config['sensor_brightness'])
+csi0.framebuffers(3)   # triple-buffer for max snapshot throughput
+csi0.framerate(60)     # remove any implicit cap (can't exceed the sensor's native rate)
 clock = time.clock()
 #=================================================================================================
 # set params from text config
@@ -114,7 +116,8 @@ while(True):
                 mouseeli[imouse]  = [hx, hy]
                 mousecent[imouse] = [mx, my]
                 mcorners[imouse]  = mouseblob.min_corners
-                print("Mouse ", imouse+1, " X: ", mx, "Y: ", my, " Direction: ", math.degrees(headdir))
+                if final_config['debug']:
+                    print("Mouse ", imouse+1, " X: ", mx, "Y: ", my, " Direction: ", math.degrees(headdir))
                 #----------------------------------------------------------------------------------
                 thetadiff = targetAngle[imouse]-headdir
                 angle = math.pi - math.fabs(math.fabs(thetadiff) - math.pi);
@@ -131,7 +134,8 @@ while(True):
                     mouseinzone[imouse] = True
                     mousepins[imouse].value(True)
                     prevcorr[imouse] = True
-                    print("Mouse ", imouse+1," detected")
+                    if final_config['debug']:
+                        print("Mouse ", imouse+1," detected")
                 else:
                     mousepins[imouse].value(False)
                     prevcorr[imouse] = False
